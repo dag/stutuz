@@ -1,0 +1,6 @@
+include LICENSE
+include README.rst
+include app.wsgi
+include manage.py
+recursive-include stutuz/static *
+recursive-include stutuz/templates *
