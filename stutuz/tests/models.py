@@ -14,6 +14,7 @@ class Models(TestBase):
 
     def test_account(self):
         """Accounts store passwords hashed and authenticates"""
+
         account = Account(username='admin', password='mipri')
         self.assert_not_equal(account.password, 'mipri')
         self.assert_true(account.authenticate('mipri'))
@@ -27,6 +28,7 @@ class Models(TestBase):
     def test_users(self):
         """Users have unique usernames, authenticates by username with password
         """
+
         users = Users()
         users.new('admin', 'mipri')
         users.new('guest', 'vitke')
@@ -44,8 +46,10 @@ class Models(TestBase):
 
     def test_history(self):
         """Histories keep lists of Revisions with last as active"""
+
         history = History()
         account = Account(username='admin')
+
         first = Revision(author=account,
                          comment='First!',
                          object=(1, 2, 3))
