@@ -17,21 +17,28 @@ manager.add_option('-c', '--config', dest='config',
                    default='stutuz.configs.development')
 
 
-@manager.shell
-def context():
+@manager.command
+def shell():
+    """Interactive stutuz console."""
+    import code
     from flask import current_app
     from stutuz import db, models
-    return dict(app=current_app, db=db, models=models)
 
-manager._commands['shell'].banner = \
+    banner = \
 """Interactive stutuz console.
 
 Useful names:
 
   app     Flask application for stutuz
   db      The database instance
+  root    Database root object
   models  Namespace for all models
 """
+
+    with db() as root:
+        local = dict(app=current_app, db=db, root=root, models=models)
+        code.interact(banner, local=local)
+
 
 if __name__ == '__main__':
     manager.run()
