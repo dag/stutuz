@@ -10,15 +10,16 @@ import re
 from functools import partial
 
 from flaskext.testing import TestCase
+import unittest2
 
 from stutuz import create_app
 
 
-class TestBase(TestCase):
+class TestBase(TestCase, unittest2.TestCase):
 
     def create_app(self):
         return create_app('stutuz.configs.testing')
 
     def __getattr__(self, name):
         name = re.sub(r'_([a-z])', lambda m: m.group(1).upper(), name)
-        return partial(getattr(TestCase, name), self)
+        return partial(getattr(unittest2.TestCase, name), self)
