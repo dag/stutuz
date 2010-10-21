@@ -20,7 +20,6 @@ manager.add_option('-c', '--config', dest='config',
 @manager.command
 def shell():
     """Interactive stutuz console."""
-    import code
     from flask import current_app
     from stutuz import db, models
 
@@ -36,8 +35,15 @@ Useful names:
 """
 
     with db() as root:
-        local = dict(app=current_app, db=db, root=root, models=models)
-        code.interact(banner, local=local)
+        context = dict(app=current_app, db=db, root=root, models=models)
+
+        try:
+            import bpython
+        except ImportError:
+            import code
+            code.interact(banner, local=context)
+        else:
+            bpython.embed(context, ['-i'], banner)
 
 
 if __name__ == '__main__':
