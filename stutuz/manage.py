@@ -46,5 +46,9 @@ Useful names:
             bpython.embed(context, ['-i'], banner)
 
 
-if __name__ == '__main__':
+def main():
     manager.run()
+
+
+if __name__ == '__main__':
+    main()

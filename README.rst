@@ -59,7 +59,7 @@ Run the tests::
 
 Start the development server::
 
-    ./manage.py runserver
+    stutuzctl runserver
 
 When you're done you might want to get out of the environment::
 

@@ -32,6 +32,12 @@ setup(
     include_package_data=True,
     zip_safe=False,
 
+    entry_points={
+        'console_scripts': [
+            'stutuzctl = stutuz.manage:main',
+        ],
+    },
+
     install_requires=[
         'Flask>=0.6',
         'Flask-Genshi>=0.4',
