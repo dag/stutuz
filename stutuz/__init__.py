@@ -6,11 +6,13 @@ from __future__ import with_statement
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from logbook import Logger, NestedSetup
 from flask import Flask
 from flaskext.genshi import Genshi
 from flaskext.zodb import ZODB
 
 
+logger = Logger(__name__)
 genshi = Genshi()
 db = ZODB()
 
@@ -24,7 +26,14 @@ def create_app(config=None):
         app.config.from_object(config)
     app.config.from_envvar('STUTUZ_CONFIG', silent=True)
 
-    for extension in genshi, db:
-        extension.init_app(app)
+    handlers = app.config.get('LOGBOOK_HANDLERS')
+    with NestedSetup(handlers):
+        conf = '\n'.join('  {0} = {1!r}'.format(k, v)
+                         for (k, v) in app.config.iteritems())
+        logger.debug('Loaded app with configuration:\n' + conf)
 
-    return app
+        for extension in genshi, db:
+            logger.debug('Loading extension {0.__module__}'.format(extension))
+            extension.init_app(app)
+
+        return app

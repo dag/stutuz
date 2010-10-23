@@ -43,6 +43,7 @@ setup(
         'Flask-Genshi>=0.4',
         'Flask-Script>=0.3.1',
         'ZODB3>=3.10.0',
+        'Logbook>=0.3',
     ],
 
     tests_require=[

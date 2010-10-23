@@ -8,11 +8,40 @@ from __future__ import unicode_literals
 
 import os
 
+import logbook
+from logbook.more import ColorizedStderrHandler
+from logbook.notifiers import create_notification_handler
 from ZODB.FileStorage import FileStorage
 
 
 DEBUG = True
 SECRET_KEY = 'stutuz-development'
+
+
+class ThemedStderrHandler(ColorizedStderrHandler):
+
+    def get_color(self, record):
+        case = lambda x: record.level >= x
+        if case(logbook.ERROR):
+            return 'darkred'
+        elif case(logbook.NOTICE):
+            return 'darkyellow'
+        elif case(logbook.INFO):
+            return 'darkgray'
+        return 'black'
+
+
+LOGBOOK_HANDLERS = [
+    ThemedStderrHandler(),
+]
+
+try:
+    notifier = create_notification_handler(level=logbook.WARNING)
+except RuntimeError:
+    pass
+else:
+    notifier.bubble = True
+    LOGBOOK_HANDLERS.append(notifier)
 
 try:
     os.makedirs('var/db')
