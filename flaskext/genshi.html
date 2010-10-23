@@ -1,0 +1,214 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Genshi &mdash; stutuz v0.1dev documentation</title>
+    <link rel="stylesheet" href="../_static/agogo.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="stutuz v0.1dev documentation" href="../index.html" />
+    <link rel="up" title="Flask extensions" href="../extensions.html" />
+    <link rel="next" title="Script" href="script.html" />
+    <link rel="prev" title="Flask extensions" href="../extensions.html" /> 
+  </head>
+  <body>
+    <div class="header-wrapper">
+      <div class="header">
+        <h1><a href="../index.html">stutuz v0.1dev documentation</a></h1>
+        <div class="rel">
+          <a href="../extensions.html" title="Flask extensions"
+             accesskey="P">previous</a> |
+          <a href="script.html" title="Script"
+             accesskey="N">next</a> |
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-flaskext.genshi">
+<span id="genshi"></span><h1>Genshi<a class="headerlink" href="#module-flaskext.genshi" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference external" href="http://packages.python.org/Flask-Genshi/">Full documentation</a></li>
+<li><a class="reference external" href="http://genshi.edgewall.org/wiki/Documentation/0.6.x/xml-templates.html">Templating language guide</a></li>
+</ul>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="flaskext.genshi.Genshi">
+<em class="property">class </em><tt class="descclassname">flaskext.genshi.</tt><tt class="descname">Genshi</tt><big>(</big><em>app=None</em><big>)</big><a class="reference internal" href="../_modules/flaskext/genshi.html#Genshi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.genshi.Genshi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize extension.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">genshi</span> <span class="o">=</span> <span class="n">Genshi</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 0.4: </span>You can now initialize your application later with <a class="reference internal" href="#flaskext.genshi.Genshi.init_app" title="flaskext.genshi.Genshi.init_app"><tt class="xref py py-meth docutils literal"><span class="pre">init_app()</span></tt></a>.</p>
+<p class="deprecated">
+<span class="versionmodified">Deprecated since version 0.4: </span><tt class="docutils literal"><span class="pre">app.genshi_instance</span></tt> in favor of <tt class="docutils literal"><span class="pre">app.extensions['genshi']</span></tt>.</p>
+<dl class="attribute">
+<dt id="flaskext.genshi.Genshi.extensions">
+<tt class="descname">extensions</tt><a class="headerlink" href="#flaskext.genshi.Genshi.extensions" title="Permalink to this definition">¶</a></dt>
+<dd><p>What method is used for an extension.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flaskext.genshi.Genshi.filter">
+<tt class="descname">filter</tt><big>(</big><em>*methods</em><big>)</big><a class="reference internal" href="../_modules/flaskext/genshi.html#Genshi.filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.genshi.Genshi.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator that adds a function to apply filters
+to templates by rendering method.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">genshi.filters</span> <span class="kn">import</span> <span class="n">Transformer</span>
+
+<span class="nd">@genshi.filter</span><span class="p">(</span><span class="s">&#39;html&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">prepend_title</span><span class="p">(</span><span class="n">template</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">template</span> <span class="o">|</span> <span class="n">Transformer</span><span class="p">(</span><span class="s">&#39;head/title&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">prepend</span><span class="p">(</span><span class="s">&#39;MySite - &#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See the <a class="reference external" href="http://genshi.edgewall.org/wiki/Documentation/0.6.x/filters.html">Genshi documentation</a>
+for more filters you can use.</p>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.3.</span></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flaskext.genshi.Genshi.filters">
+<tt class="descname">filters</tt><a class="headerlink" href="#flaskext.genshi.Genshi.filters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter functions to be applied to templates.</p>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.3.</span></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flaskext.genshi.Genshi.init_app">
+<tt class="descname">init_app</tt><big>(</big><em>app</em><big>)</big><a class="reference internal" href="../_modules/flaskext/genshi.html#Genshi.init_app"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.genshi.Genshi.init_app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a <a class="reference external" href="http://flask.pocoo.org/docs/api/#flask.Flask" title="(in Flask v0.6)"><tt class="xref py py-class docutils literal"><span class="pre">Flask</span></tt></a> application
+for use with this extension. Useful for the factory pattern but
+not needed if you passed your application to the <a class="reference internal" href="#flaskext.genshi.Genshi" title="flaskext.genshi.Genshi"><tt class="xref py py-class docutils literal"><span class="pre">Genshi</span></tt></a>
+constructor.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">genshi</span> <span class="o">=</span> <span class="n">Genshi</span><span class="p">()</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">genshi</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.4.</span></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flaskext.genshi.Genshi.methods">
+<tt class="descname">methods</tt><a class="headerlink" href="#flaskext.genshi.Genshi.methods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render methods.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 0.3: </span>Support for Javascript and CSS.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 0.4: </span>Support for SVG.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flaskext.genshi.Genshi.template_loader">
+<tt class="descname">template_loader</tt><a class="reference internal" href="../_modules/flaskext/genshi.html#Genshi.template_loader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.genshi.Genshi.template_loader" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <tt class="xref py py-class docutils literal"><span class="pre">genshi.template.TemplateLoader</span></tt> that loads templates
+from the same places as Flask.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="flaskext.genshi.render_response">
+<tt class="descclassname">flaskext.genshi.</tt><tt class="descname">render_response</tt><big>(</big><em>template=None</em>, <em>context=None</em>, <em>method=None</em>, <em>string=None</em><big>)</big><a class="reference internal" href="../_modules/flaskext/genshi.html#render_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.genshi.render_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders a template and wraps it in a <a class="reference external" href="http://flask.pocoo.org/docs/api/#flask.Flask.response_class" title="(in Flask v0.6)"><tt class="xref py py-attr docutils literal"><span class="pre">response_class</span></tt></a>
+with mimetype set according to the rendering method.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          <h3>Table Of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../extensions.html">Flask extensions</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">Genshi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="script.html">Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zodb.html">ZODB</a></li>
+</ul>
+</li>
+</ul>
+
+          <h3 style="margin-top: 1.5em;">Search</h3>
+          <form class="search" action="../search.html" method="get">
+            <input type="text" name="q" size="18" />
+            <input type="submit" value="Go" />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+          </form>
+          <p class="searchtip" style="font-size: 90%">
+            Enter search terms or a module, class or function name.
+          </p>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <a href="../extensions.html" title="Flask extensions"
+             >previous</a> |
+          <a href="script.html" title="Script"
+             >next</a> |
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |
+          <a href="../genindex.html" title="General Index"
+             >index</a>
+            <br/>
+            <a href="../_sources/flaskext/genshi.txt"
+               rel="nofollow">Show Source</a>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer">
+        &copy; Copyright 2010, Dag Odenhall.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

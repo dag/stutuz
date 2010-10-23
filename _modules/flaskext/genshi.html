@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>flaskext.genshi &mdash; stutuz v0.1dev documentation</title>
+    <link rel="stylesheet" href="../../_static/agogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="stutuz v0.1dev documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="header-wrapper">
+      <div class="header">
+        <h1><a href="../../index.html">stutuz v0.1dev documentation</a></h1>
+        <div class="rel">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for flaskext.genshi</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    flaskext.genshi</span>
+<span class="sd">    ~~~~~~~~~~~~~~~</span>
+
+<span class="sd">    An extension to Flask for easy Genshi templating.</span>
+
+<span class="sd">    :copyright: (c) 2010 by Dag Odenhall &lt;dag.odenhall@gmail.com&gt;.</span>
+<span class="sd">    :license: BSD, see LICENSE for more details.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">from</span> <span class="nn">genshi.template</span> <span class="kn">import</span> <span class="p">(</span><span class="n">NewTextTemplate</span><span class="p">,</span> <span class="n">MarkupTemplate</span><span class="p">,</span>
+                             <span class="n">loader</span><span class="p">,</span> <span class="n">TemplateLoader</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">werkzeug</span> <span class="kn">import</span> <span class="n">cached_property</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">current_app</span>
+
+
+<div class="viewcode-block" id="Genshi"><a class="viewcode-back" href="../../flaskext/genshi.html#flaskext.genshi.Genshi">[docs]</a><span class="k">class</span> <span class="nc">Genshi</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Initialize extension.</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        app = Flask(__name__)</span>
+<span class="sd">        genshi = Genshi(app)</span>
+
+<span class="sd">    .. versionchanged:: 0.4</span>
+<span class="sd">        You can now initialize your application later with :meth:`init_app`.</span>
+
+<span class="sd">    .. deprecated:: 0.4</span>
+<span class="sd">        ``app.genshi_instance`` in favor of ``app.extensions[&#39;genshi&#39;]``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">app</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+        <span class="c">#: What method is used for an extension.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extensions</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="s">&#39;html&#39;</span><span class="p">,</span>
+            <span class="s">&#39;xml&#39;</span><span class="p">:</span> <span class="s">&#39;xml&#39;</span><span class="p">,</span>
+            <span class="s">&#39;txt&#39;</span><span class="p">:</span> <span class="s">&#39;text&#39;</span><span class="p">,</span>
+            <span class="s">&#39;js&#39;</span><span class="p">:</span> <span class="s">&#39;js&#39;</span><span class="p">,</span>
+            <span class="s">&#39;css&#39;</span><span class="p">:</span> <span class="s">&#39;css&#39;</span><span class="p">,</span>
+            <span class="s">&#39;svg&#39;</span><span class="p">:</span> <span class="s">&#39;svg&#39;</span>
+        <span class="p">}</span>
+
+        <span class="c">#: Render methods.</span>
+        <span class="c">#:</span>
+        <span class="c">#: .. versionchanged:: 0.3 Support for Javascript and CSS.</span>
+        <span class="c">#: .. versionchanged:: 0.4 Support for SVG.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">methods</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">&#39;serializer&#39;</span><span class="p">:</span> <span class="s">&#39;html&#39;</span><span class="p">,</span>
+                <span class="s">&#39;doctype&#39;</span><span class="p">:</span> <span class="s">&#39;html&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s">&#39;html5&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">&#39;serializer&#39;</span><span class="p">:</span> <span class="s">&#39;html&#39;</span><span class="p">,</span>
+                <span class="s">&#39;doctype&#39;</span><span class="p">:</span> <span class="s">&#39;html5&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s">&#39;xhtml&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">&#39;serializer&#39;</span><span class="p">:</span> <span class="s">&#39;xhtml&#39;</span><span class="p">,</span>
+                <span class="s">&#39;doctype&#39;</span><span class="p">:</span> <span class="s">&#39;xhtml&#39;</span><span class="p">,</span>
+                <span class="s">&#39;mimetype&#39;</span><span class="p">:</span> <span class="s">&#39;application/xhtml+xml&#39;</span>
+            <span class="p">},</span>
+            <span class="s">&#39;xml&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">&#39;serializer&#39;</span><span class="p">:</span> <span class="s">&#39;xml&#39;</span><span class="p">,</span>
+                <span class="s">&#39;mimetype&#39;</span><span class="p">:</span> <span class="s">&#39;application/xml&#39;</span>
+            <span class="p">},</span>
+            <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">&#39;serializer&#39;</span><span class="p">:</span> <span class="s">&#39;text&#39;</span><span class="p">,</span>
+                <span class="s">&#39;mimetype&#39;</span><span class="p">:</span> <span class="s">&#39;text/plain&#39;</span><span class="p">,</span>
+                <span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="n">NewTextTemplate</span>
+            <span class="p">},</span>
+            <span class="s">&#39;js&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">&#39;serializer&#39;</span><span class="p">:</span> <span class="s">&#39;text&#39;</span><span class="p">,</span>
+                <span class="s">&#39;mimetype&#39;</span><span class="p">:</span> <span class="s">&#39;application/javascript&#39;</span><span class="p">,</span>
+                <span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="n">NewTextTemplate</span>
+            <span class="p">},</span>
+            <span class="s">&#39;css&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">&#39;serializer&#39;</span><span class="p">:</span> <span class="s">&#39;text&#39;</span><span class="p">,</span>
+                <span class="s">&#39;mimetype&#39;</span><span class="p">:</span> <span class="s">&#39;text/css&#39;</span><span class="p">,</span>
+                <span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="n">NewTextTemplate</span>
+            <span class="p">},</span>
+            <span class="s">&#39;svg&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">&#39;serializer&#39;</span><span class="p">:</span> <span class="s">&#39;xml&#39;</span><span class="p">,</span>
+                <span class="s">&#39;doctype&#39;</span><span class="p">:</span> <span class="s">&#39;svg&#39;</span><span class="p">,</span>
+                <span class="s">&#39;mimetype&#39;</span><span class="p">:</span> <span class="s">&#39;image/svg+xml&#39;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="c">#: Filter functions to be applied to templates.</span>
+        <span class="c">#:</span>
+        <span class="c">#: .. versionadded:: 0.3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Genshi.init_app"><a class="viewcode-back" href="../../flaskext/genshi.html#flaskext.genshi.Genshi.init_app">[docs]</a>    <span class="k">def</span> <span class="nf">init_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize a :class:`~flask.Flask` application</span>
+<span class="sd">        for use with this extension. Useful for the factory pattern but</span>
+<span class="sd">        not needed if you passed your application to the :class:`Genshi`</span>
+<span class="sd">        constructor.</span>
+
+<span class="sd">        ::</span>
+
+<span class="sd">            genshi = Genshi()</span>
+
+<span class="sd">            app = Flask(__name__)</span>
+<span class="sd">            genshi.init_app(app)</span>
+
+<span class="sd">        .. versionadded:: 0.4</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="s">&#39;extensions&#39;</span><span class="p">):</span>
+            <span class="n">app</span><span class="o">.</span><span class="n">extensions</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">app</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s">&#39;genshi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">genshi_instance</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+</div>
+    <span class="nd">@cached_property</span>
+<div class="viewcode-block" id="Genshi.template_loader"><a class="viewcode-back" href="../../flaskext/genshi.html#flaskext.genshi.Genshi.template_loader">[docs]</a>    <span class="k">def</span> <span class="nf">template_loader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A :class:`genshi.template.TemplateLoader` that loads templates</span>
+<span class="sd">        from the same places as Flask.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">directory</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">root_path</span><span class="p">,</span> <span class="s">&#39;templates&#39;</span><span class="p">))</span>
+        <span class="n">module_paths</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">modules</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">,</span> <span class="s">&#39;modules&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">modules</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">module_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">root_path</span><span class="p">,</span> <span class="s">&#39;templates&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">module_path</span><span class="p">):</span>
+                <span class="n">module_paths</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">directory</span><span class="p">(</span><span class="n">module_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">TemplateLoader</span><span class="p">([</span><span class="n">path</span><span class="p">,</span> <span class="n">loader</span><span class="o">.</span><span class="n">prefixed</span><span class="p">(</span><span class="o">**</span><span class="n">module_paths</span><span class="p">)],</span>
+                              <span class="n">auto_reload</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Genshi.filter"><a class="viewcode-back" href="../../flaskext/genshi.html#flaskext.genshi.Genshi.filter">[docs]</a>    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">methods</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Decorator that adds a function to apply filters</span>
+<span class="sd">        to templates by rendering method.</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            from genshi.filters import Transformer</span>
+
+<span class="sd">            @genshi.filter(&#39;html&#39;)</span>
+<span class="sd">            def prepend_title(template):</span>
+<span class="sd">                return template | Transformer(&#39;head/title&#39;).prepend(&#39;MySite - &#39;)</span>
+
+<span class="sd">        See the `Genshi documentation</span>
+<span class="sd">        &lt;http://genshi.edgewall.org/wiki/Documentation/0.6.x/filters.html&gt;`_</span>
+<span class="sd">        for more filters you can use.</span>
+
+<span class="sd">        .. versionadded:: 0.3</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="n">method</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">function</span>
+        <span class="k">return</span> <span class="n">decorator</span>
+</div>
+    <span class="k">def</span> <span class="nf">_method_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Selects a method from :attr:`Genshi.methods`</span>
+<span class="sd">        based on the file extension of ``template``</span>
+<span class="sd">        and :attr:`Genshi.extensions`, or based on ``method``.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">template</span><span class="p">)[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="n">ext</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">method</span>
+
+</div>
+<span class="k">def</span> <span class="nf">select_method</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Same as :meth:`Genshi._method_for`.</span>
+
+<span class="sd">    .. deprecated:: 0.4</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warn</span><span class="p">(</span><span class="s">&#39;select_method to be dropped in future releases&#39;</span><span class="p">,</span>
+         <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">current_app</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s">&#39;genshi&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">_method_for</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">generate_template</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">string</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a Genshi template stream that you can</span>
+<span class="sd">    run filters and transformations on.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">genshi</span> <span class="o">=</span> <span class="n">current_app</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s">&#39;genshi&#39;</span><span class="p">]</span>
+    <span class="n">method</span> <span class="o">=</span> <span class="n">genshi</span><span class="o">.</span><span class="n">_method_for</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+    <span class="n">class_</span> <span class="o">=</span> <span class="n">genshi</span><span class="o">.</span><span class="n">methods</span><span class="p">[</span><span class="n">method</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;class&#39;</span><span class="p">,</span> <span class="n">MarkupTemplate</span><span class="p">)</span>
+
+    <span class="n">context</span> <span class="o">=</span> <span class="n">context</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">current_app</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">globals</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">&#39;filters&#39;</span><span class="p">,</span> <span class="n">current_app</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">filters</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">&#39;tests&#39;</span><span class="p">,</span> <span class="n">current_app</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">tests</span><span class="p">)</span>
+    <span class="n">current_app</span><span class="o">.</span><span class="n">update_template_context</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="n">genshi</span><span class="o">.</span><span class="n">template_loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">cls</span><span class="o">=</span><span class="n">class_</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">string</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="n">class_</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;Need a template or string&#39;</span><span class="p">)</span>
+
+    <span class="n">template</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="o">**</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="nb">filter</span> <span class="ow">in</span> <span class="n">genshi</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="n">method</span><span class="p">]:</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">template</span>
+
+
+<span class="k">def</span> <span class="nf">render_template</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">string</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Renders a template to a string.&quot;&quot;&quot;</span>
+    <span class="n">genshi</span> <span class="o">=</span> <span class="n">current_app</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s">&#39;genshi&#39;</span><span class="p">]</span>
+    <span class="n">method</span> <span class="o">=</span> <span class="n">genshi</span><span class="o">.</span><span class="n">_method_for</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">generate_template</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+    <span class="n">render_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">genshi</span><span class="o">.</span><span class="n">methods</span><span class="p">[</span><span class="n">method</span><span class="p">][</span><span class="s">&#39;serializer&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="s">&#39;doctype&#39;</span> <span class="ow">in</span> <span class="n">genshi</span><span class="o">.</span><span class="n">methods</span><span class="p">[</span><span class="n">method</span><span class="p">]:</span>
+        <span class="n">render_args</span><span class="p">[</span><span class="s">&#39;doctype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">genshi</span><span class="o">.</span><span class="n">methods</span><span class="p">[</span><span class="n">method</span><span class="p">][</span><span class="s">&#39;doctype&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">render_args</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="render_response"><a class="viewcode-back" href="../../flaskext/genshi.html#flaskext.genshi.render_response">[docs]</a><span class="k">def</span> <span class="nf">render_response</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">string</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Renders a template and wraps it in a :attr:`~flask.Flask.response_class`</span>
+<span class="sd">    with mimetype set according to the rendering method.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">genshi</span> <span class="o">=</span> <span class="n">current_app</span><span class="o">.</span><span class="n">extensions</span><span class="p">[</span><span class="s">&#39;genshi&#39;</span><span class="p">]</span>
+    <span class="n">method</span> <span class="o">=</span> <span class="n">genshi</span><span class="o">.</span><span class="n">_method_for</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+    <span class="n">mimetype</span> <span class="o">=</span> <span class="n">genshi</span><span class="o">.</span><span class="n">methods</span><span class="p">[</span><span class="n">method</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;mimetype&#39;</span><span class="p">,</span> <span class="s">&#39;text/html&#39;</span><span class="p">)</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">render_template</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">current_app</span><span class="o">.</span><span class="n">response_class</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="n">mimetype</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          <h3>Table Of Contents</h3>
+          <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../extensions.html">Flask extensions</a></li>
+</ul>
+
+          <h3 style="margin-top: 1.5em;">Search</h3>
+          <form class="search" action="../../search.html" method="get">
+            <input type="text" name="q" size="18" />
+            <input type="submit" value="Go" />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+          </form>
+          <p class="searchtip" style="font-size: 90%">
+            Enter search terms or a module, class or function name.
+          </p>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |
+          <a href="../../genindex.html" title="General Index"
+             >index</a>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer">
+        &copy; Copyright 2010, Dag Odenhall.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

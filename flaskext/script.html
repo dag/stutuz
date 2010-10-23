@@ -1,0 +1,526 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Script &mdash; stutuz v0.1dev documentation</title>
+    <link rel="stylesheet" href="../_static/agogo.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="stutuz v0.1dev documentation" href="../index.html" />
+    <link rel="up" title="Flask extensions" href="../extensions.html" />
+    <link rel="next" title="Testing" href="testing.html" />
+    <link rel="prev" title="Genshi" href="genshi.html" /> 
+  </head>
+  <body>
+    <div class="header-wrapper">
+      <div class="header">
+        <h1><a href="../index.html">stutuz v0.1dev documentation</a></h1>
+        <div class="rel">
+          <a href="genshi.html" title="Genshi"
+             accesskey="P">previous</a> |
+          <a href="testing.html" title="Testing"
+             accesskey="N">next</a> |
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="script">
+<h1>Script<a class="headerlink" href="#script" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference external" href="http://packages.python.org/Flask-Script/">Full documentation</a></li>
+</ul>
+<p>In stutuz we run our script manager with <strong class="command">stutuzctl</strong>
+and the code is in <tt class="file docutils literal"><span class="pre">stutuz/manage.py</span></tt>.</p>
+<dl class="option">
+<dt>
+<tt class="descname">runserver</tt></dt>
+<dd><p>Starts a development server.</p>
+</dd></dl>
+
+<dl class="option">
+<dt>
+<tt class="descname">shell</tt></dt>
+<dd><p>An interactive Python console with some stutuz objects included.
+Loads <strong class="command">bpython</strong> if installed:</p>
+<div class="highlight-bash"><div class="highlight"><pre>easy_install bpython
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="section" id="module-flaskext.script">
+<span id="api"></span><h2>API<a class="headerlink" href="#module-flaskext.script" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="flaskext.script.Command">
+<em class="property">class </em><tt class="descclassname">flaskext.script.</tt><tt class="descname">Command</tt><a class="reference internal" href="../_modules/flaskext/script.html#Command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for creating commands.</p>
+<dl class="method">
+<dt id="flaskext.script.Command.add_option">
+<tt class="descname">add_option</tt><big>(</big><em>option</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Command.add_option"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Command.add_option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds Option to option list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flaskext.script.Command.get_options">
+<tt class="descname">get_options</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Command.get_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Command.get_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>By default, returns self.option_list.Override if you
+need to do instance-specific configuration.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flaskext.script.Command.handle">
+<tt class="descname">handle</tt><big>(</big><em>app</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Command.handle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Command.handle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handles the command with given app. Default behaviour is to call within
+a test request context.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flaskext.script.Command.run">
+<tt class="descname">run</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Command.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Command.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs a command. This must be implemented by the subclass. Should take
+arguments as configured by the Command options.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="flaskext.script.Shell">
+<em class="property">class </em><tt class="descclassname">flaskext.script.</tt><tt class="descname">Shell</tt><big>(</big><em>banner=None</em>, <em>make_context=None</em>, <em>use_ipython=True</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Shell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Shell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs a Python shell inside Flask application context.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>banner</strong> &#8211; banner appearing at top of shell when started</li>
+<li><strong>make_context</strong> &#8211; a callable returning a dict of variables 
+used in the shell namespace. By default 
+returns a dict consisting of just the app.</li>
+<li><strong>use_ipython</strong> &#8211; use IPython shell if available, ignore if not. 
+The IPython shell can be turned off in command 
+line by passing the <strong>&#8211;no-ipython</strong> flag.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="flaskext.script.Shell.get_context">
+<tt class="descname">get_context</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Shell.get_context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Shell.get_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dict of context variables added to the shell namespace.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flaskext.script.Shell.run">
+<tt class="descname">run</tt><big>(</big><em>no_ipython</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Shell.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Shell.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs the shell. Unless no_ipython is True or use_python is False
+then runs IPython shell if that is installed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="flaskext.script.Server">
+<em class="property">class </em><tt class="descclassname">flaskext.script.</tt><tt class="descname">Server</tt><big>(</big><em>host='127.0.0.1'</em>, <em>port=5000</em>, <em>use_debugger=True</em>, <em>use_reloader=True</em>, <em>**options</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs the Flask development server i.e. app.run()</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>host</strong> &#8211; server host</li>
+<li><strong>port</strong> &#8211; server port</li>
+<li><strong>use_debugger</strong> &#8211; if False, will no longer use Werkzeug debugger.
+This can be overriden in the command line 
+by passing the <strong>-d</strong> flag.</li>
+<li><strong>use_reloader</strong> &#8211; if False, will no longer use auto-reloader.
+This can be overriden in the command line by 
+passing the <strong>-r</strong> flag.</li>
+<li><strong>options</strong> &#8211; <a class="reference external" href="http://werkzeug.pocoo.org/documentation/dev/serving.html#werkzeug.run_simple" title="(in Werkzeug v0.7)"><tt class="xref py py-func docutils literal"><span class="pre">werkzeug.run_simple()</span></tt></a> options.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="flaskext.script.Manager">
+<em class="property">class </em><tt class="descclassname">flaskext.script.</tt><tt class="descname">Manager</tt><big>(</big><em>app</em>, <em>with_default_commands=True</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Manager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Controller class for handling a set of commands.</p>
+<p>Typical usage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Print</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&quot;hello&quot;</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="n">manager</span> <span class="o">=</span> <span class="n">Manager</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="s">&quot;print&quot;</span><span class="p">,</span> <span class="n">Print</span><span class="p">())</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">manager</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>On command line:</p>
+<div class="highlight-python"><pre>python manage.py print
+&gt; hello</pre>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>app</strong> &#8211; Flask instance or callable returning a Flask instance.</li>
+<li><strong>with_default_commands</strong> &#8211; load commands <strong>runserver</strong> and <strong>shell</strong>
+by default.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="flaskext.script.Manager.add_command">
+<tt class="descname">add_command</tt><big>(</big><em>name</em>, <em>command</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Manager.add_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Manager.add_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds command to registry.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>command</strong> &#8211; Command instance</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="flaskext.script.Manager.add_default_commands">
+<tt class="descname">add_default_commands</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Manager.add_default_commands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Manager.add_default_commands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds the shell and runserver default commands. To override these 
+simply add your own equivalents using add_command or decorators.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flaskext.script.Manager.add_option">
+<tt class="descname">add_option</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Manager.add_option"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Manager.add_option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds an application-wide option. This is useful if you want to set variables
+applying to the application setup, rather than individual commands.</p>
+<p>For this to work, the manager must be initialized with a factory
+function rather than an instance. Otherwise any options you set will
+be ignored.</p>
+<p>The arguments are then passed to your function, e.g.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">create_app</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">config</span><span class="p">:</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_pyfile</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">app</span>
+
+<span class="n">manager</span> <span class="o">=</span> <span class="n">Manager</span><span class="p">(</span><span class="n">create_app</span><span class="p">)</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&quot;-c&quot;</span><span class="p">,</span> <span class="s">&quot;--config&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;config&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and are evoked like this:</p>
+<div class="highlight-python"><pre>&gt; python manage.py -c dev.cfg mycommand</pre>
+</div>
+<p>Any manager options passed in the command line will not be passed to 
+the command.</p>
+<p>Arguments for this function are the same as for the Option class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flaskext.script.Manager.command">
+<tt class="descname">command</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Manager.command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Manager.command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a command function to the registry.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>func</strong> &#8211; command function.Arguments depend on the 
+options.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="flaskext.script.Manager.create_parser">
+<tt class="descname">create_parser</tt><big>(</big><em>prog</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Manager.create_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Manager.create_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an ArgumentParser instance from options returned 
+by get_options(), and a subparser for the given command.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flaskext.script.Manager.get_usage">
+<tt class="descname">get_usage</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Manager.get_usage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Manager.get_usage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns string consisting of all commands and their
+descriptions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flaskext.script.Manager.option">
+<tt class="descname">option</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Manager.option"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Manager.option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to add an option to a function. Automatically registers the 
+function - do not use together with <tt class="docutils literal"><span class="pre">&#64;command</span></tt>. You can add as many
+<tt class="docutils literal"><span class="pre">&#64;option</span></tt> calls as you like, for example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@option</span><span class="p">(</span><span class="s">&#39;-n&#39;</span><span class="p">,</span> <span class="s">&#39;--name&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;name&#39;</span><span class="p">)</span>
+<span class="nd">@option</span><span class="p">(</span><span class="s">&#39;-u&#39;</span><span class="p">,</span> <span class="s">&#39;--url&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;url&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&quot;hello&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">url</span>
+</pre></div>
+</div>
+<p>Takes the same arguments as the <tt class="docutils literal"><span class="pre">Option</span></tt> constructor.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flaskext.script.Manager.print_usage">
+<tt class="descname">print_usage</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Manager.print_usage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Manager.print_usage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints result of get_usage()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="flaskext.script.Manager.run">
+<tt class="descname">run</tt><big>(</big><em>commands=None</em>, <em>default_command=None</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Manager.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Manager.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares manager to receive command line input. Usually run
+inside &#8220;if __name__ == &#8220;__main__&#8221; block in a Python script.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>commands</strong> &#8211; optional dict of commands. Appended to any commands 
+added using add_command().</li>
+<li><strong>default_command</strong> &#8211; name of default command to run if no 
+arguments passed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="flaskext.script.Manager.shell">
+<tt class="descname">shell</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Manager.shell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Manager.shell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator that wraps function in shell command. This is equivalent to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">_make_context</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
+
+<span class="n">manager</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="s">&quot;shell&quot;</span><span class="p">,</span> <span class="n">Shell</span><span class="p">(</span><span class="n">make_context</span><span class="o">=</span><span class="n">_make_context</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The decorated function should take a single &#8220;app&#8221; argument, and return 
+a dict.</p>
+<p>For more sophisticated usage use the Shell class.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="flaskext.script.Option">
+<em class="property">class </em><tt class="descclassname">flaskext.script.</tt><tt class="descname">Option</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#Option"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.Option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores positional and optional arguments for <a class="reference external" href="http://argparse.googlecode.com/svn/trunk/doc/add_argument.html">ArgumentParser.add_argument</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name_or_flags</strong> &#8211; Either a name or a list of option strings, 
+e.g. foo or -f, &#8211;foo</li>
+<li><strong>action</strong> &#8211; The basic type of action to be taken when this argument 
+is encountered at the command-line.</li>
+<li><strong>nargs</strong> &#8211; The number of command-line arguments that should be consumed.</li>
+<li><strong>const</strong> &#8211; A constant value required by some action and nargs selections.</li>
+<li><strong>default</strong> &#8211; The value produced if the argument is absent from 
+the command-line.</li>
+<li><strong>type</strong> &#8211; The type to which the command-line arg should be converted.</li>
+<li><strong>choices</strong> &#8211; A container of the allowable values for the argument.</li>
+<li><strong>required</strong> &#8211; Whether or not the command-line option may be omitted 
+(optionals only).</li>
+<li><strong>help</strong> &#8211; A brief description of what the argument does.</li>
+<li><strong>metavar</strong> &#8211; A name for the argument in usage messages.</li>
+<li><strong>dest</strong> &#8211; The name of the attribute to be added to the object 
+returned by parse_args().</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="flaskext.script.prompt">
+<tt class="descclassname">flaskext.script.</tt><tt class="descname">prompt</tt><big>(</big><em>name</em>, <em>default=None</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.prompt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grab user input from command line.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; prompt text</li>
+<li><strong>default</strong> &#8211; default value if no input provided.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="flaskext.script.prompt_pass">
+<tt class="descclassname">flaskext.script.</tt><tt class="descname">prompt_pass</tt><big>(</big><em>name</em>, <em>default=None</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#prompt_pass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.prompt_pass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grabs hidden (password) input from command line.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; prompt text</li>
+<li><strong>default</strong> &#8211; default value if no input provided.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="flaskext.script.prompt_bool">
+<tt class="descclassname">flaskext.script.</tt><tt class="descname">prompt_bool</tt><big>(</big><em>name</em>, <em>default=False</em>, <em>yes_choices=None</em>, <em>no_choices=None</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#prompt_bool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.prompt_bool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grabs user input from command line and converts to boolean
+value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; prompt text</li>
+<li><strong>default</strong> &#8211; default value if no input provided.</li>
+<li><strong>yes_choices</strong> &#8211; default &#8216;y&#8217;, &#8216;yes&#8217;, &#8216;1&#8217;, &#8216;on&#8217;, &#8216;true&#8217;, &#8216;t&#8217;</li>
+<li><strong>no_choices</strong> &#8211; default &#8216;n&#8217;, &#8216;no&#8217;, &#8216;0&#8217;, &#8216;off&#8217;, &#8216;false&#8217;, &#8216;f&#8217;</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="flaskext.script.prompt_choices">
+<tt class="descclassname">flaskext.script.</tt><tt class="descname">prompt_choices</tt><big>(</big><em>name</em>, <em>choices</em>, <em>default=None</em>, <em>resolve=&lt;function lower at 0xb759aca4&gt;</em>, <em>no_choice=('none'</em>, <em>)</em><big>)</big><a class="reference internal" href="../_modules/flaskext/script.html#prompt_choices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.script.prompt_choices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grabs user input from command line from set of provided choices.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; prompt text</li>
+<li><strong>choices</strong> &#8211; list or tuple of available choices. Choices may be 
+single strings or (key, value) tuples.</li>
+<li><strong>default</strong> &#8211; default value if no input provided.</li>
+<li><strong>no_choice</strong> &#8211; acceptable list of strings for &#8220;null choice&#8221;</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          <h3>Table Of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../extensions.html">Flask extensions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="genshi.html">Genshi</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zodb.html">ZODB</a></li>
+</ul>
+</li>
+</ul>
+
+          <h3 style="margin-top: 1.5em;">Search</h3>
+          <form class="search" action="../search.html" method="get">
+            <input type="text" name="q" size="18" />
+            <input type="submit" value="Go" />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+          </form>
+          <p class="searchtip" style="font-size: 90%">
+            Enter search terms or a module, class or function name.
+          </p>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <a href="genshi.html" title="Genshi"
+             >previous</a> |
+          <a href="testing.html" title="Testing"
+             >next</a> |
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |
+          <a href="../genindex.html" title="General Index"
+             >index</a>
+            <br/>
+            <a href="../_sources/flaskext/script.txt"
+               rel="nofollow">Show Source</a>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer">
+        &copy; Copyright 2010, Dag Odenhall.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>
