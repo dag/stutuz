@@ -7,4 +7,5 @@ Documentation
 .. toctree::
    :maxdepth: 2
 
+   flask
    extensions
