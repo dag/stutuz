@@ -1,0 +1,178 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Hacking on stutuz &mdash; stutuz v0.1dev documentation</title>
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="stutuz v0.1dev documentation" href="index.html" />
+    <link rel="next" title="Flask microframework" href="flask.html" />
+    <link rel="prev" title="Prototypical foundation for a Lojban web infrastructure with a focus on Jbovlaste 2." href="index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="flask.html" title="Flask microframework"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Prototypical foundation for a Lojban web infrastructure with a focus on Jbovlaste 2."
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">stutuz v0.1dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="hacking-on-stutuz">
+<h1>Hacking on stutuz<a class="headerlink" href="#hacking-on-stutuz" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="setting-up-a-development-instance">
+<h2>Setting up a development instance<a class="headerlink" href="#setting-up-a-development-instance" title="Permalink to this headline">¶</a></h2>
+<p>Prerequisites:</p>
+<ul class="simple">
+<li>Python 2.6 or 2.7</li>
+<li><a class="reference external" href="http://virtualenv.openplans.org/">virtualenv</a></li>
+<li><a class="reference external" href="http://www.doughellmann.com/projects/virtualenvwrapper/">virtualenvwrapper</a></li>
+</ul>
+<p>On Ubuntu 10.10 you can install all of these with:</p>
+<div class="highlight-python"><pre>sudo apt-get install virtualenvwrapper</pre>
+</div>
+<p>Next, we&#8217;ll create a virtual Python environment to set it all up in:</p>
+<div class="highlight-python"><pre>mkvirtualenv --no-site-packages stutuz
+./setup.py develop</pre>
+</div>
+</div>
+<div class="section" id="working-with-our-development-instance">
+<h2>Working with our development instance<a class="headerlink" href="#working-with-our-development-instance" title="Permalink to this headline">¶</a></h2>
+<p>Run the tests:</p>
+<div class="highlight-python"><pre>./setup.py test</pre>
+</div>
+<p>Start the development server:</p>
+<div class="highlight-python"><pre>stutuzctl runserver</pre>
+</div>
+<p>When you&#8217;re done you might want to get out of the environment:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">deactivate</span>
+</pre></div>
+</div>
+<p>And the next time you need it, run:</p>
+<div class="highlight-python"><pre>workon stutuz</pre>
+</div>
+</div>
+<div class="section" id="technical-details">
+<h2>Technical details<a class="headerlink" href="#technical-details" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="http://flask.pocoo.org/docs/">Flask</a> is used for the HTTP side</li>
+<li><a class="reference external" href="http://werkzeug.pocoo.org/documentation/0.6.2/">Werkzeug</a> is primarily
+used by Flask but sometimes we use it directly</li>
+<li><a class="reference external" href="http://genshi.edgewall.org/wiki/Documentation/0.6.x/xml-templates.html">Genshi</a>
+is used for HTML templating</li>
+<li><a class="reference external" href="http://zodb.org/">ZODB</a> is used for data persistence</li>
+</ul>
+</div>
+<div class="section" id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
+<p>First of all: <em>Don&#8217;t panic!</em> An unsuccessful attempt at contributing has more
+potential to lead to a successful contribution than no attempt at all. It
+can also help me improve this documentation!</p>
+<p>Some suggestions:</p>
+<ul class="simple">
+<li>Follow the <a class="reference external" href="http://www.python.org/dev/peps/pep-0008/">Style Guide for Python code</a></li>
+<li>Add unit tests for new code and make sure all tests pass before you commit</li>
+<li>Write docstrings where they make sense, with
+<a class="reference external" href="http://sphinx.pocoo.org/contents.html">Sphinx</a> markup</li>
+</ul>
+<p>There are some tools you can use to check your code (but beware of false
+positives - no need to be fanatic):</p>
+<div class="highlight-python"><pre>pip install pep8 pyflakes</pre>
+</div>
+<p>Check the code style:</p>
+<div class="highlight-python"><pre>pep8 stutuz/</pre>
+</div>
+<p>Look for missing or unused imports/variables/etc:</p>
+<div class="highlight-python"><pre>pyflakes stutuz/</pre>
+</div>
+<p>And finally: Have fun!</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Hacking on stutuz</a><ul>
+<li><a class="reference internal" href="#setting-up-a-development-instance">Setting up a development instance</a></li>
+<li><a class="reference internal" href="#working-with-our-development-instance">Working with our development instance</a></li>
+<li><a class="reference internal" href="#technical-details">Technical details</a></li>
+<li><a class="reference internal" href="#contributing">Contributing</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Prototypical foundation for a Lojban web infrastructure with a focus on Jbovlaste 2.</a></li>
+      <li>Next: <a href="flask.html" title="next chapter">Flask microframework</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/hacking.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Dag Odenhall.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>
