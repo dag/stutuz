@@ -1,0 +1,244 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>werkzeug &mdash; stutuz v0.1dev documentation</title>
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="stutuz v0.1dev documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">stutuz v0.1dev documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for werkzeug</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    werkzeug</span>
+<span class="sd">    ~~~~~~~~</span>
+
+<span class="sd">    Werkzeug is the Swiss Army knife of Python web development.</span>
+
+<span class="sd">    It provides useful classes and functions for any WSGI application to make</span>
+<span class="sd">    the life of a python web developer much easier.  All of the provided</span>
+<span class="sd">    classes are independent from each other so you can mix it with any other</span>
+<span class="sd">    library.</span>
+
+
+<span class="sd">    :copyright: (c) 2010 by the Werkzeug Team, see AUTHORS for more details.</span>
+<span class="sd">    :license: BSD, see LICENSE for more details.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c"># This import magic raises concerns quite often which is why the implementation</span>
+<span class="c"># and motiviation is explained here in detail now.</span>
+<span class="c">#</span>
+<span class="c"># The majority of the functions and classes provided by Werkzeug work on the</span>
+<span class="c"># HTTP and WSGI layer.  There is no useful grouping for those which is why</span>
+<span class="c"># they are all importable from &quot;werkzeug&quot; instead of the modules where they are</span>
+<span class="c"># implemented.  The downside of that is, that now everything would be loaded at</span>
+<span class="c"># once, even if unused.</span>
+<span class="c">#</span>
+<span class="c"># The implementation of a lazy-loading module in this file replaces the</span>
+<span class="c"># werkzeug package when imported from within.  Attribute access to the werkzeug</span>
+<span class="c"># module will then lazily import from the modules that implement the objects.</span>
+
+
+<span class="c"># import mapping to objects in other modules</span>
+<span class="n">all_by_module</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;werkzeug.debug&#39;</span><span class="p">:</span>       <span class="p">[</span><span class="s">&#39;DebuggedApplication&#39;</span><span class="p">],</span>
+    <span class="s">&#39;werkzeug.local&#39;</span><span class="p">:</span>       <span class="p">[</span><span class="s">&#39;Local&#39;</span><span class="p">,</span> <span class="s">&#39;LocalManager&#39;</span><span class="p">,</span> <span class="s">&#39;LocalProxy&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;LocalStack&#39;</span><span class="p">,</span> <span class="s">&#39;release_local&#39;</span><span class="p">],</span>
+    <span class="s">&#39;werkzeug.templates&#39;</span><span class="p">:</span>   <span class="p">[</span><span class="s">&#39;Template&#39;</span><span class="p">],</span>
+    <span class="s">&#39;werkzeug.serving&#39;</span><span class="p">:</span>     <span class="p">[</span><span class="s">&#39;run_simple&#39;</span><span class="p">],</span>
+    <span class="s">&#39;werkzeug.test&#39;</span><span class="p">:</span>        <span class="p">[</span><span class="s">&#39;Client&#39;</span><span class="p">,</span> <span class="s">&#39;EnvironBuilder&#39;</span><span class="p">,</span> <span class="s">&#39;create_environ&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;run_wsgi_app&#39;</span><span class="p">],</span>
+    <span class="s">&#39;werkzeug.testapp&#39;</span><span class="p">:</span>     <span class="p">[</span><span class="s">&#39;test_app&#39;</span><span class="p">],</span>
+    <span class="s">&#39;werkzeug.exceptions&#39;</span><span class="p">:</span>  <span class="p">[</span><span class="s">&#39;abort&#39;</span><span class="p">,</span> <span class="s">&#39;Aborter&#39;</span><span class="p">],</span>
+    <span class="s">&#39;werkzeug.urls&#39;</span><span class="p">:</span>        <span class="p">[</span><span class="s">&#39;url_decode&#39;</span><span class="p">,</span> <span class="s">&#39;url_encode&#39;</span><span class="p">,</span> <span class="s">&#39;url_quote&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;url_quote_plus&#39;</span><span class="p">,</span> <span class="s">&#39;url_unquote&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;url_unquote_plus&#39;</span><span class="p">,</span> <span class="s">&#39;url_fix&#39;</span><span class="p">,</span> <span class="s">&#39;Href&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;iri_to_uri&#39;</span><span class="p">,</span> <span class="s">&#39;uri_to_iri&#39;</span><span class="p">],</span>
+    <span class="s">&#39;werkzeug.formparser&#39;</span><span class="p">:</span>  <span class="p">[</span><span class="s">&#39;parse_form_data&#39;</span><span class="p">],</span>
+    <span class="s">&#39;werkzeug.utils&#39;</span><span class="p">:</span>       <span class="p">[</span><span class="s">&#39;escape&#39;</span><span class="p">,</span> <span class="s">&#39;environ_property&#39;</span><span class="p">,</span> <span class="s">&#39;cookie_date&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;http_date&#39;</span><span class="p">,</span> <span class="s">&#39;append_slash_redirect&#39;</span><span class="p">,</span> <span class="s">&#39;redirect&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;cached_property&#39;</span><span class="p">,</span> <span class="s">&#39;import_string&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;dump_cookie&#39;</span><span class="p">,</span> <span class="s">&#39;parse_cookie&#39;</span><span class="p">,</span> <span class="s">&#39;unescape&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;format_string&#39;</span><span class="p">,</span> <span class="s">&#39;find_modules&#39;</span><span class="p">,</span> <span class="s">&#39;header_property&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;html&#39;</span><span class="p">,</span> <span class="s">&#39;xhtml&#39;</span><span class="p">,</span> <span class="s">&#39;HTMLBuilder&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;validate_arguments&#39;</span><span class="p">,</span> <span class="s">&#39;ArgumentValidationError&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;bind_arguments&#39;</span><span class="p">,</span> <span class="s">&#39;secure_filename&#39;</span><span class="p">],</span>
+    <span class="s">&#39;werkzeug.wsgi&#39;</span><span class="p">:</span>        <span class="p">[</span><span class="s">&#39;get_current_url&#39;</span><span class="p">,</span> <span class="s">&#39;get_host&#39;</span><span class="p">,</span> <span class="s">&#39;pop_path_info&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;peek_path_info&#39;</span><span class="p">,</span> <span class="s">&#39;SharedDataMiddleware&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;DispatcherMiddleware&#39;</span><span class="p">,</span> <span class="s">&#39;ClosingIterator&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;FileWrapper&#39;</span><span class="p">,</span> <span class="s">&#39;make_line_iter&#39;</span><span class="p">,</span> <span class="s">&#39;LimitedStream&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;responder&#39;</span><span class="p">,</span> <span class="s">&#39;wrap_file&#39;</span><span class="p">,</span> <span class="s">&#39;extract_path_info&#39;</span><span class="p">],</span>
+    <span class="s">&#39;werkzeug.datastructures&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;MultiDict&#39;</span><span class="p">,</span> <span class="s">&#39;CombinedMultiDict&#39;</span><span class="p">,</span> <span class="s">&#39;Headers&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;EnvironHeaders&#39;</span><span class="p">,</span> <span class="s">&#39;ImmutableList&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;ImmutableDict&#39;</span><span class="p">,</span> <span class="s">&#39;ImmutableMultiDict&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;TypeConversionDict&#39;</span><span class="p">,</span> <span class="s">&#39;ImmutableTypeConversionDict&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;Accept&#39;</span><span class="p">,</span> <span class="s">&#39;MIMEAccept&#39;</span><span class="p">,</span> <span class="s">&#39;CharsetAccept&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;LanguageAccept&#39;</span><span class="p">,</span> <span class="s">&#39;RequestCacheControl&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;ResponseCacheControl&#39;</span><span class="p">,</span> <span class="s">&#39;ETags&#39;</span><span class="p">,</span> <span class="s">&#39;HeaderSet&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;WWWAuthenticate&#39;</span><span class="p">,</span> <span class="s">&#39;Authorization&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;FileMultiDict&#39;</span><span class="p">,</span> <span class="s">&#39;CallbackDict&#39;</span><span class="p">,</span> <span class="s">&#39;FileStorage&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;OrderedMultiDict&#39;</span><span class="p">,</span> <span class="s">&#39;ImmutableOrderedMultiDict&#39;</span><span class="p">],</span>
+    <span class="s">&#39;werkzeug.useragents&#39;</span><span class="p">:</span>  <span class="p">[</span><span class="s">&#39;UserAgent&#39;</span><span class="p">],</span>
+    <span class="s">&#39;werkzeug.http&#39;</span><span class="p">:</span>        <span class="p">[</span><span class="s">&#39;parse_etags&#39;</span><span class="p">,</span> <span class="s">&#39;parse_date&#39;</span><span class="p">,</span> <span class="s">&#39;parse_cache_control_header&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;is_resource_modified&#39;</span><span class="p">,</span> <span class="s">&#39;parse_accept_header&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;parse_set_header&#39;</span><span class="p">,</span> <span class="s">&#39;quote_etag&#39;</span><span class="p">,</span> <span class="s">&#39;unquote_etag&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;generate_etag&#39;</span><span class="p">,</span> <span class="s">&#39;dump_header&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;parse_list_header&#39;</span><span class="p">,</span> <span class="s">&#39;parse_dict_header&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;parse_authorization_header&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;parse_www_authenticate_header&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;remove_entity_headers&#39;</span><span class="p">,</span> <span class="s">&#39;is_entity_header&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;remove_hop_by_hop_headers&#39;</span><span class="p">,</span> <span class="s">&#39;parse_options_header&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;dump_options_header&#39;</span><span class="p">,</span> <span class="s">&#39;is_hop_by_hop_header&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;unquote_header_value&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;quote_header_value&#39;</span><span class="p">,</span> <span class="s">&#39;HTTP_STATUS_CODES&#39;</span><span class="p">],</span>
+    <span class="s">&#39;werkzeug.wrappers&#39;</span><span class="p">:</span>    <span class="p">[</span><span class="s">&#39;BaseResponse&#39;</span><span class="p">,</span> <span class="s">&#39;BaseRequest&#39;</span><span class="p">,</span> <span class="s">&#39;Request&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;Response&#39;</span><span class="p">,</span> <span class="s">&#39;AcceptMixin&#39;</span><span class="p">,</span> <span class="s">&#39;ETagRequestMixin&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;ETagResponseMixin&#39;</span><span class="p">,</span> <span class="s">&#39;ResponseStreamMixin&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;CommonResponseDescriptorsMixin&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;UserAgentMixin&#39;</span><span class="p">,</span> <span class="s">&#39;AuthorizationMixin&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;WWWAuthenticateMixin&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;CommonRequestDescriptorsMixin&#39;</span><span class="p">],</span>
+    <span class="s">&#39;werkzeug.security&#39;</span><span class="p">:</span>    <span class="p">[</span><span class="s">&#39;generate_password_hash&#39;</span><span class="p">,</span> <span class="s">&#39;check_password_hash&#39;</span><span class="p">],</span>
+    <span class="c"># the undocumented easteregg ;-)</span>
+    <span class="s">&#39;werkzeug._internal&#39;</span><span class="p">:</span>   <span class="p">[</span><span class="s">&#39;_easteregg&#39;</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="c"># modules that should be imported when accessed as attributes of werkzeug</span>
+<span class="n">attribute_modules</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">([</span><span class="s">&#39;exceptions&#39;</span><span class="p">,</span> <span class="s">&#39;routing&#39;</span><span class="p">,</span> <span class="s">&#39;script&#39;</span><span class="p">])</span>
+
+
+<span class="n">object_origins</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">module</span><span class="p">,</span> <span class="n">items</span> <span class="ow">in</span> <span class="n">all_by_module</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="n">object_origins</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">module</span>
+
+
+<span class="c">#: the cached version of the library.  We get the distribution from</span>
+<span class="c">#: pkg_resources the first time this attribute is accessed.  Because</span>
+<span class="c">#: this operation is quite slow it speeds up importing a lot.</span>
+<span class="n">version</span> <span class="o">=</span> <span class="bp">None</span>
+
+<span class="k">class</span> <span class="nc">module</span><span class="p">(</span><span class="n">ModuleType</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Automatically import objects from the modules.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">object_origins</span><span class="p">:</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">object_origins</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="p">[</span><span class="n">name</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">extra_name</span> <span class="ow">in</span> <span class="n">all_by_module</span><span class="p">[</span><span class="n">module</span><span class="o">.</span><span class="n">__name__</span><span class="p">]:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extra_name</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">extra_name</span><span class="p">))</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">attribute_modules</span><span class="p">:</span>
+            <span class="nb">__import__</span><span class="p">(</span><span class="s">&#39;werkzeug.&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ModuleType</span><span class="o">.</span><span class="n">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Just show what we want to show.&quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">new_module</span><span class="o">.</span><span class="n">__all__</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="s">&#39;__file__&#39;</span><span class="p">,</span> <span class="s">&#39;__path__&#39;</span><span class="p">,</span> <span class="s">&#39;__doc__&#39;</span><span class="p">,</span> <span class="s">&#39;__all__&#39;</span><span class="p">,</span>
+                       <span class="s">&#39;__docformat__&#39;</span><span class="p">,</span> <span class="s">&#39;__name__&#39;</span><span class="p">,</span> <span class="s">&#39;__path__&#39;</span><span class="p">,</span>
+                       <span class="s">&#39;__package__&#39;</span><span class="p">,</span> <span class="s">&#39;__version__&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">__version__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">version</span>
+        <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="s">&#39;pkg_resources&#39;</span><span class="p">)</span> \
+                          <span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="s">&#39;Werkzeug&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">version</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="s">&#39;unknown&#39;</span>
+        <span class="k">return</span> <span class="n">version</span>
+
+<span class="c"># keep a reference to this module so that it&#39;s not garbage collected</span>
+<span class="n">old_module</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s">&#39;werkzeug&#39;</span><span class="p">]</span>
+
+
+<span class="c"># setup the new module and patch it into the dict of loaded modules</span>
+<span class="n">new_module</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s">&#39;werkzeug&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">module</span><span class="p">(</span><span class="s">&#39;werkzeug&#39;</span><span class="p">)</span>
+<span class="n">new_module</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s">&#39;__file__&#39;</span><span class="p">:</span>         <span class="n">__file__</span><span class="p">,</span>
+    <span class="s">&#39;__path__&#39;</span><span class="p">:</span>         <span class="n">__path__</span><span class="p">,</span>
+    <span class="s">&#39;__doc__&#39;</span><span class="p">:</span>          <span class="n">__doc__</span><span class="p">,</span>
+    <span class="s">&#39;__all__&#39;</span><span class="p">:</span>          <span class="nb">tuple</span><span class="p">(</span><span class="n">object_origins</span><span class="p">)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">attribute_modules</span><span class="p">),</span>
+    <span class="s">&#39;__docformat__&#39;</span><span class="p">:</span>    <span class="s">&#39;restructuredtext en&#39;</span>
+<span class="p">})</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Dag Odenhall.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>

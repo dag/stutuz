@@ -1,0 +1,546 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>werkzeug.urls &mdash; stutuz v0.1dev documentation</title>
+    <link rel="stylesheet" href="../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="stutuz v0.1dev documentation" href="../../index.html" />
+    <link rel="up" title="werkzeug" href="../werkzeug.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">stutuz v0.1dev documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../werkzeug.html" accesskey="U">werkzeug</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for werkzeug.urls</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    werkzeug.urls</span>
+<span class="sd">    ~~~~~~~~~~~~~</span>
+
+<span class="sd">    This module implements various URL related functions.</span>
+
+<span class="sd">    :copyright: (c) 2010 by the Werkzeug Team, see AUTHORS for more details.</span>
+<span class="sd">    :license: BSD, see LICENSE for more details.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">urlparse</span>
+
+<span class="kn">from</span> <span class="nn">werkzeug._internal</span> <span class="kn">import</span> <span class="n">_decode_unicode</span>
+
+
+<span class="c">#: list of characters that are always safe in URLs.</span>
+<span class="n">_always_safe</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="s">&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#39;</span>
+                         <span class="s">&#39;abcdefghijklmnopqrstuvwxyz&#39;</span>
+                         <span class="s">&#39;0123456789_.-&#39;</span><span class="p">)</span>
+
+<span class="c">#: lookup table for encoded characters.</span>
+<span class="n">_hextochr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="s">&#39;</span><span class="si">%02x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="nb">chr</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">256</span><span class="p">))</span>
+<span class="n">_hextochr</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="s">&#39;</span><span class="si">%02X</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="nb">chr</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">256</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_quote</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">_quotechar</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%%%02X</span><span class="s">&#39;</span><span class="o">.</span><span class="n">__mod__</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="s">&#39;quote only works on bytes&#39;</span>
+    <span class="n">safe</span> <span class="o">=</span> <span class="n">_always_safe</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">safe</span><span class="p">)</span>
+    <span class="n">rv</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">char</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">char</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">safe</span><span class="p">:</span>
+            <span class="n">rv</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">_quotechar</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">char</span><span class="p">))</span>
+    <span class="k">return</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rv</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_quote_plus</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s">&#39; &#39;</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_quote</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">safe</span> <span class="o">+</span> <span class="s">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;+&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_quote</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">safe</span><span class="p">)</span>
+
+
+
+<span class="k">def</span> <span class="nf">_safe_urlsplit</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;the urllib.urlsplit cache breaks if it contains unicode and</span>
+<span class="sd">    we cannot control that.  So we force type cast that thing back</span>
+<span class="sd">    to what we think it is.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rv</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">rv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="n">rv</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">UnicodeError</span><span class="p">:</span>
+            <span class="c"># oh well, we most likely will break later again, but</span>
+            <span class="c"># let&#39;s just say it worked out well to that point.</span>
+            <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">rv</span>
+
+
+<span class="k">def</span> <span class="nf">_unquote</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">unsafe</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="s">&#39;unquote only works on bytes&#39;</span>
+    <span class="n">unsafe</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">unsafe</span><span class="p">)</span>
+    <span class="n">rv</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;%&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rv</span><span class="p">)):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="n">rv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">char</span> <span class="o">=</span> <span class="n">_hextochr</span><span class="p">[</span><span class="n">item</span><span class="p">[:</span><span class="mi">2</span><span class="p">]]</span>
+            <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">unsafe</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">()</span>
+            <span class="n">rv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">char</span> <span class="o">+</span> <span class="n">item</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">rv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;%&#39;</span> <span class="o">+</span> <span class="n">item</span>
+    <span class="k">return</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rv</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_unquote_plus</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_unquote</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;+&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_uri_split</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Splits up an URI or IRI.&quot;&quot;&quot;</span>
+    <span class="n">scheme</span><span class="p">,</span> <span class="n">netloc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">fragment</span> <span class="o">=</span> <span class="n">_safe_urlsplit</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+
+    <span class="n">port</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">if</span> <span class="s">&#39;@&#39;</span> <span class="ow">in</span> <span class="n">netloc</span><span class="p">:</span>
+        <span class="n">auth</span><span class="p">,</span> <span class="n">hostname</span> <span class="o">=</span> <span class="n">netloc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;@&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">auth</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">hostname</span> <span class="o">=</span> <span class="n">netloc</span>
+    <span class="k">if</span> <span class="n">hostname</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">hostname</span><span class="p">:</span>
+            <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">hostname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">scheme</span><span class="p">,</span> <span class="n">auth</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">fragment</span>
+
+
+<div class="viewcode-block" id="iri_to_uri"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.urls.iri_to_uri">[docs]</a><span class="k">def</span> <span class="nf">iri_to_uri</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="s">&#39;utf-8&#39;</span><span class="p">):</span>
+    <span class="s">r&quot;&quot;&quot;Converts any unicode based IRI to an acceptable ASCII URI.  Werkzeug</span>
+<span class="s">    always uses utf-8 URLs internally because this is what browsers and HTTP</span>
+<span class="s">    do as well.  In some places where it accepts an URL it also accepts a</span>
+<span class="s">    unicode IRI and converts it into a URI.</span>
+
+<span class="s">    Examples for IRI versus URI:</span>
+
+<span class="s">    &gt;&gt;&gt; iri_to_uri(u&#39;http://☃.net/&#39;)</span>
+<span class="s">    &#39;http://xn--n3h.net/&#39;</span>
+<span class="s">    &gt;&gt;&gt; iri_to_uri(u&#39;http://üser:pässword@☃.net/påth&#39;)</span>
+<span class="s">    &#39;http://%C3%BCser:p%C3%A4ssword@xn--n3h.net/p%C3%A5th&#39;</span>
+
+<span class="s">    .. versionadded:: 0.6</span>
+
+<span class="s">    :param iri: the iri to convert</span>
+<span class="s">    :param charset: the charset for the URI</span>
+<span class="s">    &quot;&quot;&quot;</span>
+    <span class="n">iri</span> <span class="o">=</span> <span class="nb">unicode</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
+    <span class="n">scheme</span><span class="p">,</span> <span class="n">auth</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">fragment</span> <span class="o">=</span> <span class="n">_uri_split</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
+
+    <span class="n">scheme</span> <span class="o">=</span> <span class="n">scheme</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;ascii&#39;</span><span class="p">)</span>
+    <span class="n">hostname</span> <span class="o">=</span> <span class="n">hostname</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;idna&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">auth</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">auth</span><span class="p">:</span>
+            <span class="n">auth</span><span class="p">,</span> <span class="n">password</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">password</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">auth</span> <span class="o">=</span> <span class="n">_quote</span><span class="p">(</span><span class="n">auth</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">charset</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">password</span><span class="p">:</span>
+            <span class="n">auth</span> <span class="o">+=</span> <span class="s">&#39;:&#39;</span> <span class="o">+</span> <span class="n">_quote</span><span class="p">(</span><span class="n">password</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">charset</span><span class="p">))</span>
+        <span class="n">hostname</span> <span class="o">=</span> <span class="n">auth</span> <span class="o">+</span> <span class="s">&#39;@&#39;</span> <span class="o">+</span> <span class="n">hostname</span>
+    <span class="k">if</span> <span class="n">port</span><span class="p">:</span>
+        <span class="n">hostname</span> <span class="o">+=</span> <span class="s">&#39;:&#39;</span> <span class="o">+</span> <span class="n">port</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="n">_quote</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">charset</span><span class="p">),</span> <span class="n">safe</span><span class="o">=</span><span class="s">&quot;/:~+&quot;</span><span class="p">)</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">_quote</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">charset</span><span class="p">),</span> <span class="n">safe</span><span class="o">=</span><span class="s">&quot;=%&amp;[]:;$()+,!?*/&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urlunsplit</span><span class="p">([</span><span class="n">scheme</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">fragment</span><span class="p">])</span>
+
+</div>
+<div class="viewcode-block" id="uri_to_iri"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.urls.uri_to_iri">[docs]</a><span class="k">def</span> <span class="nf">uri_to_iri</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="s">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s">&#39;ignore&#39;</span><span class="p">):</span>
+    <span class="s">r&quot;&quot;&quot;Converts a URI in a given charset to a IRI.</span>
+
+<span class="s">    Examples for URI versus IRI</span>
+
+<span class="s">    &gt;&gt;&gt; uri_to_iri(&#39;http://xn--n3h.net/&#39;)</span>
+<span class="s">    u&#39;http://\u2603.net/&#39;</span>
+<span class="s">    &gt;&gt;&gt; uri_to_iri(&#39;http://%C3%BCser:p%C3%A4ssword@xn--n3h.net/p%C3%A5th&#39;)</span>
+<span class="s">    u&#39;http://\xfcser:p\xe4ssword@\u2603.net/p\xe5th&#39;</span>
+
+<span class="s">    Query strings are left unchanged:</span>
+
+<span class="s">    &gt;&gt;&gt; uri_to_iri(&#39;/?foo=24&amp;x=</span><span class="si">%26%</span><span class="s">2f&#39;)</span>
+<span class="s">    u&#39;/?foo=24&amp;x=</span><span class="si">%26%</span><span class="s">2f&#39;</span>
+
+<span class="s">    .. versionadded:: 0.6</span>
+
+<span class="s">    :param uri: the URI to convert</span>
+<span class="s">    :param charset: the charset of the URI</span>
+<span class="s">    :param errors: the error handling on decode</span>
+<span class="s">    &quot;&quot;&quot;</span>
+    <span class="n">uri</span> <span class="o">=</span> <span class="n">url_fix</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">uri</span><span class="p">),</span> <span class="n">charset</span><span class="p">)</span>
+    <span class="n">scheme</span><span class="p">,</span> <span class="n">auth</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">fragment</span> <span class="o">=</span> <span class="n">_uri_split</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+
+    <span class="n">scheme</span> <span class="o">=</span> <span class="n">_decode_unicode</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="s">&#39;ascii&#39;</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">hostname</span> <span class="o">=</span> <span class="n">hostname</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;idna&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">UnicodeError</span><span class="p">:</span>
+        <span class="c"># dammit, that codec raised an error.  Because it does not support</span>
+        <span class="c"># any error handling we have to fake it.... badly</span>
+        <span class="k">if</span> <span class="n">errors</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;ignore&#39;</span><span class="p">,</span> <span class="s">&#39;replace&#39;</span><span class="p">):</span>
+            <span class="k">raise</span>
+        <span class="n">hostname</span> <span class="o">=</span> <span class="n">hostname</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;ascii&#39;</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">auth</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">auth</span><span class="p">:</span>
+            <span class="n">auth</span><span class="p">,</span> <span class="n">password</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">password</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">auth</span> <span class="o">=</span> <span class="n">_decode_unicode</span><span class="p">(</span><span class="n">_unquote</span><span class="p">(</span><span class="n">auth</span><span class="p">),</span> <span class="n">charset</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">password</span><span class="p">:</span>
+            <span class="n">auth</span> <span class="o">+=</span> <span class="s">u&#39;:&#39;</span> <span class="o">+</span> <span class="n">_decode_unicode</span><span class="p">(</span><span class="n">_unquote</span><span class="p">(</span><span class="n">password</span><span class="p">),</span>
+                                           <span class="n">charset</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="n">hostname</span> <span class="o">=</span> <span class="n">auth</span> <span class="o">+</span> <span class="s">u&#39;@&#39;</span> <span class="o">+</span> <span class="n">hostname</span>
+    <span class="k">if</span> <span class="n">port</span><span class="p">:</span>
+        <span class="c"># port should be numeric, but you never know...</span>
+        <span class="n">hostname</span> <span class="o">+=</span> <span class="s">u&#39;:&#39;</span> <span class="o">+</span> <span class="n">port</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">charset</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="n">_decode_unicode</span><span class="p">(</span><span class="n">_unquote</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;/;?&#39;</span><span class="p">),</span> <span class="n">charset</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">_decode_unicode</span><span class="p">(</span><span class="n">_unquote</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="s">&#39;;/?:@&amp;=+,$&#39;</span><span class="p">),</span>
+                            <span class="n">charset</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urlunsplit</span><span class="p">([</span><span class="n">scheme</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">fragment</span><span class="p">])</span>
+
+</div>
+<div class="viewcode-block" id="url_decode"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.urls.url_decode">[docs]</a><span class="k">def</span> <span class="nf">url_decode</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="s">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">decode_keys</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">include_empty</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+               <span class="n">errors</span><span class="o">=</span><span class="s">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s">&#39;&amp;&#39;</span><span class="p">,</span> <span class="n">cls</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parse a querystring and return it as :class:`MultiDict`.  Per default</span>
+<span class="sd">    only values are decoded into unicode strings.  If `decode_keys` is set to</span>
+<span class="sd">    `True` the same will happen for keys.</span>
+
+<span class="sd">    Per default a missing value for a key will default to an empty key.  If</span>
+<span class="sd">    you don&#39;t want that behavior you can set `include_empty` to `False`.</span>
+
+<span class="sd">    Per default encoding errors are ignored.  If you want a different behavior</span>
+<span class="sd">    you can set `errors` to ``&#39;replace&#39;`` or ``&#39;strict&#39;``.  In strict mode a</span>
+<span class="sd">    `HTTPUnicodeError` is raised.</span>
+
+<span class="sd">    .. versionchanged:: 0.5</span>
+<span class="sd">       In previous versions &quot;;&quot; and &quot;&amp;&quot; could be used for url decoding.</span>
+<span class="sd">       This changed in 0.5 where only &quot;&amp;&quot; is supported.  If you want to</span>
+<span class="sd">       use &quot;;&quot; instead a different `separator` can be provided.</span>
+
+<span class="sd">       The `cls` parameter was added.</span>
+
+<span class="sd">    :param s: a string with the query string to decode.</span>
+<span class="sd">    :param charset: the charset of the query string.</span>
+<span class="sd">    :param decode_keys: set to `True` if you want the keys to be decoded</span>
+<span class="sd">                        as well.</span>
+<span class="sd">    :param include_empty: Set to `False` if you don&#39;t want empty values to</span>
+<span class="sd">                          appear in the dict.</span>
+<span class="sd">    :param errors: the decoding error behavior.</span>
+<span class="sd">    :param separator: the pair separator to be used, defaults to ``&amp;``</span>
+<span class="sd">    :param cls: an optional dict class to use.  If this is not specified</span>
+<span class="sd">                       or `None` the default :class:`MultiDict` is used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">cls</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">cls</span> <span class="o">=</span> <span class="n">MultiDict</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">separator</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pair</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="s">&#39;=&#39;</span> <span class="ow">in</span> <span class="n">pair</span><span class="p">:</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">pair</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;=&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">pair</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">_unquote_plus</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">decode_keys</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">_decode_unicode</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">charset</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">url_unquote_plus</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">charset</span><span class="p">,</span> <span class="n">errors</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="url_encode"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.urls.url_encode">[docs]</a><span class="k">def</span> <span class="nf">url_encode</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="s">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">encode_keys</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+               <span class="n">separator</span><span class="o">=</span><span class="s">&#39;&amp;&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;URL encode a dict/`MultiDict`.  If a value is `None` it will not appear</span>
+<span class="sd">    in the result string.  Per default only values are encoded into the target</span>
+<span class="sd">    charset strings.  If `encode_keys` is set to ``True`` unicode keys are</span>
+<span class="sd">    supported too.</span>
+
+<span class="sd">    If `sort` is set to `True` the items are sorted by `key` or the default</span>
+<span class="sd">    sorting algorithm.</span>
+
+<span class="sd">    .. versionadded:: 0.5</span>
+<span class="sd">        `sort`, `key`, and `separator` were added.</span>
+
+<span class="sd">    :param obj: the object to encode into a query string.</span>
+<span class="sd">    :param charset: the charset of the query string.</span>
+<span class="sd">    :param encode_keys: set to `True` if you have unicode keys.</span>
+<span class="sd">    :param sort: set to `True` if you want parameters to be sorted by `key`.</span>
+<span class="sd">    :param separator: the separator to be used for the pairs.</span>
+<span class="sd">    :param key: an optional function to be used for sorting.  For more details</span>
+<span class="sd">                check out the :func:`sorted` documentation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">iterable</span> <span class="o">=</span> <span class="n">iter_multi_items</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sort</span><span class="p">:</span>
+        <span class="n">iterable</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+        <span class="n">iterable</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">encode_keys</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">):</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">charset</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">charset</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">tmp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">_quote</span><span class="p">(</span><span class="n">key</span><span class="p">),</span>
+                              <span class="n">_quote_plus</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">separator</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="url_quote"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.urls.url_quote">[docs]</a><span class="k">def</span> <span class="nf">url_quote</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="s">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s">&#39;/:&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;URL encode a single string with a given encoding.</span>
+
+<span class="sd">    :param s: the string to quote.</span>
+<span class="sd">    :param charset: the charset to be used.</span>
+<span class="sd">    :param safe: an optional sequence of safe characters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">charset</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_quote</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="n">safe</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="url_quote_plus"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.urls.url_quote_plus">[docs]</a><span class="k">def</span> <span class="nf">url_quote_plus</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="s">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;URL encode a single string with the given encoding and convert</span>
+<span class="sd">    whitespace to &quot;+&quot;.</span>
+
+<span class="sd">    :param s: the string to quote.</span>
+<span class="sd">    :param charset: the charset to be used.</span>
+<span class="sd">    :param safe: an optional sequence of safe characters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">charset</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_quote_plus</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="n">safe</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="url_unquote"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.urls.url_unquote">[docs]</a><span class="k">def</span> <span class="nf">url_unquote</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="s">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s">&#39;ignore&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;URL decode a single string with a given decoding.</span>
+
+<span class="sd">    Per default encoding errors are ignored.  If you want a different behavior</span>
+<span class="sd">    you can set `errors` to ``&#39;replace&#39;`` or ``&#39;strict&#39;``.  In strict mode a</span>
+<span class="sd">    `HTTPUnicodeError` is raised.</span>
+
+<span class="sd">    :param s: the string to unquote.</span>
+<span class="sd">    :param charset: the charset to be used.</span>
+<span class="sd">    :param errors: the error handling for the charset decoding.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">charset</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_decode_unicode</span><span class="p">(</span><span class="n">_unquote</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="n">charset</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="url_unquote_plus"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.urls.url_unquote_plus">[docs]</a><span class="k">def</span> <span class="nf">url_unquote_plus</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="s">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s">&#39;ignore&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;URL decode a single string with the given decoding and decode</span>
+<span class="sd">    a &quot;+&quot; to whitespace.</span>
+
+<span class="sd">    Per default encoding errors are ignored.  If you want a different behavior</span>
+<span class="sd">    you can set `errors` to ``&#39;replace&#39;`` or ``&#39;strict&#39;``.  In strict mode a</span>
+<span class="sd">    `HTTPUnicodeError` is raised.</span>
+
+<span class="sd">    :param s: the string to unquote.</span>
+<span class="sd">    :param charset: the charset to be used.</span>
+<span class="sd">    :param errors: the error handling for the charset decoding.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_decode_unicode</span><span class="p">(</span><span class="n">_unquote_plus</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="n">charset</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="url_fix"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.urls.url_fix">[docs]</a><span class="k">def</span> <span class="nf">url_fix</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="s">&#39;utf-8&#39;</span><span class="p">):</span>
+    <span class="s">r&quot;&quot;&quot;Sometimes you get an URL by a user that just isn&#39;t a real URL because</span>
+<span class="s">    it contains unsafe characters like &#39; &#39; and so on.  This function can fix</span>
+<span class="s">    some of the problems in a similar way browsers handle data entered by the</span>
+<span class="s">    user:</span>
+
+<span class="s">    &gt;&gt;&gt; url_fix(u&#39;http://de.wikipedia.org/wiki/Elf (Begriffskl\xe4rung)&#39;)</span>
+<span class="s">    &#39;http://de.wikipedia.org/wiki/Elf</span><span class="si">%20%</span><span class="s">28Begriffskl%C3%A4rung%29&#39;</span>
+
+<span class="s">    :param s: the string with the URL to fix.</span>
+<span class="s">    :param charset: The target charset for the URL if the url was given as</span>
+<span class="s">                    unicode string.</span>
+<span class="s">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">charset</span><span class="p">,</span> <span class="s">&#39;ignore&#39;</span><span class="p">)</span>
+    <span class="n">scheme</span><span class="p">,</span> <span class="n">netloc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">anchor</span> <span class="o">=</span> <span class="n">_safe_urlsplit</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">_quote</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;/%&#39;</span><span class="p">)</span>
+    <span class="n">qs</span> <span class="o">=</span> <span class="n">_quote_plus</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="s">&#39;:&amp;%=&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urlunsplit</span><span class="p">((</span><span class="n">scheme</span><span class="p">,</span> <span class="n">netloc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">anchor</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="Href"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.urls.Href">[docs]</a><span class="k">class</span> <span class="nc">Href</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Implements a callable that constructs URLs with the given base. The</span>
+<span class="sd">    function can be called with any number of positional and keyword</span>
+<span class="sd">    arguments which than are used to assemble the URL.  Works with URLs</span>
+<span class="sd">    and posix paths.</span>
+
+<span class="sd">    Positional arguments are appended as individual segments to</span>
+<span class="sd">    the path of the URL:</span>
+
+<span class="sd">    &gt;&gt;&gt; href = Href(&#39;/foo&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; href(&#39;bar&#39;, 23)</span>
+<span class="sd">    &#39;/foo/bar/23&#39;</span>
+<span class="sd">    &gt;&gt;&gt; href(&#39;foo&#39;, bar=23)</span>
+<span class="sd">    &#39;/foo/foo?bar=23&#39;</span>
+
+<span class="sd">    If any of the arguments (positional or keyword) evaluates to `None` it</span>
+<span class="sd">    will be skipped.  If no keyword arguments are given the last argument</span>
+<span class="sd">    can be a :class:`dict` or :class:`MultiDict` (or any other dict subclass),</span>
+<span class="sd">    otherwise the keyword arguments are used for the query parameters, cutting</span>
+<span class="sd">    off the first trailing underscore of the parameter name:</span>
+
+<span class="sd">    &gt;&gt;&gt; href(is_=42)</span>
+<span class="sd">    &#39;/foo?is=42&#39;</span>
+<span class="sd">    &gt;&gt;&gt; href({&#39;foo&#39;: &#39;bar&#39;})</span>
+<span class="sd">    &#39;/foo?foo=bar&#39;</span>
+
+<span class="sd">    Combining of both methods is not allowed:</span>
+
+<span class="sd">    &gt;&gt;&gt; href({&#39;foo&#39;: &#39;bar&#39;}, bar=42)</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">      ...</span>
+<span class="sd">    TypeError: keyword arguments and query-dicts can&#39;t be combined</span>
+
+<span class="sd">    Accessing attributes on the href object creates a new href object with</span>
+<span class="sd">    the attribute name as prefix:</span>
+
+<span class="sd">    &gt;&gt;&gt; bar_href = href.bar</span>
+<span class="sd">    &gt;&gt;&gt; bar_href(&quot;blub&quot;)</span>
+<span class="sd">    &#39;/foo/bar/blub&#39;</span>
+
+<span class="sd">    If `sort` is set to `True` the items are sorted by `key` or the default</span>
+<span class="sd">    sorting algorithm:</span>
+
+<span class="sd">    &gt;&gt;&gt; href = Href(&quot;/&quot;, sort=True)</span>
+<span class="sd">    &gt;&gt;&gt; href(a=1, b=2, c=3)</span>
+<span class="sd">    &#39;/?a=1&amp;b=2&amp;c=3&#39;</span>
+
+<span class="sd">    .. versionadded:: 0.5</span>
+<span class="sd">        `sort` and `key` were added.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="s">&#39;./&#39;</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="s">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">base</span><span class="p">:</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="s">&#39;./&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="n">base</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charset</span> <span class="o">=</span> <span class="n">charset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sort</span> <span class="o">=</span> <span class="n">sort</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;__&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span>
+        <span class="k">if</span> <span class="n">base</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span> <span class="o">!=</span> <span class="s">&#39;/&#39;</span><span class="p">:</span>
+            <span class="n">base</span> <span class="o">+=</span> <span class="s">&#39;/&#39;</span>
+        <span class="k">return</span> <span class="n">Href</span><span class="p">(</span><span class="n">urlparse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">charset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">query</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">query</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&#39;keyword arguments and query-dicts &#39;</span>
+                                <span class="s">&#39;can</span><span class="se">\&#39;</span><span class="s">t be combined&#39;</span><span class="p">)</span>
+            <span class="n">query</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">query</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">k</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">k</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                          <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">url_quote</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">charset</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">path</span>
+                         <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">])</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span>
+        <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">rv</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">):</span>
+                <span class="n">rv</span> <span class="o">+=</span> <span class="s">&#39;/&#39;</span>
+            <span class="n">rv</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">rv</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">query</span><span class="p">:</span>
+            <span class="n">rv</span> <span class="o">+=</span> <span class="s">&#39;?&#39;</span> <span class="o">+</span> <span class="n">url_encode</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">charset</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sort</span><span class="p">,</span>
+                                   <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">rv</span><span class="p">)</span>
+
+
+<span class="c"># circular dependencies</span></div>
+<span class="kn">from</span> <span class="nn">werkzeug.datastructures</span> <span class="kn">import</span> <span class="n">MultiDict</span><span class="p">,</span> <span class="n">iter_multi_items</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../werkzeug.html">werkzeug</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Dag Odenhall.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>

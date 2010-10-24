@@ -1,0 +1,1177 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Werkzeug WSGI utilities &mdash; stutuz v0.1dev documentation</title>
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="stutuz v0.1dev documentation" href="index.html" />
+    <link rel="next" title="Flask extensions" href="extensions.html" />
+    <link rel="prev" title="Flask microframework" href="flask.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="extensions.html" title="Flask extensions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="flask.html" title="Flask microframework"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">stutuz v0.1dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-werkzeug">
+<span id="werkzeug-wsgi-utilities"></span><h1>Werkzeug WSGI utilities<a class="headerlink" href="#module-werkzeug" title="Permalink to this headline">¶</a></h1>
+<p>Werkzeug is a lower-level library for dealing with HTTP over WSGI.
+Flask is built on top of Werkzeug and provides many higher-level interfaces,
+but Werkzeug is very powerful and it&#8217;s good to know a little about it.</p>
+<ul class="simple">
+<li><a class="reference external" href="http://werkzeug.pocoo.org/documentation/dev/">Full documentation</a></li>
+</ul>
+<div class="section" id="utilities">
+<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="urls">
+<h3>URLs<a class="headerlink" href="#urls" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="werkzeug.url_encode">
+<tt class="descclassname">werkzeug.</tt><tt class="descname">url_encode</tt><big>(</big><em>obj</em>, <em>charset='utf-8'</em>, <em>encode_keys=False</em>, <em>sort=False</em>, <em>key=None</em>, <em>separator='&amp;'</em><big>)</big><a class="headerlink" href="#werkzeug.url_encode" title="Permalink to this definition">¶</a></dt>
+<dd><p>URL encode a dict/<cite>MultiDict</cite>.  If a value is <cite>None</cite> it will not appear
+in the result string.  Per default only values are encoded into the target
+charset strings.  If <cite>encode_keys</cite> is set to <tt class="xref docutils literal"><span class="pre">True</span></tt> unicode keys are
+supported too.</p>
+<p>If <cite>sort</cite> is set to <cite>True</cite> the items are sorted by <cite>key</cite> or the default
+sorting algorithm.</p>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.5: </span><cite>sort</cite>, <cite>key</cite>, and <cite>separator</cite> were added.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>obj</strong> &#8211; the object to encode into a query string.</li>
+<li><strong>charset</strong> &#8211; the charset of the query string.</li>
+<li><strong>encode_keys</strong> &#8211; set to <cite>True</cite> if you have unicode keys.</li>
+<li><strong>sort</strong> &#8211; set to <cite>True</cite> if you want parameters to be sorted by <cite>key</cite>.</li>
+<li><strong>separator</strong> &#8211; the separator to be used for the pairs.</li>
+<li><strong>key</strong> &#8211; an optional function to be used for sorting.  For more details
+check out the <a class="reference external" href="http://docs.python.org/library/functions.html#sorted" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">sorted()</span></tt></a> documentation.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="werkzeug.url_quote">
+<tt class="descclassname">werkzeug.</tt><tt class="descname">url_quote</tt><big>(</big><em>s</em>, <em>charset='utf-8'</em>, <em>safe='/:'</em><big>)</big><a class="headerlink" href="#werkzeug.url_quote" title="Permalink to this definition">¶</a></dt>
+<dd><p>URL encode a single string with a given encoding.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>s</strong> &#8211; the string to quote.</li>
+<li><strong>charset</strong> &#8211; the charset to be used.</li>
+<li><strong>safe</strong> &#8211; an optional sequence of safe characters.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="werkzeug.url_quote_plus">
+<tt class="descclassname">werkzeug.</tt><tt class="descname">url_quote_plus</tt><big>(</big><em>s</em>, <em>charset='utf-8'</em>, <em>safe=''</em><big>)</big><a class="headerlink" href="#werkzeug.url_quote_plus" title="Permalink to this definition">¶</a></dt>
+<dd><p>URL encode a single string with the given encoding and convert
+whitespace to &#8220;+&#8221;.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>s</strong> &#8211; the string to quote.</li>
+<li><strong>charset</strong> &#8211; the charset to be used.</li>
+<li><strong>safe</strong> &#8211; an optional sequence of safe characters.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="werkzeug.url_unquote">
+<tt class="descclassname">werkzeug.</tt><tt class="descname">url_unquote</tt><big>(</big><em>s</em>, <em>charset='utf-8'</em>, <em>errors='ignore'</em><big>)</big><a class="headerlink" href="#werkzeug.url_unquote" title="Permalink to this definition">¶</a></dt>
+<dd><p>URL decode a single string with a given decoding.</p>
+<p>Per default encoding errors are ignored.  If you want a different behavior
+you can set <cite>errors</cite> to <tt class="docutils literal"><span class="pre">'replace'</span></tt> or <tt class="docutils literal"><span class="pre">'strict'</span></tt>.  In strict mode a
+<cite>HTTPUnicodeError</cite> is raised.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>s</strong> &#8211; the string to unquote.</li>
+<li><strong>charset</strong> &#8211; the charset to be used.</li>
+<li><strong>errors</strong> &#8211; the error handling for the charset decoding.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="werkzeug.url_unquote_plus">
+<tt class="descclassname">werkzeug.</tt><tt class="descname">url_unquote_plus</tt><big>(</big><em>s</em>, <em>charset='utf-8'</em>, <em>errors='ignore'</em><big>)</big><a class="headerlink" href="#werkzeug.url_unquote_plus" title="Permalink to this definition">¶</a></dt>
+<dd><p>URL decode a single string with the given decoding and decode
+a &#8220;+&#8221; to whitespace.</p>
+<p>Per default encoding errors are ignored.  If you want a different behavior
+you can set <cite>errors</cite> to <tt class="docutils literal"><span class="pre">'replace'</span></tt> or <tt class="docutils literal"><span class="pre">'strict'</span></tt>.  In strict mode a
+<cite>HTTPUnicodeError</cite> is raised.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>s</strong> &#8211; the string to unquote.</li>
+<li><strong>charset</strong> &#8211; the charset to be used.</li>
+<li><strong>errors</strong> &#8211; the error handling for the charset decoding.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="werkzeug.url_fix">
+<tt class="descclassname">werkzeug.</tt><tt class="descname">url_fix</tt><big>(</big><em>s</em>, <em>charset='utf-8'</em><big>)</big><a class="headerlink" href="#werkzeug.url_fix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sometimes you get an URL by a user that just isn&#8217;t a real URL because
+it contains unsafe characters like &#8216; &#8216; and so on.  This function can fix
+some of the problems in a similar way browsers handle data entered by the
+user:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">url_fix</span><span class="p">(</span><span class="s">u&#39;http://de.wikipedia.org/wiki/Elf (Begriffskl</span><span class="se">\xe4</span><span class="s">rung)&#39;</span><span class="p">)</span>
+<span class="go">&#39;http://de.wikipedia.org/wiki/Elf%20%28Begriffskl%C3%A4rung%29&#39;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>s</strong> &#8211; the string with the URL to fix.</li>
+<li><strong>charset</strong> &#8211; The target charset for the URL if the url was given as
+unicode string.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="werkzeug.uri_to_iri">
+<tt class="descclassname">werkzeug.</tt><tt class="descname">uri_to_iri</tt><big>(</big><em>uri</em>, <em>charset='utf-8'</em>, <em>errors='ignore'</em><big>)</big><a class="headerlink" href="#werkzeug.uri_to_iri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a URI in a given charset to a IRI.</p>
+<p>Examples for URI versus IRI</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">uri_to_iri</span><span class="p">(</span><span class="s">&#39;http://xn--n3h.net/&#39;</span><span class="p">)</span>
+<span class="go">u&#39;http://\u2603.net/&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">uri_to_iri</span><span class="p">(</span><span class="s">&#39;http://%C3%BCser:p%C3%A4ssword@xn--n3h.net/p%C3%A5th&#39;</span><span class="p">)</span>
+<span class="go">u&#39;http://\xfcser:p\xe4ssword@\u2603.net/p\xe5th&#39;</span>
+</pre></div>
+</div>
+<p>Query strings are left unchanged:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">uri_to_iri</span><span class="p">(</span><span class="s">&#39;/?foo=24&amp;x=</span><span class="si">%26%</span><span class="s">2f&#39;</span><span class="p">)</span>
+<span class="go">u&#39;/?foo=24&amp;x=%26%2f&#39;</span>
+</pre></div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.6.</span></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>uri</strong> &#8211; the URI to convert</li>
+<li><strong>charset</strong> &#8211; the charset of the URI</li>
+<li><strong>errors</strong> &#8211; the error handling on decode</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="werkzeug.iri_to_uri">
+<tt class="descclassname">werkzeug.</tt><tt class="descname">iri_to_uri</tt><big>(</big><em>iri</em>, <em>charset='utf-8'</em><big>)</big><a class="headerlink" href="#werkzeug.iri_to_uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts any unicode based IRI to an acceptable ASCII URI.  Werkzeug
+always uses utf-8 URLs internally because this is what browsers and HTTP
+do as well.  In some places where it accepts an URL it also accepts a
+unicode IRI and converts it into a URI.</p>
+<p>Examples for IRI versus URI:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">iri_to_uri</span><span class="p">(</span><span class="s">u&#39;http://☃.net/&#39;</span><span class="p">)</span>
+<span class="go">&#39;http://xn--n3h.net/&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">iri_to_uri</span><span class="p">(</span><span class="s">u&#39;http://üser:pässword@☃.net/påth&#39;</span><span class="p">)</span>
+<span class="go">&#39;http://%C3%BCser:p%C3%A4ssword@xn--n3h.net/p%C3%A5th&#39;</span>
+</pre></div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.6.</span></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>iri</strong> &#8211; the iri to convert</li>
+<li><strong>charset</strong> &#8211; the charset for the URI</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="html">
+<h3>HTML<a class="headerlink" href="#html" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="werkzeug.escape">
+<tt class="descclassname">werkzeug.</tt><tt class="descname">escape</tt><big>(</big><em>s</em>, <em>quote=False</em><big>)</big><a class="headerlink" href="#werkzeug.escape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace special characters &#8220;&amp;&#8221;, &#8220;&lt;&#8221; and &#8220;&gt;&#8221; to HTML-safe sequences.  If
+the optional flag <cite>quote</cite> is <cite>True</cite>, the quotation mark character (&#8221;) is
+also translated.</p>
+<p>There is a special handling for <cite>None</cite> which escapes to an empty string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>s</strong> &#8211; the string to escape.</li>
+<li><strong>quote</strong> &#8211; set to true to also escape double quotes.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="werkzeug.unescape">
+<tt class="descclassname">werkzeug.</tt><tt class="descname">unescape</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#werkzeug.unescape" title="Permalink to this definition">¶</a></dt>
+<dd><p>The reverse function of <cite>escape</cite>.  This unescapes all the HTML
+entities, not only the XML entities inserted by <cite>escape</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>s</strong> &#8211; the string to unescape.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="http">
+<h3>HTTP<a class="headerlink" href="#http" title="Permalink to this headline">¶</a></h3>
+<p>Useful attributes on Flask&#8217;s request object.</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">request.accept_charsets</span></tt></dt>
+<dd><dl class="first last class">
+<dt id="werkzeug.CharsetAccept">
+<em class="property">class </em><tt class="descclassname">werkzeug.</tt><tt class="descname">CharsetAccept</tt><big>(</big><em>values=()</em><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like <tt class="xref py py-class docutils literal"><span class="pre">Accept</span></tt> but with normalization for charsets.</p>
+<dl class="attribute">
+<dt id="werkzeug.CharsetAccept.best">
+<tt class="descname">best</tt><a class="headerlink" href="#werkzeug.CharsetAccept.best" title="Permalink to this definition">¶</a></dt>
+<dd><p>The best match as value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.CharsetAccept.best_match">
+<tt class="descname">best_match</tt><big>(</big><em>matches</em>, <em>default=None</em><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept.best_match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the best match from a list of possible matches based
+on the quality of the client.  If two items have the same quality,
+the one is returned that comes first.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>matches</strong> &#8211; a list of matches to check for</li>
+<li><strong>default</strong> &#8211; the value that is returned if none match</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.CharsetAccept.count">
+<tt class="descname">count</tt><a class="headerlink" href="#werkzeug.CharsetAccept.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>L.count(value) -&gt; integer &#8211; return number of occurrences of value</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.CharsetAccept.find">
+<tt class="descname">find</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the position of an entry or return -1.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> &#8211; The key to be looked up.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.CharsetAccept.index">
+<tt class="descname">index</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the position of an entry or raise <tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> &#8211; The key to be looked up.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 0.5: </span>This used to raise <tt class="xref py py-exc docutils literal"><span class="pre">IndexError</span></tt>, which was inconsistent
+with the list API.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.CharsetAccept.itervalues">
+<tt class="descname">itervalues</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept.itervalues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over all values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.CharsetAccept.quality">
+<tt class="descname">quality</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept.quality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the quality of the key.</p>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.6: </span>In previous versions you had to use the item-lookup syntax
+(eg: <tt class="docutils literal"><span class="pre">obj[key]</span></tt> instead of <tt class="docutils literal"><span class="pre">obj.quality(key)</span></tt>)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.CharsetAccept.to_header">
+<tt class="descname">to_header</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept.to_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the header set into an HTTP header string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.CharsetAccept.values">
+<tt class="descname">values</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the values, not the qualities.</p>
+</dd></dl>
+
+</dd></dl>
+
+</dd>
+<dt><tt class="docutils literal"><span class="pre">request.accept_languages</span></tt></dt>
+<dd><dl class="first last class">
+<dt id="werkzeug.LanguageAccept">
+<em class="property">class </em><tt class="descclassname">werkzeug.</tt><tt class="descname">LanguageAccept</tt><big>(</big><em>values=()</em><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like <tt class="xref py py-class docutils literal"><span class="pre">Accept</span></tt> but with normalization for languages.</p>
+<dl class="attribute">
+<dt id="werkzeug.LanguageAccept.best">
+<tt class="descname">best</tt><a class="headerlink" href="#werkzeug.LanguageAccept.best" title="Permalink to this definition">¶</a></dt>
+<dd><p>The best match as value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.LanguageAccept.best_match">
+<tt class="descname">best_match</tt><big>(</big><em>matches</em>, <em>default=None</em><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept.best_match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the best match from a list of possible matches based
+on the quality of the client.  If two items have the same quality,
+the one is returned that comes first.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>matches</strong> &#8211; a list of matches to check for</li>
+<li><strong>default</strong> &#8211; the value that is returned if none match</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.LanguageAccept.count">
+<tt class="descname">count</tt><a class="headerlink" href="#werkzeug.LanguageAccept.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>L.count(value) -&gt; integer &#8211; return number of occurrences of value</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.LanguageAccept.find">
+<tt class="descname">find</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the position of an entry or return -1.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> &#8211; The key to be looked up.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.LanguageAccept.index">
+<tt class="descname">index</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the position of an entry or raise <tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> &#8211; The key to be looked up.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 0.5: </span>This used to raise <tt class="xref py py-exc docutils literal"><span class="pre">IndexError</span></tt>, which was inconsistent
+with the list API.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.LanguageAccept.itervalues">
+<tt class="descname">itervalues</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept.itervalues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over all values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.LanguageAccept.quality">
+<tt class="descname">quality</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept.quality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the quality of the key.</p>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.6: </span>In previous versions you had to use the item-lookup syntax
+(eg: <tt class="docutils literal"><span class="pre">obj[key]</span></tt> instead of <tt class="docutils literal"><span class="pre">obj.quality(key)</span></tt>)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.LanguageAccept.to_header">
+<tt class="descname">to_header</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept.to_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the header set into an HTTP header string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.LanguageAccept.values">
+<tt class="descname">values</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the values, not the qualities.</p>
+</dd></dl>
+
+</dd></dl>
+
+</dd>
+<dt><tt class="docutils literal"><span class="pre">request.accept_mimetypes</span></tt></dt>
+<dd><dl class="first last class">
+<dt id="werkzeug.MIMEAccept">
+<em class="property">class </em><tt class="descclassname">werkzeug.</tt><tt class="descname">MIMEAccept</tt><big>(</big><em>values=()</em><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like <tt class="xref py py-class docutils literal"><span class="pre">Accept</span></tt> but with special methods and behavior for
+mimetypes.</p>
+<dl class="attribute">
+<dt id="werkzeug.MIMEAccept.accept_html">
+<tt class="descname">accept_html</tt><a class="headerlink" href="#werkzeug.MIMEAccept.accept_html" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if this object accepts HTML.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.MIMEAccept.accept_xhtml">
+<tt class="descname">accept_xhtml</tt><a class="headerlink" href="#werkzeug.MIMEAccept.accept_xhtml" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if this object accepts XHTML.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.MIMEAccept.best">
+<tt class="descname">best</tt><a class="headerlink" href="#werkzeug.MIMEAccept.best" title="Permalink to this definition">¶</a></dt>
+<dd><p>The best match as value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.MIMEAccept.best_match">
+<tt class="descname">best_match</tt><big>(</big><em>matches</em>, <em>default=None</em><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept.best_match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the best match from a list of possible matches based
+on the quality of the client.  If two items have the same quality,
+the one is returned that comes first.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>matches</strong> &#8211; a list of matches to check for</li>
+<li><strong>default</strong> &#8211; the value that is returned if none match</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.MIMEAccept.count">
+<tt class="descname">count</tt><a class="headerlink" href="#werkzeug.MIMEAccept.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>L.count(value) -&gt; integer &#8211; return number of occurrences of value</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.MIMEAccept.find">
+<tt class="descname">find</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the position of an entry or return -1.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> &#8211; The key to be looked up.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.MIMEAccept.index">
+<tt class="descname">index</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the position of an entry or raise <tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> &#8211; The key to be looked up.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 0.5: </span>This used to raise <tt class="xref py py-exc docutils literal"><span class="pre">IndexError</span></tt>, which was inconsistent
+with the list API.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.MIMEAccept.itervalues">
+<tt class="descname">itervalues</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept.itervalues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over all values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.MIMEAccept.quality">
+<tt class="descname">quality</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept.quality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the quality of the key.</p>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.6: </span>In previous versions you had to use the item-lookup syntax
+(eg: <tt class="docutils literal"><span class="pre">obj[key]</span></tt> instead of <tt class="docutils literal"><span class="pre">obj.quality(key)</span></tt>)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.MIMEAccept.to_header">
+<tt class="descname">to_header</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept.to_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the header set into an HTTP header string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.MIMEAccept.values">
+<tt class="descname">values</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the values, not the qualities.</p>
+</dd></dl>
+
+</dd></dl>
+
+</dd>
+<dt><tt class="docutils literal"><span class="pre">request.user_agent</span></tt></dt>
+<dd><dl class="first last class">
+<dt id="werkzeug.UserAgent">
+<em class="property">class </em><tt class="descclassname">werkzeug.</tt><tt class="descname">UserAgent</tt><big>(</big><em>environ_or_string</em><big>)</big><a class="headerlink" href="#werkzeug.UserAgent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a user agent.  Pass it a WSGI environment or a user agent
+string and you can inspect some of the details from the user agent
+string via the attributes.  The following attributes exist:</p>
+<dl class="attribute">
+<dt id="werkzeug.UserAgent.string">
+<tt class="descname">string</tt><a class="headerlink" href="#werkzeug.UserAgent.string" title="Permalink to this definition">¶</a></dt>
+<dd><p>the raw user agent string</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.UserAgent.platform">
+<tt class="descname">platform</tt><a class="headerlink" href="#werkzeug.UserAgent.platform" title="Permalink to this definition">¶</a></dt>
+<dd><p>the browser platform.  The following platforms are currently
+recognized:</p>
+<ul class="simple">
+<li><cite>aix</cite></li>
+<li><cite>amiga</cite></li>
+<li><cite>android</cite></li>
+<li><cite>bsd</cite></li>
+<li><cite>hpux</cite></li>
+<li><cite>iphone</cite></li>
+<li><cite>irix</cite></li>
+<li><cite>linux</cite></li>
+<li><cite>macos</cite></li>
+<li><cite>sco</cite></li>
+<li><cite>solaris</cite></li>
+<li><cite>wii</cite></li>
+<li><cite>windows</cite></li>
+</ul>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.UserAgent.browser">
+<tt class="descname">browser</tt><a class="headerlink" href="#werkzeug.UserAgent.browser" title="Permalink to this definition">¶</a></dt>
+<dd><p>the name of the browser.  The following browsers are currently
+recognized:</p>
+<ul class="simple">
+<li><cite>aol</cite> *</li>
+<li><cite>ask</cite> *</li>
+<li><cite>camino</cite></li>
+<li><cite>chrome</cite></li>
+<li><cite>firefox</cite></li>
+<li><cite>galeon</cite></li>
+<li><cite>google</cite> *</li>
+<li><cite>kmeleon</cite></li>
+<li><cite>konqueror</cite></li>
+<li><cite>links</cite></li>
+<li><cite>lynx</cite></li>
+<li><cite>msie</cite></li>
+<li><cite>msn</cite></li>
+<li><cite>netscape</cite></li>
+<li><cite>opera</cite></li>
+<li><cite>safari</cite></li>
+<li><cite>seamonkey</cite></li>
+<li><cite>webkit</cite></li>
+<li><cite>yahoo</cite> *</li>
+</ul>
+<p>(Browsers maked with a star (<tt class="docutils literal"><span class="pre">*</span></tt>) are crawlers.)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.UserAgent.version">
+<tt class="descname">version</tt><a class="headerlink" href="#werkzeug.UserAgent.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>the version of the browser</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.UserAgent.language">
+<tt class="descname">language</tt><a class="headerlink" href="#werkzeug.UserAgent.language" title="Permalink to this definition">¶</a></dt>
+<dd><p>the language of the browser</p>
+</dd></dl>
+
+</dd></dl>
+
+</dd>
+<dt><tt class="docutils literal"><span class="pre">request.authorization</span></tt></dt>
+<dd><dl class="first last class">
+<dt id="werkzeug.Authorization">
+<em class="property">class </em><tt class="descclassname">werkzeug.</tt><tt class="descname">Authorization</tt><big>(</big><em>auth_type</em>, <em>data=None</em><big>)</big><a class="headerlink" href="#werkzeug.Authorization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents an <cite>Authorization</cite> header sent by the client.  You should
+not create this kind of object yourself but use it when it&#8217;s returned by
+the <cite>parse_authorization_header</cite> function.</p>
+<p>This object is a dict subclass and can be altered by setting dict items
+but it should be considered immutable as it&#8217;s returned by the client and
+not meant for modifications.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 0.5: </span>This object became immutable.</p>
+<dl class="attribute">
+<dt id="werkzeug.Authorization.cnonce">
+<tt class="descname">cnonce</tt><a class="headerlink" href="#werkzeug.Authorization.cnonce" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the server sent a qop-header in the <tt class="docutils literal"><span class="pre">WWW-Authenticate</span></tt>
+header, the client has to provide this value for HTTP digest auth.
+See the RFC for more details.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.Authorization.nc">
+<tt class="descname">nc</tt><a class="headerlink" href="#werkzeug.Authorization.nc" title="Permalink to this definition">¶</a></dt>
+<dd><p>The nonce count value transmitted by clients if a qop-header is
+also transmitted.  HTTP digest auth only.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.Authorization.nonce">
+<tt class="descname">nonce</tt><a class="headerlink" href="#werkzeug.Authorization.nonce" title="Permalink to this definition">¶</a></dt>
+<dd><p>The nonce the server sent for digest auth, sent back by the client.
+A nonce should be unique for every 401 response for HTTP digest
+auth.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.Authorization.opaque">
+<tt class="descname">opaque</tt><a class="headerlink" href="#werkzeug.Authorization.opaque" title="Permalink to this definition">¶</a></dt>
+<dd><p>The opaque header from the server returned unchanged by the client.
+It is recommended that this string be base64 or hexadecimal data.
+Digest auth only.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.Authorization.password">
+<tt class="descname">password</tt><a class="headerlink" href="#werkzeug.Authorization.password" title="Permalink to this definition">¶</a></dt>
+<dd><p>When the authentication type is basic this is the password
+transmitted by the client, else <cite>None</cite>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.Authorization.qop">
+<tt class="descname">qop</tt><a class="headerlink" href="#werkzeug.Authorization.qop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicates what &#8220;quality of protection&#8221; the client has applied to
+the message for HTTP digest auth.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.Authorization.realm">
+<tt class="descname">realm</tt><a class="headerlink" href="#werkzeug.Authorization.realm" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the server realm sent back for HTTP digest auth.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.Authorization.response">
+<tt class="descname">response</tt><a class="headerlink" href="#werkzeug.Authorization.response" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string of 32 hex digits computed as defined in RFC 2617, which
+proves that the user knows a password.  Digest auth only.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.Authorization.uri">
+<tt class="descname">uri</tt><a class="headerlink" href="#werkzeug.Authorization.uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>The URI from Request-URI of the Request-Line; duplicated because
+proxies are allowed to change the Request-Line in transit.  HTTP
+digest auth only.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="werkzeug.Authorization.username">
+<tt class="descname">username</tt><a class="headerlink" href="#werkzeug.Authorization.username" title="Permalink to this definition">¶</a></dt>
+<dd><p>The username transmitted.  This is set for both basic and digest
+auth all the time.</p>
+</dd></dl>
+
+</dd></dl>
+
+</dd>
+</dl>
+</div>
+<div class="section" id="security">
+<h3>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="werkzeug.secure_filename">
+<tt class="descclassname">werkzeug.</tt><tt class="descname">secure_filename</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#werkzeug.secure_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pass it a filename and it will return a secure version of it.  This
+filename can then safely be stored on a regular file system and passed
+to <a class="reference external" href="http://docs.python.org/library/os.path.html#os.path.join" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">os.path.join()</span></tt></a>.  The filename returned is an ASCII only string
+for maximum portability.</p>
+<p>On windows system the function also makes sure that the file is not
+named after one of the special device files.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">secure_filename</span><span class="p">(</span><span class="s">&quot;My cool movie.mov&quot;</span><span class="p">)</span>
+<span class="go">&#39;My_cool_movie.mov&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">secure_filename</span><span class="p">(</span><span class="s">&quot;../../../etc/passwd&quot;</span><span class="p">)</span>
+<span class="go">&#39;etc_passwd&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">secure_filename</span><span class="p">(</span><span class="s">u&#39;i contain cool </span><span class="se">\xfc</span><span class="s">ml</span><span class="se">\xe4</span><span class="s">uts.txt&#39;</span><span class="p">)</span>
+<span class="go">&#39;i_contain_cool_umlauts.txt&#39;</span>
+</pre></div>
+</div>
+<p>The function might return an empty filename.  It&#8217;s your responsibility
+to ensure that the filename is unique and that you generate random
+filename if the function returned an empty one.</p>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.5.</span></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> &#8211; the filename to secure</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="werkzeug.generate_password_hash">
+<tt class="descclassname">werkzeug.</tt><tt class="descname">generate_password_hash</tt><big>(</big><em>password</em>, <em>method='sha1'</em>, <em>salt_length=8</em><big>)</big><a class="headerlink" href="#werkzeug.generate_password_hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hash a password with the given method and salt with with a string of
+the given length.  The format of the string returned includes the method
+that was used so that <a class="reference internal" href="#werkzeug.check_password_hash" title="werkzeug.check_password_hash"><tt class="xref py py-func docutils literal"><span class="pre">check_password_hash()</span></tt></a> can check the hash.</p>
+<p>The format for the hashed string looks like this:</p>
+<div class="highlight-python"><pre>method$salt$hash</pre>
+</div>
+<p>This method can <strong>not</strong> generate unsalted passwords but it is possible
+to set the method to plain to enforce plaintext passwords.  If a salt
+is used, hmac is used internally to salt the password.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>password</strong> &#8211; the password to hash</li>
+<li><strong>method</strong> &#8211; the hash method to use (<tt class="docutils literal"><span class="pre">'md5'</span></tt> or <tt class="docutils literal"><span class="pre">'sha1'</span></tt>)</li>
+<li><strong>salt_length</strong> &#8211; the lengt of the salt in letters</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="werkzeug.check_password_hash">
+<tt class="descclassname">werkzeug.</tt><tt class="descname">check_password_hash</tt><big>(</big><em>pwhash</em>, <em>password</em><big>)</big><a class="headerlink" href="#werkzeug.check_password_hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>check a password against a given salted and hashed password value.
+In order to support unsalted legacy passwords this method supports
+plain text passwords, md5 and sha1 hashes (both salted and unsalted).</p>
+<p>Returns <cite>True</cite> if the password matched, <cite>False</cite> otherwise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pwhash</strong> &#8211; a hashed string like returned by
+<a class="reference internal" href="#werkzeug.generate_password_hash" title="werkzeug.generate_password_hash"><tt class="xref py py-func docutils literal"><span class="pre">generate_password_hash()</span></tt></a></li>
+<li><strong>password</strong> &#8211; the plaintext password to compare against the hash</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="general-use">
+<h3>General use<a class="headerlink" href="#general-use" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="werkzeug.cached_property">
+<tt class="descclassname">werkzeug.</tt><tt class="descname">cached_property</tt><big>(</big><em>func</em>, <em>name=None</em>, <em>doc=None</em>, <em>writeable=False</em><big>)</big><a class="headerlink" href="#werkzeug.cached_property" title="Permalink to this definition">¶</a></dt>
+<dd><p>A decorator that converts a function into a lazy property.  The
+function wrapped is called the first time to retrieve the result
+and then that calculated result is used the next time you access
+the value:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># calculate something important here</span>
+        <span class="k">return</span> <span class="mi">42</span>
+</pre></div>
+</div>
+<p>The class has to have a <cite>__dict__</cite> in order for this property to
+work.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 0.6: </span>the <cite>writeable</cite> attribute and parameter was deprecated.  If a
+cached property is writeable or not has to be documented now.
+For performance reasons the implementation does not honor the
+writeable setting and will always make the property writeable.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="werkzeug.import_string">
+<tt class="descclassname">werkzeug.</tt><tt class="descname">import_string</tt><big>(</big><em>import_name</em>, <em>silent=False</em><big>)</big><a class="headerlink" href="#werkzeug.import_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Imports an object based on a string.  This is useful if you want to
+use import paths as endpoints or something similar.  An import path can
+be specified either in dotted notation (<tt class="docutils literal"><span class="pre">xml.sax.saxutils.escape</span></tt>)
+or with a colon as object delimiter (<tt class="docutils literal"><span class="pre">xml.sax.saxutils:escape</span></tt>).</p>
+<p>If <cite>silent</cite> is True the return value will be <cite>None</cite> if the import fails.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>import_name</strong> &#8211; the dotted name for the object to import.</li>
+<li><strong>silent</strong> &#8211; if set to <cite>True</cite> import errors are ignored and
+<cite>None</cite> is returned instead.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">imported object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="werkzeug.find_modules">
+<tt class="descclassname">werkzeug.</tt><tt class="descname">find_modules</tt><big>(</big><em>import_path</em>, <em>include_packages=False</em>, <em>recursive=False</em><big>)</big><a class="headerlink" href="#werkzeug.find_modules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find all the modules below a package.  This can be useful to
+automatically import all views / controllers so that their metaclasses /
+function decorators have a chance to register themselves on the
+application.</p>
+<p>Packages are not returned unless <cite>include_packages</cite> is <cite>True</cite>.  This can
+also recursively list modules but in that case it will import all the
+packages to get the correct load path of that module.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>import_name</strong> &#8211; the dotted name for the package to find child modules.</li>
+<li><strong>include_packages</strong> &#8211; set to <cite>True</cite> if packages should be returned, too.</li>
+<li><strong>recursive</strong> &#8211; set to <cite>True</cite> if recursion should happen.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">generator</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-werkzeug.exceptions">
+<span id="exceptions"></span><h2>Exceptions<a class="headerlink" href="#module-werkzeug.exceptions" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="werkzeug.exceptions.BadRequest">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">BadRequest</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#BadRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.BadRequest" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>400</em> <cite>Bad Request</cite></p>
+<p>Raise if the browser sends something to the application the application
+or server cannot handle.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="werkzeug.exceptions.Unauthorized">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">Unauthorized</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#Unauthorized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.Unauthorized" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>401</em> <cite>Unauthorized</cite></p>
+<p>Raise if the user is not authorized.  Also used if you want to use HTTP
+basic auth.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="werkzeug.exceptions.Forbidden">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">Forbidden</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#Forbidden"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.Forbidden" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>403</em> <cite>Forbidden</cite></p>
+<p>Raise if the user doesn&#8217;t have the permission for the requested resource
+but was authenticated.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="werkzeug.exceptions.NotFound">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">NotFound</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#NotFound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.NotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>404</em> <cite>Not Found</cite></p>
+<p>Raise if a resource does not exist and never existed.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="werkzeug.exceptions.MethodNotAllowed">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">MethodNotAllowed</tt><big>(</big><em>valid_methods=None</em>, <em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#MethodNotAllowed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.MethodNotAllowed" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>405</em> <cite>Method Not Allowed</cite></p>
+<p>Raise if the server used a method the resource does not handle.  For
+example <cite>POST</cite> if the resource is view only.  Especially useful for REST.</p>
+<p>The first argument for this exception should be a list of allowed methods.
+Strictly speaking the response would be invalid if you don&#8217;t provide valid
+methods in the header which you can do with that list.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="werkzeug.exceptions.NotAcceptable">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">NotAcceptable</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#NotAcceptable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.NotAcceptable" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>406</em> <cite>Not Acceptable</cite></p>
+<p>Raise if the server can&#8217;t return any content conforming to the
+<cite>Accept</cite> headers of the client.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="werkzeug.exceptions.RequestTimeout">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">RequestTimeout</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#RequestTimeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.RequestTimeout" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>408</em> <cite>Request Timeout</cite></p>
+<p>Raise to signalize a timeout.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="werkzeug.exceptions.Gone">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">Gone</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#Gone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.Gone" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>410</em> <cite>Gone</cite></p>
+<p>Raise if a resource existed previously and went away without new location.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="werkzeug.exceptions.LengthRequired">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">LengthRequired</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#LengthRequired"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.LengthRequired" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>411</em> <cite>Length Required</cite></p>
+<p>Raise if the browser submitted data but no <tt class="docutils literal"><span class="pre">Content-Length</span></tt> header which
+is required for the kind of processing the server does.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="werkzeug.exceptions.PreconditionFailed">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">PreconditionFailed</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#PreconditionFailed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.PreconditionFailed" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>412</em> <cite>Precondition Failed</cite></p>
+<p>Status code used in combination with <tt class="docutils literal"><span class="pre">If-Match</span></tt>, <tt class="docutils literal"><span class="pre">If-None-Match</span></tt>, or
+<tt class="docutils literal"><span class="pre">If-Unmodified-Since</span></tt>.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="werkzeug.exceptions.RequestEntityTooLarge">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">RequestEntityTooLarge</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#RequestEntityTooLarge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.RequestEntityTooLarge" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>413</em> <cite>Request Entity Too Large</cite></p>
+<p>The status code one should return if the data submitted exceeded a given
+limit.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="werkzeug.exceptions.RequestURITooLarge">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">RequestURITooLarge</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#RequestURITooLarge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.RequestURITooLarge" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>414</em> <cite>Request URI Too Large</cite></p>
+<p>Like <em>413</em> but for too long URLs.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="werkzeug.exceptions.UnsupportedMediaType">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">UnsupportedMediaType</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#UnsupportedMediaType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.UnsupportedMediaType" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>415</em> <cite>Unsupported Media Type</cite></p>
+<p>The status code returned if the server is unable to handle the media type
+the client transmitted.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="werkzeug.exceptions.InternalServerError">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">InternalServerError</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#InternalServerError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.InternalServerError" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>500</em> <cite>Internal Server Error</cite></p>
+<p>Raise if an internal server error occurred.  This is a good fallback if an
+unknown error occurred in the dispatcher.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="werkzeug.exceptions.NotImplemented">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">NotImplemented</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#NotImplemented"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.NotImplemented" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>501</em> <cite>Not Implemented</cite></p>
+<p>Raise if the application does not support the action requested by the
+browser.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="werkzeug.exceptions.BadGateway">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">BadGateway</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#BadGateway"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.BadGateway" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>502</em> <cite>Bad Gateway</cite></p>
+<p>If you do proxying in your application you should return this status code
+if you received an invalid response from the upstream server it accessed
+in attempting to fulfill the request.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="werkzeug.exceptions.ServiceUnavailable">
+<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">ServiceUnavailable</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#ServiceUnavailable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.ServiceUnavailable" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>503</em> <cite>Service Unavailable</cite></p>
+<p>Status code you should return if a service is temporarily unavailable.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Werkzeug WSGI utilities</a><ul>
+<li><a class="reference internal" href="#utilities">Utilities</a><ul>
+<li><a class="reference internal" href="#urls">URLs</a></li>
+<li><a class="reference internal" href="#html">HTML</a></li>
+<li><a class="reference internal" href="#http">HTTP</a></li>
+<li><a class="reference internal" href="#security">Security</a></li>
+<li><a class="reference internal" href="#general-use">General use</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-werkzeug.exceptions">Exceptions</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="flask.html" title="previous chapter">Flask microframework</a></li>
+      <li>Next: <a href="extensions.html" title="next chapter">Flask extensions</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/werkzeug.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Dag Odenhall.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>

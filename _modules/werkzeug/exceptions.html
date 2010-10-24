@@ -1,0 +1,549 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>werkzeug.exceptions &mdash; stutuz v0.1dev documentation</title>
+    <link rel="stylesheet" href="../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="stutuz v0.1dev documentation" href="../../index.html" />
+    <link rel="up" title="werkzeug" href="../werkzeug.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">stutuz v0.1dev documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../werkzeug.html" accesskey="U">werkzeug</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for werkzeug.exceptions</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    werkzeug.exceptions</span>
+<span class="sd">    ~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="sd">    This module implements a number of Python exceptions you can raise from</span>
+<span class="sd">    within your views to trigger a standard non-200 response.</span>
+
+
+<span class="sd">    Usage Example</span>
+<span class="sd">    -------------</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        from werkzeug import BaseRequest, responder</span>
+<span class="sd">        from werkzeug.exceptions import HTTPException, NotFound</span>
+
+<span class="sd">        def view(request):</span>
+<span class="sd">            raise NotFound()</span>
+
+<span class="sd">        @responder</span>
+<span class="sd">        def application(environ, start_response):</span>
+<span class="sd">            request = BaseRequest(environ)</span>
+<span class="sd">            try:</span>
+<span class="sd">                return view(request)</span>
+<span class="sd">            except HTTPException, e:</span>
+<span class="sd">                return e</span>
+
+
+<span class="sd">    As you can see from this example those exceptions are callable WSGI</span>
+<span class="sd">    applications.  Because of Python 2.4 compatibility those do not extend</span>
+<span class="sd">    from the response objects but only from the python exception class.</span>
+
+<span class="sd">    As a matter of fact they are not Werkzeug response objects.  However you</span>
+<span class="sd">    can get a response object by calling ``get_response()`` on a HTTP</span>
+<span class="sd">    exception.</span>
+
+<span class="sd">    Keep in mind that you have to pass an environment to ``get_response()``</span>
+<span class="sd">    because some errors fetch additional information from the WSGI</span>
+<span class="sd">    environment.</span>
+
+<span class="sd">    If you want to hook in a different exception page to say, a 404 status</span>
+<span class="sd">    code, you can add a second except for a specific subclass of an error::</span>
+
+<span class="sd">        @responder</span>
+<span class="sd">        def application(environ, start_response):</span>
+<span class="sd">            request = BaseRequest(environ)</span>
+<span class="sd">            try:</span>
+<span class="sd">                return view(request)</span>
+<span class="sd">            except NotFound, e:</span>
+<span class="sd">                return not_found(request)</span>
+<span class="sd">            except HTTPException, e:</span>
+<span class="sd">                return e</span>
+
+
+<span class="sd">    :copyright: (c) 2010 by the Werkzeug Team, see AUTHORS for more details.</span>
+<span class="sd">    :license: BSD, see LICENSE for more details.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">werkzeug._internal</span> <span class="kn">import</span> <span class="n">HTTP_STATUS_CODES</span><span class="p">,</span> <span class="n">_get_environ</span>
+
+
+<div class="viewcode-block" id="HTTPException"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.HTTPException">[docs]</a><span class="k">class</span> <span class="nc">HTTPException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Baseclass for all HTTP exceptions.  This exception can be called as WSGI</span>
+<span class="sd">    application to render a default error page or you can catch the subclasses</span>
+<span class="sd">    of it independently and render nicer error messages.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">code</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;</span><span class="si">%d</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="HTTPException.wrap"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.HTTPException.wrap">[docs]</a>    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">exception</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method returns a new subclass of the exception provided that</span>
+<span class="sd">        also is a subclass of `BadRequest`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">class</span> <span class="nc">newcls</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">exception</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+                <span class="n">cls</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span>
+                <span class="n">exception</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
+        <span class="n">newcls</span><span class="o">.</span><span class="n">__module__</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f_globals</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;__name__&#39;</span><span class="p">)</span>
+        <span class="n">newcls</span><span class="o">.</span><span class="n">__name__</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">cls</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="n">exception</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="k">return</span> <span class="n">newcls</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="HTTPException.name"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.HTTPException.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The status name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">HTTP_STATUS_CODES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="HTTPException.get_description"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.HTTPException.get_description">[docs]</a>    <span class="k">def</span> <span class="nf">get_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the description.&quot;&quot;&quot;</span>
+        <span class="n">environ</span> <span class="o">=</span> <span class="n">_get_environ</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span>
+</div>
+<div class="viewcode-block" id="HTTPException.get_body"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.HTTPException.get_body">[docs]</a>    <span class="k">def</span> <span class="nf">get_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the HTML body.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s">&#39;&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 3.2 Final//EN&quot;&gt;</span><span class="se">\n</span><span class="s">&#39;</span>
+            <span class="s">&#39;&lt;title&gt;</span><span class="si">%(code)s</span><span class="s"> </span><span class="si">%(name)s</span><span class="s">&lt;/title&gt;</span><span class="se">\n</span><span class="s">&#39;</span>
+            <span class="s">&#39;&lt;h1&gt;</span><span class="si">%(name)s</span><span class="s">&lt;/h1&gt;</span><span class="se">\n</span><span class="s">&#39;</span>
+            <span class="s">&#39;</span><span class="si">%(description)s</span><span class="se">\n</span><span class="s">&#39;</span>
+        <span class="p">)</span> <span class="o">%</span> <span class="p">{</span>
+            <span class="s">&#39;code&#39;</span><span class="p">:</span>         <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span>
+            <span class="s">&#39;name&#39;</span><span class="p">:</span>         <span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+            <span class="s">&#39;description&#39;</span><span class="p">:</span>  <span class="bp">self</span><span class="o">.</span><span class="n">get_description</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
+        <span class="p">}</span>
+</div>
+<div class="viewcode-block" id="HTTPException.get_headers"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.HTTPException.get_headers">[docs]</a>    <span class="k">def</span> <span class="nf">get_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a list of headers.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="s">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s">&#39;text/html&#39;</span><span class="p">)]</span>
+</div>
+<div class="viewcode-block" id="HTTPException.get_response"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.HTTPException.get_response">[docs]</a>    <span class="k">def</span> <span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a response object.</span>
+
+<span class="sd">        :param environ: the environ for the request.</span>
+<span class="sd">        :return: a :class:`BaseResponse` object or a subclass thereof.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># lazily imported for various reasons.  For one, we can use the exceptions</span>
+        <span class="c"># with custom responses (testing exception instances against types) and</span>
+        <span class="c"># so we don&#39;t ever have to import the wrappers, but also because there</span>
+        <span class="c"># are circular dependencies when bootstrapping the module.</span>
+        <span class="n">environ</span> <span class="o">=</span> <span class="n">_get_environ</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">werkzeug.wrappers</span> <span class="kn">import</span> <span class="n">BaseResponse</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">BaseResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_body</span><span class="p">(</span><span class="n">environ</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Call the exception as WSGI application.</span>
+
+<span class="sd">        :param environ: the WSGI environment.</span>
+<span class="sd">        :param start_response: the response callable provided by the WSGI</span>
+<span class="sd">                               server.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">unicode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s">&#39;description&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">:</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">return</span> <span class="s">&#39;</span><span class="si">%d</span><span class="s">: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">txt</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;&lt;</span><span class="si">%s</span><span class="s"> </span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+</div>
+<span class="k">class</span> <span class="nc">_ProxyException</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An HTTP exception that expands renders a WSGI application on error.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;proxy exception for </span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">response</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">response</span>
+
+    <span class="k">def</span> <span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">response</span>
+
+
+<div class="viewcode-block" id="BadRequest"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.BadRequest">[docs]</a><span class="k">class</span> <span class="nc">BadRequest</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*400* `Bad Request`</span>
+
+<span class="sd">    Raise if the browser sends something to the application the application</span>
+<span class="sd">    or server cannot handle.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">400</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;&lt;p&gt;The browser (or proxy) sent a request that this server could &#39;</span>
+        <span class="s">&#39;not understand.&lt;/p&gt;&#39;</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="Unauthorized"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.Unauthorized">[docs]</a><span class="k">class</span> <span class="nc">Unauthorized</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*401* `Unauthorized`</span>
+
+<span class="sd">    Raise if the user is not authorized.  Also used if you want to use HTTP</span>
+<span class="sd">    basic auth.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">401</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;&lt;p&gt;The server could not verify that you are authorized to access &#39;</span>
+        <span class="s">&#39;the URL requested.  You either supplied the wrong credentials (e.g. &#39;</span>
+        <span class="s">&#39;a bad password), or your browser doesn</span><span class="se">\&#39;</span><span class="s">t understand how to supply &#39;</span>
+        <span class="s">&#39;the credentials required.&lt;/p&gt;&lt;p&gt;In case you are allowed to request &#39;</span>
+        <span class="s">&#39;the document, please check your user-id and password and try &#39;</span>
+        <span class="s">&#39;again.&lt;/p&gt;&#39;</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="Forbidden"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.Forbidden">[docs]</a><span class="k">class</span> <span class="nc">Forbidden</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*403* `Forbidden`</span>
+
+<span class="sd">    Raise if the user doesn&#39;t have the permission for the requested resource</span>
+<span class="sd">    but was authenticated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">403</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;&lt;p&gt;You don</span><span class="se">\&#39;</span><span class="s">t have the permission to access the requested resource. &#39;</span>
+        <span class="s">&#39;It is either read-protected or not readable by the server.&lt;/p&gt;&#39;</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="NotFound"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.NotFound">[docs]</a><span class="k">class</span> <span class="nc">NotFound</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*404* `Not Found`</span>
+
+<span class="sd">    Raise if a resource does not exist and never existed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">404</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;&lt;p&gt;The requested URL was not found on the server.&lt;/p&gt;&#39;</span>
+        <span class="s">&#39;&lt;p&gt;If you entered the URL manually please check your spelling and &#39;</span>
+        <span class="s">&#39;try again.&lt;/p&gt;&#39;</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="MethodNotAllowed"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.MethodNotAllowed">[docs]</a><span class="k">class</span> <span class="nc">MethodNotAllowed</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*405* `Method Not Allowed`</span>
+
+<span class="sd">    Raise if the server used a method the resource does not handle.  For</span>
+<span class="sd">    example `POST` if the resource is view only.  Especially useful for REST.</span>
+
+<span class="sd">    The first argument for this exception should be a list of allowed methods.</span>
+<span class="sd">    Strictly speaking the response would be invalid if you don&#39;t provide valid</span>
+<span class="sd">    methods in the header which you can do with that list.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">405</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valid_methods</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Takes an optional list of valid http methods</span>
+<span class="sd">        starting with werkzeug 0.3 the list will be mandatory.&quot;&quot;&quot;</span>
+        <span class="n">HTTPException</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid_methods</span> <span class="o">=</span> <span class="n">valid_methods</span>
+
+    <span class="k">def</span> <span class="nf">get_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">HTTPException</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_methods</span><span class="p">:</span>
+            <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;Allow&#39;</span><span class="p">,</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_methods</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">headers</span>
+
+    <span class="k">def</span> <span class="nf">get_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">escape</span><span class="p">(</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;REQUEST_METHOD&#39;</span><span class="p">,</span> <span class="s">&#39;GET&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s">&#39;&lt;p&gt;The method </span><span class="si">%s</span><span class="s"> is not allowed for the requested URL.&lt;/p&gt;&#39;</span> <span class="o">%</span> <span class="n">m</span>
+
+</div>
+<div class="viewcode-block" id="NotAcceptable"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.NotAcceptable">[docs]</a><span class="k">class</span> <span class="nc">NotAcceptable</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*406* `Not Acceptable`</span>
+
+<span class="sd">    Raise if the server can&#39;t return any content conforming to the</span>
+<span class="sd">    `Accept` headers of the client.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">406</span>
+
+    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;&lt;p&gt;The resource identified by the request is only capable of &#39;</span>
+        <span class="s">&#39;generating response entities which have content characteristics &#39;</span>
+        <span class="s">&#39;not acceptable according to the accept headers sent in the &#39;</span>
+        <span class="s">&#39;request.&lt;/p&gt;&#39;</span>
+        <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="RequestTimeout"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.RequestTimeout">[docs]</a><span class="k">class</span> <span class="nc">RequestTimeout</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*408* `Request Timeout`</span>
+
+<span class="sd">    Raise to signalize a timeout.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">408</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;&lt;p&gt;The server closed the network connection because the browser &#39;</span>
+        <span class="s">&#39;didn</span><span class="se">\&#39;</span><span class="s">t finish the request within the specified time.&lt;/p&gt;&#39;</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="Gone"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.Gone">[docs]</a><span class="k">class</span> <span class="nc">Gone</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*410* `Gone`</span>
+
+<span class="sd">    Raise if a resource existed previously and went away without new location.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">410</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;&lt;p&gt;The requested URL is no longer available on this server and &#39;</span>
+        <span class="s">&#39;there is no forwarding address.&lt;/p&gt;&lt;p&gt;If you followed a link &#39;</span>
+        <span class="s">&#39;from a foreign page, please contact the author of this page.&#39;</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="LengthRequired"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.LengthRequired">[docs]</a><span class="k">class</span> <span class="nc">LengthRequired</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*411* `Length Required`</span>
+
+<span class="sd">    Raise if the browser submitted data but no ``Content-Length`` header which</span>
+<span class="sd">    is required for the kind of processing the server does.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">411</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;&lt;p&gt;A request with this method requires a valid &lt;code&gt;Content-&#39;</span>
+        <span class="s">&#39;Length&lt;/code&gt; header.&lt;/p&gt;&#39;</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="PreconditionFailed"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.PreconditionFailed">[docs]</a><span class="k">class</span> <span class="nc">PreconditionFailed</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*412* `Precondition Failed`</span>
+
+<span class="sd">    Status code used in combination with ``If-Match``, ``If-None-Match``, or</span>
+<span class="sd">    ``If-Unmodified-Since``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">412</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;&lt;p&gt;The precondition on the request for the URL failed positive &#39;</span>
+        <span class="s">&#39;evaluation.&lt;/p&gt;&#39;</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="RequestEntityTooLarge"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.RequestEntityTooLarge">[docs]</a><span class="k">class</span> <span class="nc">RequestEntityTooLarge</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*413* `Request Entity Too Large`</span>
+
+<span class="sd">    The status code one should return if the data submitted exceeded a given</span>
+<span class="sd">    limit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">413</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;&lt;p&gt;The data value transmitted exceeds the capacity limit.&lt;/p&gt;&#39;</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="RequestURITooLarge"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.RequestURITooLarge">[docs]</a><span class="k">class</span> <span class="nc">RequestURITooLarge</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*414* `Request URI Too Large`</span>
+
+<span class="sd">    Like *413* but for too long URLs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">414</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;&lt;p&gt;The length of the requested URL exceeds the capacity limit &#39;</span>
+        <span class="s">&#39;for this server.  The request cannot be processed.&lt;/p&gt;&#39;</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="UnsupportedMediaType"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.UnsupportedMediaType">[docs]</a><span class="k">class</span> <span class="nc">UnsupportedMediaType</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*415* `Unsupported Media Type`</span>
+
+<span class="sd">    The status code returned if the server is unable to handle the media type</span>
+<span class="sd">    the client transmitted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">415</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;&lt;p&gt;The server does not support the media type transmitted in &#39;</span>
+        <span class="s">&#39;the request.&lt;/p&gt;&#39;</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="InternalServerError"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.InternalServerError">[docs]</a><span class="k">class</span> <span class="nc">InternalServerError</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*500* `Internal Server Error`</span>
+
+<span class="sd">    Raise if an internal server error occurred.  This is a good fallback if an</span>
+<span class="sd">    unknown error occurred in the dispatcher.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">500</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;&lt;p&gt;The server encountered an internal error and was unable to &#39;</span>
+        <span class="s">&#39;complete your request.  Either the server is overloaded or there &#39;</span>
+        <span class="s">&#39;is an error in the application.&lt;/p&gt;&#39;</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="NotImplemented"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.NotImplemented">[docs]</a><span class="k">class</span> <span class="nc">NotImplemented</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*501* `Not Implemented`</span>
+
+<span class="sd">    Raise if the application does not support the action requested by the</span>
+<span class="sd">    browser.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">501</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;&lt;p&gt;The server does not support the action requested by the &#39;</span>
+        <span class="s">&#39;browser.&lt;/p&gt;&#39;</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="BadGateway"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.BadGateway">[docs]</a><span class="k">class</span> <span class="nc">BadGateway</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*502* `Bad Gateway`</span>
+
+<span class="sd">    If you do proxying in your application you should return this status code</span>
+<span class="sd">    if you received an invalid response from the upstream server it accessed</span>
+<span class="sd">    in attempting to fulfill the request.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">502</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;&lt;p&gt;The proxy server received an invalid response from an upstream &#39;</span>
+        <span class="s">&#39;server.&lt;/p&gt;&#39;</span>
+    <span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ServiceUnavailable"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.ServiceUnavailable">[docs]</a><span class="k">class</span> <span class="nc">ServiceUnavailable</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*503* `Service Unavailable`</span>
+
+<span class="sd">    Status code you should return if a service is temporarily unavailable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">503</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;&lt;p&gt;The server is temporarily unable to service your request due to &#39;</span>
+        <span class="s">&#39;maintenance downtime or capacity problems.  Please try again &#39;</span>
+        <span class="s">&#39;later.&lt;/p&gt;&#39;</span>
+    <span class="p">)</span>
+
+</div>
+<span class="n">default_exceptions</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;HTTPException&#39;</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">_find_exceptions</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;code&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">default_exceptions</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">code</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+                <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span> <span class="c"># pragma: no cover</span>
+            <span class="k">continue</span>
+<span class="n">_find_exceptions</span><span class="p">()</span>
+<span class="k">del</span> <span class="n">_find_exceptions</span>
+
+
+<span class="c">#: raised by the request functions if they were unable to decode the</span>
+<span class="c">#: incoming data properly.</span>
+<span class="n">HTTPUnicodeError</span> <span class="o">=</span> <span class="n">BadRequest</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="ne">UnicodeError</span><span class="p">,</span> <span class="s">&#39;HTTPUnicodeError&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Aborter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    When passed a dict of code -&gt; exception items it can be used as</span>
+<span class="sd">    callable that raises exceptions.  If the first argument to the</span>
+<span class="sd">    callable is an integer it will be looked up in the mapping, if it&#39;s</span>
+<span class="sd">    a WSGI application it will be raised in a proxy exception.</span>
+
+<span class="sd">    The rest of the arguments are forwarded to the exception constructor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">mapping</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="n">default_exceptions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">extra</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extra</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">long</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">_ProxyException</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">LookupError</span><span class="p">(</span><span class="s">&#39;no exception for </span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">code</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">code</span><span class="p">](</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="n">abort</span> <span class="o">=</span> <span class="n">Aborter</span><span class="p">()</span>
+
+
+<span class="c"># imported here because of circular dependencies of werkzeug.utils</span>
+<span class="kn">from</span> <span class="nn">werkzeug.utils</span> <span class="kn">import</span> <span class="n">escape</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../werkzeug.html">werkzeug</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Dag Odenhall.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>
