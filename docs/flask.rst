@@ -21,9 +21,11 @@ Request and Response
 
 .. autoclass:: Request
    :members:
+   :inherited-members:
 
 .. autoclass:: Response
    :members:
+   :inherited-members:
 
 
 Functions
