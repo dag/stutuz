@@ -39,4 +39,5 @@ Documentation
 
    hacking
    flask
+   werkzeug
    extensions
