@@ -1,2 +1,2 @@
 all:
-	sphinx-build docs .
+	cp -R build/sphinx/html/* .
