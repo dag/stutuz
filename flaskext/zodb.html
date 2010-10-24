@@ -56,8 +56,133 @@
 <li><a class="reference external" href="http://zodb.org/documentation/guide/index.html">Programming guide</a></li>
 <li><a class="reference external" href="http://docs.zope.org/zope3/Code/ZODB/index.html">Low-level API</a></li>
 </ul>
-<div class="section" id="api">
-<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-flaskext.zodb">
+<span id="api"></span><h2>API<a class="headerlink" href="#module-flaskext.zodb" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="flaskext.zodb.ZODB">
+<em class="property">class </em><tt class="descclassname">flaskext.zodb.</tt><tt class="descname">ZODB</tt><big>(</big><em>app=None</em><big>)</big><a class="reference internal" href="../_modules/flaskext/zodb.html#ZODB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.zodb.ZODB" title="Permalink to this definition">¶</a></dt>
+<dd><p>ZODB extension for Flask: persistence of native Python objects.</p>
+<p>Basic setup:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">ZODB.FileStorage</span> <span class="kn">import</span> <span class="n">FileStorage</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">render_template_string</span>
+<span class="kn">from</span> <span class="nn">flaskext.zodb</span> <span class="kn">import</span> <span class="n">ZODB</span>
+
+<span class="n">ZODB_STORAGE</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">FileStorage</span><span class="p">(</span><span class="s">&#39;app.fs&#39;</span><span class="p">)</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">ZODB</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/&lt;message&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">message</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">db</span><span class="p">[</span><span class="s">&#39;message&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render_template_string</span><span class="p">(</span><span class="s">&#39;Latest message: {{ message }}&#39;</span><span class="p">,</span>
+                                  <span class="n">message</span><span class="o">=</span><span class="n">db</span><span class="p">[</span><span class="s">&#39;message&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>During requests the <tt class="docutils literal"><span class="pre">db</span></tt> object acts like a Python <tt class="docutils literal"><span class="pre">dict</span></tt>. Any changes
+made to it <em>directly</em> will persist, changes made to mutable objects
+within will have to be marked as mutated. This is done for you if you
+inherit <a class="reference internal" href="#flaskext.zodb.Model" title="flaskext.zodb.Model"><tt class="xref py py-class docutils literal"><span class="pre">Model</span></tt></a> for your own classes and use <a class="reference internal" href="#flaskext.zodb.List" title="flaskext.zodb.List"><tt class="xref py py-attr docutils literal"><span class="pre">List</span></tt></a> and
+<a class="reference internal" href="#flaskext.zodb.Mapping" title="flaskext.zodb.Mapping"><tt class="xref py py-attr docutils literal"><span class="pre">Mapping</span></tt></a> as substitutes for Python&#8217;s <tt class="docutils literal"><span class="pre">list</span></tt> and <tt class="docutils literal"><span class="pre">dict</span></tt>.</p>
+<p>Outside of requests, the object can be used as a context manager if
+called, yielding the root object to be used inside the context.
+See <tt class="xref py py-meth docutils literal"><span class="pre">__call__()</span></tt>.</p>
+<dl class="attribute">
+<dt id="flaskext.zodb.ZODB.connection">
+<tt class="descname">connection</tt><a class="reference internal" href="../_modules/flaskext/zodb.html#ZODB.connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.zodb.ZODB.connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request-local database connection.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="flaskext.zodb.ZODB.root">
+<tt class="descname">root</tt><a class="reference internal" href="../_modules/flaskext/zodb.html#ZODB.root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.zodb.ZODB.root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Root object for the request-local connection.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="flaskext.zodb.Model">
+<em class="property">class </em><tt class="descclassname">flaskext.zodb.</tt><tt class="descname">Model</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/flaskext/zodb.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.zodb.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convinience model base.</p>
+<p>You can subclass <tt class="xref py py-class docutils literal"><span class="pre">persistent.Persistent</span></tt> directly if you prefer,
+but this base provides some conviniences.</p>
+<p>Set attributes in instantiation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Model</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Hello!&#39;</span><span class="p">)</span>
+<span class="go">Model(title=&#39;Hello!&#39;)</span>
+<span class="go">&gt;&gt; Model(title=&#39;Hello!&#39;).title</span>
+<span class="go">&#39;Hello!&#39;</span>
+</pre></div>
+</div>
+<p>Declare mutable and dynamic attributes in the class definition:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Post</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">UUID4</span>
+    <span class="n">posted_on</span> <span class="o">=</span> <span class="n">Timestamp</span>
+    <span class="n">comments</span> <span class="o">=</span> <span class="n">List</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Post</span><span class="p">()</span>
+<span class="go">Post(id=UUID(&#39;c3f043a8-8f1f-4381-89b3-fd1f35265925&#39;),</span>
+<span class="go">     posted_on=datetime.datetime(2010, 10, 20, 15, 42, 34, 138015),</span>
+<span class="go">     comments=[])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">Post</span><span class="p">()</span><span class="o">.</span><span class="n">comments</span><span class="p">)</span>
+<span class="go">&lt;class &#39;persistent.list.PersistentList&#39;&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="flaskext.zodb.Factory">
+<em class="property">class </em><tt class="descclassname">flaskext.zodb.</tt><tt class="descname">Factory</tt><big>(</big><em>callable</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/flaskext/zodb.html#Factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.zodb.Factory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a <a class="reference internal" href="#flaskext.zodb.Model" title="flaskext.zodb.Model"><tt class="xref py py-class docutils literal"><span class="pre">Model</span></tt></a> attribute with a callable on instantiation.
+Useful for delaying initiation of mutable or dynamic objects.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Dice</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">side</span> <span class="o">=</span> <span class="n">Factory</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Dice</span><span class="p">()</span>
+<span class="go">Dice(side=3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Dice</span><span class="p">()</span>
+<span class="go">Dice(side=5)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="data">
+<dt id="flaskext.zodb.List">
+<tt class="descclassname">flaskext.zodb.</tt><tt class="descname">List</tt><a class="headerlink" href="#flaskext.zodb.List" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory for <tt class="xref py py-class docutils literal"><span class="pre">PersistentList</span></tt></p>
+</dd></dl>
+
+<dl class="data">
+<dt id="flaskext.zodb.Mapping">
+<tt class="descclassname">flaskext.zodb.</tt><tt class="descname">Mapping</tt><a class="headerlink" href="#flaskext.zodb.Mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory for <tt class="xref py py-class docutils literal"><span class="pre">PersistentMapping</span></tt></p>
+</dd></dl>
+
+<dl class="data">
+<dt id="flaskext.zodb.Timestamp">
+<tt class="descclassname">flaskext.zodb.</tt><tt class="descname">Timestamp</tt><a class="headerlink" href="#flaskext.zodb.Timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>UTC timestamp factory</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="flaskext.zodb.UUID4">
+<tt class="descclassname">flaskext.zodb.</tt><tt class="descname">UUID4</tt><a class="headerlink" href="#flaskext.zodb.UUID4" title="Permalink to this definition">¶</a></dt>
+<dd><p>UUID4 factory</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="flaskext.zodb.current_db">
+<tt class="descclassname">flaskext.zodb.</tt><tt class="descname">current_db</tt><a class="headerlink" href="#flaskext.zodb.current_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#flaskext.zodb.ZODB" title="flaskext.zodb.ZODB"><tt class="xref py py-class docutils literal"><span class="pre">ZODB</span></tt></a> instance for the current <a class="reference external" href="http://flask.pocoo.org/docs/api/#flask.Flask" title="(in Flask v0.6)"><tt class="xref py py-class docutils literal"><span class="pre">Flask</span></tt></a>
+application.</p>
+</dd></dl>
+
 </div>
 </div>
 
