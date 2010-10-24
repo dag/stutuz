@@ -33,11 +33,13 @@ div.documentwrapper {
 }
 
 div.bodywrapper {
-    margin: 0 0 0 {{ sidebar_width }};
+    margin: 0 {{ sidebar_width }} 0 0;
+    padding-right: 30px;
 }
 
 div.sphinxsidebar {
     width: {{ sidebar_width }};
+    float: right;
 }
 
 hr {
