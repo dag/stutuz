@@ -30,12 +30,12 @@ Useful names:
 
   app     Flask application for stutuz
   db      The database instance
-  root    Database root object
   models  Namespace for all models
 """
 
-    with db() as root:
-        context = dict(app=current_app, db=db, root=root, models=models)
+    try:
+        current_app.preprocess_request()
+        context = dict(app=current_app, db=db, models=models)
 
         try:
             import bpython
@@ -44,6 +44,8 @@ Useful names:
             code.interact(banner, local=context)
         else:
             bpython.embed(context, ['-i'], banner)
+    finally:
+        current_app.process_response(current_app.response_class())
 
 
 def main():

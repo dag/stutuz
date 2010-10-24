@@ -17,6 +17,12 @@ from stutuz import create_app
 
 class TestBase(TestCase, unittest2.TestCase):
 
+    def setUp(self):
+        self.app.preprocess_request()
+
+    def tearDown(self):
+        self.app.process_response(self.app.response_class())
+
     def create_app(self):
         return create_app('stutuz.configs.testing')
 
