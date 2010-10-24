@@ -33,11 +33,13 @@ div.documentwrapper {
 }
 
 div.bodywrapper {
-    margin: 0 0 0 220px;
+    margin: 0 220px 0 0;
+    padding-right: 30px;
 }
 
 div.sphinxsidebar {
     width: 220px;
+    float: right;
 }
 
 hr {
