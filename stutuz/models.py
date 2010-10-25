@@ -73,18 +73,35 @@ class Users(Model, IterableUserDict):
 
 
 class History(Model):
+    """A sequence of revisions."""
 
+    #: The list of revisions.
     revisions = List
+
+    #: The active revision, i.e. the last added.
     active = None
 
     def add(self, revision):
+        """Add a revision to the history.
+
+        :type revision: :class:`Revision`
+
+        """
         self.revisions.append(revision)
         self.active = revision
 
 
 class Revision(Model):
+    """Metadata wrapping a version of an object."""
 
+    #: The :class:`Account` that authored this revision.
     author = None
+
+    #: A comment describing the reason for the revision.
     comment = None
+
+    #: An automatic timestamp of when the revision was created.
     timestamp = Timestamp
+
+    #: The wrapped object.
     object = None

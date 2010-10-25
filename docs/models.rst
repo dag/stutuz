@@ -12,3 +12,13 @@ User accounts
 
 .. autoclass:: Users(accounts={username: Account()…})
    :members:
+
+
+Revisions
+---------
+
+.. autoclass:: History
+   :members:
+
+.. autoclass:: Revision
+   :members:
