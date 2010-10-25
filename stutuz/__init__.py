@@ -7,13 +7,10 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from logbook import Logger, NestedSetup
-from logbook.compat import redirect_logging
 from flask import Flask
 from flaskext.genshi import Genshi
 from flaskext.zodb import ZODB
 
-
-redirect_logging()
 
 logger = Logger(__name__)
 genshi = Genshi()
