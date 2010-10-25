@@ -58,10 +58,13 @@ class Users(Model):
     def authenticate(self, username, password):
         """Authenticate a user against the accounts password.
 
+        :raises: :class:`ValueError`, if the username does not exist.
         :rtype: :class:`bool`
 
         """
-        return self.accounts[username].authenticate(password)
+        if username in self.accounts:
+            return self.accounts[username].authenticate(password)
+        raise ValueError('no such username')
 
 
 class History(Model):
