@@ -363,7 +363,7 @@ some defaults (like <cite>url_for</cite>, <cite>get_flashed_messages</cite> and 
 <dl class="attribute">
 <dt id="flask.Flask.logger">
 <tt class="descname">logger</tt><a class="headerlink" href="#flask.Flask.logger" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <tt class="xref py py-class docutils literal"><span class="pre">logging.Logger</span></tt> object for this application.  The
+<dd><p>A <a class="reference external" href="http://docs.python.org/dev/library/logging.html#logging.Logger" title="(in Python v3.2)"><tt class="xref py py-class docutils literal"><span class="pre">logging.Logger</span></tt></a> object for this application.  The
 default configuration is to log to stderr if the application is
 in debug mode.  This logger can be used to (surprise) log messages.
 Here some examples:</p>
@@ -461,7 +461,7 @@ session data in a signed cookie.  This requires that the
 <dl class="attribute">
 <dt id="flask.Flask.permanent_session_lifetime">
 <tt class="descname">permanent_session_lifetime</tt><a class="headerlink" href="#flask.Flask.permanent_session_lifetime" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <a class="reference external" href="http://docs.python.org/library/datetime.html#datetime.timedelta" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">timedelta</span></tt></a> which is used to set the expiration
+<dd><p>A <a class="reference external" href="http://docs.python.org/dev/library/datetime.html#datetime.timedelta" title="(in Python v3.2)"><tt class="xref py py-class docutils literal"><span class="pre">timedelta</span></tt></a> which is used to set the expiration
 date of a permanent session.  The default is 31 days which makes a
 permanent session survive for roughly one month.</p>
 <p>This attribute can also be configured from the config with the
@@ -2298,7 +2298,7 @@ be a list of tuples in the form <tt class="docutils literal"><span class="pre">(
 <tt class="descclassname">flask.</tt><tt class="descname">jsonify</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#flask.jsonify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a <a class="reference internal" href="#flask.Response" title="flask.Response"><tt class="xref py py-class docutils literal"><span class="pre">Response</span></tt></a> with the JSON representation of
 the given arguments with an <cite>application/json</cite> mimetype.  The arguments
-to this function are the same as to the <a class="reference external" href="http://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></a> constructor.</p>
+to this function are the same as to the <a class="reference external" href="http://docs.python.org/dev/library/stdtypes.html#dict" title="(in Python v3.2)"><tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></a> constructor.</p>
 <p>Example usage:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/_get_current_user&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_current_user</span><span class="p">():</span>

@@ -88,7 +88,7 @@ sorting algorithm.</p>
 <li><strong>sort</strong> &#8211; set to <cite>True</cite> if you want parameters to be sorted by <cite>key</cite>.</li>
 <li><strong>separator</strong> &#8211; the separator to be used for the pairs.</li>
 <li><strong>key</strong> &#8211; an optional function to be used for sorting.  For more details
-check out the <a class="reference external" href="http://docs.python.org/library/functions.html#sorted" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">sorted()</span></tt></a> documentation.</li>
+check out the <a class="reference external" href="http://docs.python.org/dev/library/functions.html#sorted" title="(in Python v3.2)"><tt class="xref py py-func docutils literal"><span class="pre">sorted()</span></tt></a> documentation.</li>
 </ul>
 </td>
 </tr>
@@ -373,7 +373,7 @@ the one is returned that comes first.</p>
 <dl class="method">
 <dt id="werkzeug.CharsetAccept.index">
 <tt class="descname">index</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept.index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the position of an entry or raise <tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt>.</p>
+<dd><p>Get the position of an entry or raise <a class="reference external" href="http://docs.python.org/dev/library/exceptions.html#ValueError" title="(in Python v3.2)"><tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -386,7 +386,7 @@ the one is returned that comes first.</p>
 </tbody>
 </table>
 <p class="versionchanged">
-<span class="versionmodified">Changed in version 0.5: </span>This used to raise <tt class="xref py py-exc docutils literal"><span class="pre">IndexError</span></tt>, which was inconsistent
+<span class="versionmodified">Changed in version 0.5: </span>This used to raise <a class="reference external" href="http://docs.python.org/dev/library/exceptions.html#IndexError" title="(in Python v3.2)"><tt class="xref py py-exc docutils literal"><span class="pre">IndexError</span></tt></a>, which was inconsistent
 with the list API.</p>
 </dd></dl>
 
@@ -477,7 +477,7 @@ the one is returned that comes first.</p>
 <dl class="method">
 <dt id="werkzeug.LanguageAccept.index">
 <tt class="descname">index</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept.index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the position of an entry or raise <tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt>.</p>
+<dd><p>Get the position of an entry or raise <a class="reference external" href="http://docs.python.org/dev/library/exceptions.html#ValueError" title="(in Python v3.2)"><tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -490,7 +490,7 @@ the one is returned that comes first.</p>
 </tbody>
 </table>
 <p class="versionchanged">
-<span class="versionmodified">Changed in version 0.5: </span>This used to raise <tt class="xref py py-exc docutils literal"><span class="pre">IndexError</span></tt>, which was inconsistent
+<span class="versionmodified">Changed in version 0.5: </span>This used to raise <a class="reference external" href="http://docs.python.org/dev/library/exceptions.html#IndexError" title="(in Python v3.2)"><tt class="xref py py-exc docutils literal"><span class="pre">IndexError</span></tt></a>, which was inconsistent
 with the list API.</p>
 </dd></dl>
 
@@ -594,7 +594,7 @@ the one is returned that comes first.</p>
 <dl class="method">
 <dt id="werkzeug.MIMEAccept.index">
 <tt class="descname">index</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept.index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the position of an entry or raise <tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt>.</p>
+<dd><p>Get the position of an entry or raise <a class="reference external" href="http://docs.python.org/dev/library/exceptions.html#ValueError" title="(in Python v3.2)"><tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -607,7 +607,7 @@ the one is returned that comes first.</p>
 </tbody>
 </table>
 <p class="versionchanged">
-<span class="versionmodified">Changed in version 0.5: </span>This used to raise <tt class="xref py py-exc docutils literal"><span class="pre">IndexError</span></tt>, which was inconsistent
+<span class="versionmodified">Changed in version 0.5: </span>This used to raise <a class="reference external" href="http://docs.python.org/dev/library/exceptions.html#IndexError" title="(in Python v3.2)"><tt class="xref py py-exc docutils literal"><span class="pre">IndexError</span></tt></a>, which was inconsistent
 with the list API.</p>
 </dd></dl>
 
@@ -817,7 +817,7 @@ auth all the time.</p>
 <tt class="descclassname">werkzeug.</tt><tt class="descname">secure_filename</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#werkzeug.secure_filename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pass it a filename and it will return a secure version of it.  This
 filename can then safely be stored on a regular file system and passed
-to <a class="reference external" href="http://docs.python.org/library/os.path.html#os.path.join" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">os.path.join()</span></tt></a>.  The filename returned is an ASCII only string
+to <a class="reference external" href="http://docs.python.org/dev/library/os.path.html#os.path.join" title="(in Python v3.2)"><tt class="xref py py-func docutils literal"><span class="pre">os.path.join()</span></tt></a>.  The filename returned is an ASCII only string
 for maximum portability.</p>
 <p>On windows system the function also makes sure that the file is not
 named after one of the special device files.</p>
