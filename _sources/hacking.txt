@@ -1,6 +1,23 @@
 Hacking on stutuz
 =================
 
+.. highlight:: bash
+
+
+Forking the code
+----------------
+
+Prerequisites:
+
+* Git
+* `hub <http://github.com/defunkt/hub>`_
+
+::
+
+    hub clone dag/stutuz
+    cd stutuz
+    hub fork
+
 
 Setting up a development instance
 ---------------------------------

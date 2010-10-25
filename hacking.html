@@ -56,6 +56,19 @@
             
   <div class="section" id="hacking-on-stutuz">
 <h1>Hacking on stutuz<a class="headerlink" href="#hacking-on-stutuz" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="forking-the-code">
+<h2>Forking the code<a class="headerlink" href="#forking-the-code" title="Permalink to this headline">¶</a></h2>
+<p>Prerequisites:</p>
+<ul class="simple">
+<li>Git</li>
+<li><a class="reference external" href="http://github.com/defunkt/hub">hub</a></li>
+</ul>
+<div class="highlight-bash"><div class="highlight"><pre>hub clone dag/stutuz
+<span class="nb">cd </span>stutuz
+hub fork
+</pre></div>
+</div>
+</div>
 <div class="section" id="setting-up-a-development-instance">
 <h2>Setting up a development instance<a class="headerlink" href="#setting-up-a-development-instance" title="Permalink to this headline">¶</a></h2>
 <p>Prerequisites:</p>
@@ -65,27 +78,32 @@
 <li><a class="reference external" href="http://www.doughellmann.com/projects/virtualenvwrapper/">virtualenvwrapper</a></li>
 </ul>
 <p>On Ubuntu 10.10 you can install all of these with:</p>
-<div class="highlight-python"><pre>sudo apt-get install virtualenvwrapper</pre>
+<div class="highlight-bash"><div class="highlight"><pre>sudo apt-get install virtualenvwrapper
+</pre></div>
 </div>
 <p>Next, we&#8217;ll create a virtual Python environment to set it all up in:</p>
-<div class="highlight-python"><pre>mkvirtualenv --no-site-packages stutuz
-./setup.py develop</pre>
+<div class="highlight-bash"><div class="highlight"><pre>mkvirtualenv --no-site-packages stutuz
+./setup.py develop
+</pre></div>
 </div>
 </div>
 <div class="section" id="working-with-our-development-instance">
 <h2>Working with our development instance<a class="headerlink" href="#working-with-our-development-instance" title="Permalink to this headline">¶</a></h2>
 <p>Run the tests:</p>
-<div class="highlight-python"><pre>./setup.py test</pre>
+<div class="highlight-bash"><div class="highlight"><pre>./setup.py <span class="nb">test</span>
+</pre></div>
 </div>
 <p>Start the development server:</p>
-<div class="highlight-python"><pre>stutuzctl runserver</pre>
+<div class="highlight-bash"><div class="highlight"><pre>stutuzctl runserver
+</pre></div>
 </div>
 <p>When you&#8217;re done you might want to get out of the environment:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">deactivate</span>
+<div class="highlight-bash"><div class="highlight"><pre>deactivate
 </pre></div>
 </div>
 <p>And the next time you need it, run:</p>
-<div class="highlight-python"><pre>workon stutuz</pre>
+<div class="highlight-bash"><div class="highlight"><pre>workon stutuz
+</pre></div>
 </div>
 </div>
 <div class="section" id="technical-details">
@@ -113,13 +131,16 @@ can also help me improve this documentation!</p>
 </ul>
 <p>There are some tools you can use to check your code (but beware of false
 positives - no need to be fanatic):</p>
-<div class="highlight-python"><pre>pip install pep8 pyflakes</pre>
+<div class="highlight-bash"><div class="highlight"><pre>pip install pep8 pyflakes
+</pre></div>
 </div>
 <p>Check the code style:</p>
-<div class="highlight-python"><pre>pep8 stutuz/</pre>
+<div class="highlight-bash"><div class="highlight"><pre>pep8 stutuz/
+</pre></div>
 </div>
 <p>Look for missing or unused imports/variables/etc:</p>
-<div class="highlight-python"><pre>pyflakes stutuz/</pre>
+<div class="highlight-bash"><div class="highlight"><pre>pyflakes stutuz/
+</pre></div>
 </div>
 <p>And finally: Have fun!</p>
 </div>
@@ -134,6 +155,7 @@ positives - no need to be fanatic):</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Hacking on stutuz</a><ul>
+<li><a class="reference internal" href="#forking-the-code">Forking the code</a></li>
 <li><a class="reference internal" href="#setting-up-a-development-instance">Setting up a development instance</a></li>
 <li><a class="reference internal" href="#working-with-our-development-instance">Working with our development instance</a></li>
 <li><a class="reference internal" href="#technical-details">Technical details</a></li>

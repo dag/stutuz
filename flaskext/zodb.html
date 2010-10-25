@@ -52,15 +52,15 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="zodb">
-<h1>ZODB<a class="headerlink" href="#zodb" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-flaskext.zodb">
+<span id="zodb"></span><h1>ZODB<a class="headerlink" href="#module-flaskext.zodb" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><a class="reference external" href="http://genshi.edgewall.org/wiki/Documentation/0.6.x/xml-templates.html">Tutorial</a></li>
 <li><a class="reference external" href="http://zodb.org/documentation/guide/index.html">Programming guide</a></li>
 <li><a class="reference external" href="http://docs.zope.org/zope3/Code/ZODB/index.html">Low-level API</a></li>
 </ul>
-<div class="section" id="module-flaskext.zodb">
-<span id="api"></span><h2>API<a class="headerlink" href="#module-flaskext.zodb" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="flaskext.zodb.ZODB">
 <em class="property">class </em><tt class="descclassname">flaskext.zodb.</tt><tt class="descname">ZODB</tt><big>(</big><em>app=None</em><big>)</big><a class="reference internal" href="../_modules/flaskext/zodb.html#ZODB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.zodb.ZODB" title="Permalink to this definition">¶</a></dt>
@@ -93,22 +93,20 @@ inherit <a class="reference internal" href="#flaskext.zodb.Model" title="flaskex
 <a class="reference internal" href="#flaskext.zodb.Mapping" title="flaskext.zodb.Mapping"><tt class="xref py py-attr docutils literal"><span class="pre">Mapping</span></tt></a> as substitutes for Python&#8217;s <tt class="docutils literal"><span class="pre">list</span></tt> and <tt class="docutils literal"><span class="pre">dict</span></tt>.</p>
 <p>Outside of requests, the object can be used as a context manager if
 called, yielding the root object to be used inside the context.
-See <tt class="xref py py-meth docutils literal"><span class="pre">__call__()</span></tt>.</p>
-<dl class="attribute">
-<dt id="flaskext.zodb.ZODB.connection">
-<tt class="descname">connection</tt><a class="reference internal" href="../_modules/flaskext/zodb.html#ZODB.connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.zodb.ZODB.connection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request-local database connection.</p>
+See <a class="reference internal" href="#flaskext.zodb.ZODB.__call__" title="flaskext.zodb.ZODB.__call__"><tt class="xref py py-meth docutils literal"><span class="pre">__call__()</span></tt></a>.</p>
+<dl class="method">
+<dt id="flaskext.zodb.ZODB.__call__">
+<tt class="descname">__call__</tt><big>(</big><em>*args</em>, <em>**kwds</em><big>)</big><a class="reference internal" href="../_modules/flaskext/zodb.html#ZODB.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.zodb.ZODB.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transactional context, for database access outside of requests.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">db</span><span class="p">()</span> <span class="k">as</span> <span class="n">root</span><span class="p">:</span>
+    <span class="n">root</span><span class="p">[</span><span class="s">&#39;this&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;is committed at the end of the context.&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="flaskext.zodb.ZODB.root">
-<tt class="descname">root</tt><a class="reference internal" href="../_modules/flaskext/zodb.html#ZODB.root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.zodb.ZODB.root" title="Permalink to this definition">¶</a></dt>
-<dd><p>Root object for the request-local connection.</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="class">
+<span class="target" id="module-flaskext.zodb"></span><dl class="class">
 <dt id="flaskext.zodb.Model">
 <em class="property">class </em><tt class="descclassname">flaskext.zodb.</tt><tt class="descname">Model</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/flaskext/zodb.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.zodb.Model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convinience model base.</p>
@@ -198,7 +196,7 @@ application.</p>
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">ZODB</a><ul>
-<li><a class="reference internal" href="#module-flaskext.zodb">API</a></li>
+<li><a class="reference internal" href="#api">API</a></li>
 </ul>
 </li>
 </ul>

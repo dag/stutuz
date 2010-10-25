@@ -1,0 +1,241 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Data models in stutuz &mdash; stutuz v0.1dev documentation</title>
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="stutuz v0.1dev documentation" href="index.html" />
+    <link rel="next" title="Flask microframework" href="flask.html" />
+    <link rel="prev" title="Hacking on stutuz" href="hacking.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="flask.html" title="Flask microframework"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="hacking.html" title="Hacking on stutuz"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">stutuz v0.1dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-stutuz.models">
+<span id="data-models-in-stutuz"></span><h1>Data models in stutuz<a class="headerlink" href="#module-stutuz.models" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="user-accounts">
+<h2>User accounts<a class="headerlink" href="#user-accounts" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="stutuz.models.Users">
+<em class="property">class </em><tt class="descclassname">stutuz.models.</tt><tt class="descname">Users</tt><big>(</big><em>{username: Account()…}</em><big>)</big><a class="reference internal" href="_modules/stutuz/models.html#Users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stutuz.models.Users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collection of user accounts, acts like a <a class="reference external" href="http://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></a>.</p>
+<dl class="method">
+<dt id="stutuz.models.Users.authenticate">
+<tt class="descname">authenticate</tt><big>(</big><em>username</em>, <em>password</em><big>)</big><a class="reference internal" href="_modules/stutuz/models.html#Users.authenticate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stutuz.models.Users.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Authenticate a user against the accounts password.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Raises :</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">ValueError</span></tt>, if the username does not exist.</td>
+</tr>
+<tr class="field"><th class="field-name">Return type:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">bool</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="stutuz.models.Users.new">
+<tt class="descname">new</tt><big>(</big><em>username</em>, <em>password</em><big>)</big><a class="reference internal" href="_modules/stutuz/models.html#Users.new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stutuz.models.Users.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new account.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Raises :</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">ValueError</span></tt>, if the username is taken.</td>
+</tr>
+<tr class="field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#stutuz.models.Account" title="stutuz.models.Account"><tt class="xref py py-class docutils literal"><span class="pre">Account</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stutuz.models.Account">
+<em class="property">class </em><tt class="descclassname">stutuz.models.</tt><tt class="descname">Account</tt><big>(</big><em>username=None</em>, <em>password=None</em><big>)</big><a class="reference internal" href="_modules/stutuz/models.html#Account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stutuz.models.Account" title="Permalink to this definition">¶</a></dt>
+<dd><p>A user account.</p>
+<dl class="method">
+<dt id="stutuz.models.Account.authenticate">
+<tt class="descname">authenticate</tt><big>(</big><em>password</em><big>)</big><a class="reference internal" href="_modules/stutuz/models.html#Account.authenticate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stutuz.models.Account.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a password is valid for this account.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return type:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">bool</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stutuz.models.Account.password">
+<tt class="descname">password</tt><a class="reference internal" href="_modules/stutuz/models.html#Account.password"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stutuz.models.Account.password" title="Permalink to this definition">¶</a></dt>
+<dd><p>The account password, automatically hashed with a salt.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stutuz.models.Account.username">
+<tt class="descname">username</tt><a class="headerlink" href="#stutuz.models.Account.username" title="Permalink to this definition">¶</a></dt>
+<dd><p>A unique identifier for this account.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="revisions">
+<h2>Revisions<a class="headerlink" href="#revisions" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="stutuz.models.History">
+<em class="property">class </em><tt class="descclassname">stutuz.models.</tt><tt class="descname">History</tt><big>(</big><span class="optional">[</span><em>Revision()…</em><span class="optional">]</span><big>)</big><a class="reference internal" href="_modules/stutuz/models.html#History"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stutuz.models.History" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sequence of revisions, acts like a <tt class="xref py py-class docutils literal"><span class="pre">list</span></tt>.</p>
+<dl class="attribute">
+<dt id="stutuz.models.History.active">
+<tt class="descname">active</tt><a class="headerlink" href="#stutuz.models.History.active" title="Permalink to this definition">¶</a></dt>
+<dd><p>The active revision, i.e. the last added.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stutuz.models.History.revise">
+<tt class="descname">revise</tt><big>(</big><em>object</em>, <em>author</em>, <em>comment=None</em><big>)</big><a class="headerlink" href="#stutuz.models.History.revise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new revision and append to the history.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#stutuz.models.Revision" title="stutuz.models.Revision"><tt class="xref py py-class docutils literal"><span class="pre">Revision</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stutuz.models.Revision">
+<em class="property">class </em><tt class="descclassname">stutuz.models.</tt><tt class="descname">Revision</tt><big>(</big><em>author=Account()</em>, <em>comment=None</em>, <em>object=None</em><big>)</big><a class="reference internal" href="_modules/stutuz/models.html#Revision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stutuz.models.Revision" title="Permalink to this definition">¶</a></dt>
+<dd><p>Metadata wrapping a version of an object.</p>
+<dl class="attribute">
+<dt id="stutuz.models.Revision.author">
+<tt class="descname">author</tt><a class="headerlink" href="#stutuz.models.Revision.author" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#stutuz.models.Account" title="stutuz.models.Account"><tt class="xref py py-class docutils literal"><span class="pre">Account</span></tt></a> that authored this revision.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stutuz.models.Revision.comment">
+<tt class="descname">comment</tt><a class="headerlink" href="#stutuz.models.Revision.comment" title="Permalink to this definition">¶</a></dt>
+<dd><p>A comment describing the reason for the revision.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stutuz.models.Revision.object">
+<tt class="descname">object</tt><a class="headerlink" href="#stutuz.models.Revision.object" title="Permalink to this definition">¶</a></dt>
+<dd><p>The wrapped object.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stutuz.models.Revision.timestamp">
+<tt class="descname">timestamp</tt><a class="headerlink" href="#stutuz.models.Revision.timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>An automatic timestamp of when the revision was created.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Data models in stutuz</a><ul>
+<li><a class="reference internal" href="#user-accounts">User accounts</a></li>
+<li><a class="reference internal" href="#revisions">Revisions</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="hacking.html" title="previous chapter">Hacking on stutuz</a></li>
+      <li>Next: <a href="flask.html" title="next chapter">Flask microframework</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/models.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Dag Odenhall.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>

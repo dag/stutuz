@@ -38,6 +38,7 @@ Documentation
    :maxdepth: 2
 
    hacking
+   models
    flask
    werkzeug
    extensions
