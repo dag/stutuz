@@ -56,19 +56,17 @@ class Models(TestBase):
         history = History()
         account = Account(username='admin')
 
-        first = Revision(author=account,
-                         comment='First!',
-                         object=(1, 2, 3))
-        history.append(first)
+        first = history.revise(author=account,
+                               comment='First!',
+                               object=(1, 2, 3))
 
         self.assert_is(history.active, first)
         self.assert_tuple_equal(history.active.object, (1, 2, 3))
         self.assert_is(history.active.author, account)
 
-        second = Revision(author=account,
-                          comment='Reversed sequence',
-                          object=(3, 2, 1))
-        history.append(second)
+        second = history.revise(author=account,
+                                comment='Reversed sequence',
+                                object=(3, 2, 1))
 
         self.assert_is(history.active, second)
         self.assert_tuple_equal(history.active.object, (3, 2, 1))
