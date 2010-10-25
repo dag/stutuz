@@ -30,8 +30,11 @@ class Models(TestBase):
         """
 
         users = Users()
-        users.new('admin', 'mipri')
-        users.new('guest', 'vitke')
+        admin = users.new('admin', 'mipri')
+        guest = users.new('guest', 'vitke')
+
+        self.assert_is(users['admin'], admin)
+        self.assert_is(users['guest'], guest)
 
         self.assert_true(users.authenticate('admin', 'mipri'))
         self.assert_false(users.authenticate('admin', 'toldra'))
@@ -43,6 +46,9 @@ class Models(TestBase):
 
         with self.assert_raises(ValueError):
             users.new('guest', 'vitke')
+
+        with self.assert_raises(ValueError):
+            users.authenticate('noda', 'da')
 
     def test_history(self):
         """Histories keep lists of Revisions with last as active"""
