@@ -7,7 +7,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from werkzeug import generate_password_hash, check_password_hash
-from flaskext.zodb import Model, List, Mapping, Timestamp
+from flaskext.zodb import Model, Timestamp
 from flaskext.zodb import PersistentList, PersistentMapping
 
 
