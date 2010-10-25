@@ -7,8 +7,8 @@ Data models in stutuz
 User accounts
 -------------
 
-.. autoclass:: Account(username, password)
+.. autoclass:: Account(username=None, password=None)
    :members:
 
-.. autoclass:: Users([Account()…])
+.. autoclass:: Users(accounts={username: Account()…})
    :members:
