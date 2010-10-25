@@ -222,4 +222,5 @@ intersphinx_mapping = {
     'http://docs.python.org/dev/': None,
     'http://flask.pocoo.org/docs/': None,
     'http://werkzeug.pocoo.org/documentation/dev/': None,
+    'http://packages.python.org/Logbook/': None,
 }
