@@ -10,15 +10,15 @@ User accounts
 .. autoclass:: Account(username=None, password=None)
    :members:
 
-.. autoclass:: Users(accounts={username: Account()…})
+.. autoclass:: Users({username: Account()…})
    :members:
 
 
 Revisions
 ---------
 
-.. autoclass:: History
+.. autoclass:: History([Revision()…])
    :members:
 
-.. autoclass:: Revision
+.. autoclass:: Revision(author=Account(), comment=None, object=None)
    :members:

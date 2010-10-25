@@ -6,10 +6,9 @@ from __future__ import with_statement
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from UserDict import IterableUserDict
-
 from werkzeug import generate_password_hash, check_password_hash
 from flaskext.zodb import Model, List, Mapping, Timestamp
+from flaskext.zodb import PersistentList, PersistentMapping
 
 
 class Account(Model):
@@ -38,14 +37,8 @@ class Account(Model):
         return check_password_hash(self.password, password)
 
 
-class Users(Model, IterableUserDict):
+class Users(PersistentMapping):
     """Collection of user accounts, acts like a :class:`dict`."""
-
-    accounts = Mapping
-
-    @property
-    def data(self):
-        return self.accounts
 
     def new(self, username, password):
         """Create a new account.
@@ -54,10 +47,10 @@ class Users(Model, IterableUserDict):
         :rtype: :class:`Account`
 
         """
-        if username in self.accounts:
+        if username in self:
             raise ValueError('username taken')
         account = Account(username=username, password=password)
-        self.accounts[username] = account
+        self[username] = account
         return account
 
     def authenticate(self, username, password):
@@ -67,28 +60,18 @@ class Users(Model, IterableUserDict):
         :rtype: :class:`bool`
 
         """
-        if username in self.accounts:
-            return self.accounts[username].authenticate(password)
+        if username in self:
+            return self[username].authenticate(password)
         raise ValueError('no such username')
 
 
-class History(Model):
-    """A sequence of revisions."""
+class History(PersistentList):
+    """A sequence of revisions, acts like a :class:`list`."""
 
-    #: The list of revisions.
-    revisions = List
-
-    #: The active revision, i.e. the last added.
-    active = None
-
-    def add(self, revision):
-        """Add a revision to the history.
-
-        :type revision: :class:`Revision`
-
-        """
-        self.revisions.append(revision)
-        self.active = revision
+    @property
+    def active(self):
+        """The active revision, i.e. the last added."""
+        return self[-1]
 
 
 class Revision(Model):

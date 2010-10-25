@@ -59,7 +59,7 @@ class Models(TestBase):
         first = Revision(author=account,
                          comment='First!',
                          object=(1, 2, 3))
-        history.add(first)
+        history.append(first)
 
         self.assert_is(history.active, first)
         self.assert_tuple_equal(history.active.object, (1, 2, 3))
@@ -68,7 +68,7 @@ class Models(TestBase):
         second = Revision(author=account,
                           comment='Reversed sequence',
                           object=(3, 2, 1))
-        history.add(second)
+        history.append(second)
 
         self.assert_is(history.active, second)
         self.assert_tuple_equal(history.active.object, (3, 2, 1))
