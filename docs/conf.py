@@ -219,7 +219,7 @@ man_pages = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'http://docs.python.org/': None,
+    'http://docs.python.org/dev/': None,
     'http://flask.pocoo.org/docs/': None,
     'http://werkzeug.pocoo.org/documentation/dev/': None,
 }

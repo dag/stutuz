@@ -17,7 +17,7 @@ class Users(PersistentMapping):
     def new(self, username, password):
         """Create a new account.
 
-        :raises: :class:`ValueError`, if the username is taken.
+        :raises ValueError: For usernames that are already registered.
         :rtype: :class:`Account`
 
         """
@@ -30,7 +30,7 @@ class Users(PersistentMapping):
     def authenticate(self, username, password):
         """Authenticate a user against the accounts password.
 
-        :raises: :class:`ValueError`, if the username does not exist.
+        :raises ValueError: For usernames that are not registered.
         :rtype: :class:`bool`
 
         """
