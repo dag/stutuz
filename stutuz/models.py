@@ -6,6 +6,8 @@ from __future__ import with_statement
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from UserDict import IterableUserDict
+
 from werkzeug import generate_password_hash, check_password_hash
 from flaskext.zodb import Model, List, Mapping, Timestamp
 
@@ -36,11 +38,14 @@ class Account(Model):
         return check_password_hash(self.password, password)
 
 
-class Users(Model):
-    """Collection of user accounts."""
+class Users(Model, IterableUserDict):
+    """Collection of user accounts, acts like a :class:`dict`."""
 
-    #: A dict of username → :class:`Account`.
     accounts = Mapping
+
+    @property
+    def data(self):
+        return self.accounts
 
     def new(self, username, password):
         """Create a new account.
