@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 
 import os
 
+from werkzeug.contrib.lint import LintMiddleware
 import logbook
 from logbook.more import ColorizedStderrHandler
 from logbook.notifiers import create_notification_handler
@@ -16,6 +17,11 @@ from ZODB.FileStorage import FileStorage
 
 DEBUG = True
 SECRET_KEY = 'stutuz-development'
+
+
+MIDDLEWARES = [
+    LintMiddleware,
+]
 
 
 class ThemedStderrHandler(ColorizedStderrHandler):

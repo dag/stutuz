@@ -36,4 +36,8 @@ def create_app(config=None):
             logger.debug('Loading extension {0.__module__}'.format(extension))
             extension.init_app(app)
 
+        for middleware in app.config.get('MIDDLEWARES', ()):
+            logger.debug('Applying middleware {0.__name__}'.format(middleware))
+            app.wsgi_app = middleware(app.wsgi_app)
+
         return app
