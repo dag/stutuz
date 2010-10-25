@@ -7,7 +7,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from stutuz.tests import TestBase
-from stutuz.models import Account, Users, History
+from stutuz.models import Account, Users, History, Revision
 
 
 class Models(TestBase):
@@ -61,6 +61,7 @@ class Models(TestBase):
                                object=(1, 2, 3))
 
         self.assert_is(history.active, first)
+        self.assert_is(history.active, history[-1])
         self.assert_tuple_equal(history.active.object, (1, 2, 3))
         self.assert_is(history.active.author, account)
 
@@ -70,3 +71,6 @@ class Models(TestBase):
 
         self.assert_is(history.active, second)
         self.assert_tuple_equal(history.active.object, (3, 2, 1))
+
+        for revision in history:
+            self.assert_is_instance(revision, Revision)
