@@ -126,14 +126,14 @@
         <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">_zodb_connection</span>
 
     <span class="nd">@connection.setter</span>
-<div class="viewcode-block" id="ZODB.connection"><a class="viewcode-back" href="../../flaskext/zodb.html#flaskext.zodb.ZODB.connection">[docs]</a>    <span class="k">def</span> <span class="nf">connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
         <span class="n">g</span><span class="o">.</span><span class="n">_zodb_connection</span> <span class="o">=</span> <span class="n">new</span>
-</div>
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="ZODB.root"><a class="viewcode-back" href="../../flaskext/zodb.html#flaskext.zodb.ZODB.root">[docs]</a>    <span class="k">def</span> <span class="nf">root</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">root</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Root object for the request-local connection.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
-</div>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>

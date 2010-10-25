@@ -112,7 +112,7 @@
 <span class="kn">from</span> <span class="nn">werkzeug._internal</span> <span class="kn">import</span> <span class="n">HTTP_STATUS_CODES</span><span class="p">,</span> <span class="n">_get_environ</span>
 
 
-<div class="viewcode-block" id="HTTPException"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.HTTPException">[docs]</a><span class="k">class</span> <span class="nc">HTTPException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">HTTPException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Baseclass for all HTTP exceptions.  This exception can be called as WSGI</span>
 <span class="sd">    application to render a default error page or you can catch the subclasses</span>
@@ -128,7 +128,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
 
     <span class="nd">@classmethod</span>
-<div class="viewcode-block" id="HTTPException.wrap"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.HTTPException.wrap">[docs]</a>    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">exception</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">exception</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;This method returns a new subclass of the exception provided that</span>
 <span class="sd">        also is a subclass of `BadRequest`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -139,18 +139,18 @@
         <span class="n">newcls</span><span class="o">.</span><span class="n">__module__</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f_globals</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;__name__&#39;</span><span class="p">)</span>
         <span class="n">newcls</span><span class="o">.</span><span class="n">__name__</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">cls</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="n">exception</span><span class="o">.</span><span class="n">__name__</span>
         <span class="k">return</span> <span class="n">newcls</span>
-</div>
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="HTTPException.name"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.HTTPException.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The status name.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">HTTP_STATUS_CODES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">]</span>
-</div>
-<div class="viewcode-block" id="HTTPException.get_description"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.HTTPException.get_description">[docs]</a>    <span class="k">def</span> <span class="nf">get_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">get_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the description.&quot;&quot;&quot;</span>
         <span class="n">environ</span> <span class="o">=</span> <span class="n">_get_environ</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span>
-</div>
-<div class="viewcode-block" id="HTTPException.get_body"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.HTTPException.get_body">[docs]</a>    <span class="k">def</span> <span class="nf">get_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">get_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the HTML body.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="s">&#39;&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 3.2 Final//EN&quot;&gt;</span><span class="se">\n</span><span class="s">&#39;</span>
@@ -162,12 +162,12 @@
             <span class="s">&#39;name&#39;</span><span class="p">:</span>         <span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
             <span class="s">&#39;description&#39;</span><span class="p">:</span>  <span class="bp">self</span><span class="o">.</span><span class="n">get_description</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
         <span class="p">}</span>
-</div>
-<div class="viewcode-block" id="HTTPException.get_headers"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.HTTPException.get_headers">[docs]</a>    <span class="k">def</span> <span class="nf">get_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">get_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get a list of headers.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[(</span><span class="s">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s">&#39;text/html&#39;</span><span class="p">)]</span>
-</div>
-<div class="viewcode-block" id="HTTPException.get_response"><a class="viewcode-back" href="../../werkzeug.html#werkzeug.exceptions.HTTPException.get_response">[docs]</a>    <span class="k">def</span> <span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get a response object.</span>
 
 <span class="sd">        :param environ: the environ for the request.</span>
@@ -181,7 +181,7 @@
         <span class="kn">from</span> <span class="nn">werkzeug.wrappers</span> <span class="kn">import</span> <span class="n">BaseResponse</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_headers</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">BaseResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_body</span><span class="p">(</span><span class="n">environ</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
-</div>
+
     <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Call the exception as WSGI application.</span>
 
@@ -205,7 +205,7 @@
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s">&#39;&lt;</span><span class="si">%s</span><span class="s"> </span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
-</div>
+
 <span class="k">class</span> <span class="nc">_ProxyException</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;An HTTP exception that expands renders a WSGI application on error.&quot;&quot;&quot;</span>
 
