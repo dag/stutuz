@@ -11,32 +11,6 @@ from flaskext.zodb import Model, Timestamp
 from flaskext.zodb import PersistentList, PersistentMapping
 
 
-class Account(Model):
-    """A user account."""
-
-    #: A unique identifier for this account.
-    username = None
-
-    password_hash = None
-
-    @property
-    def password(self):
-        """The account password, automatically hashed with a salt."""
-        return self.password_hash
-
-    @password.setter
-    def password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def authenticate(self, password):
-        """Check if a password is valid for this account.
-
-        :rtype: :class:`bool`
-
-        """
-        return check_password_hash(self.password, password)
-
-
 class Users(PersistentMapping):
     """Collection of user accounts, acts like a :class:`dict`."""
 
@@ -63,6 +37,32 @@ class Users(PersistentMapping):
         if username in self:
             return self[username].authenticate(password)
         raise ValueError('no such username')
+
+
+class Account(Model):
+    """A user account."""
+
+    #: A unique identifier for this account.
+    username = None
+
+    password_hash = None
+
+    @property
+    def password(self):
+        """The account password, automatically hashed with a salt."""
+        return self.password_hash
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def authenticate(self, password):
+        """Check if a password is valid for this account.
+
+        :rtype: :class:`bool`
+
+        """
+        return check_password_hash(self.password, password)
 
 
 class History(PersistentList):

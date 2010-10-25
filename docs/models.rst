@@ -7,10 +7,10 @@ Data models in stutuz
 User accounts
 -------------
 
-.. autoclass:: Account(username=None, password=None)
+.. autoclass:: Users({username: Account()…})
    :members:
 
-.. autoclass:: Users({username: Account()…})
+.. autoclass:: Account(username=None, password=None)
    :members:
 
 
