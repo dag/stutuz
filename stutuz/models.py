@@ -11,12 +11,16 @@ from flaskext.zodb import Model, List, Mapping, Timestamp
 
 
 class Account(Model):
+    """A user account."""
 
+    #: A unique identifier for this account.
     username = None
+
     password_hash = None
 
     @property
     def password(self):
+        """The account password, automatically hashed with a salt."""
         return self.password_hash
 
     @password.setter
@@ -24,14 +28,27 @@ class Account(Model):
         self.password_hash = generate_password_hash(password)
 
     def authenticate(self, password):
+        """Check if a password is valid for this account.
+
+        :rtype: :class:`bool`
+
+        """
         return check_password_hash(self.password, password)
 
 
 class Users(Model):
+    """Collection of user accounts."""
 
+    #: A dict of username → :class:`Account`.
     accounts = Mapping
 
     def new(self, username, password):
+        """Create a new account.
+
+        :raises: :class:`ValueError`, if the username is taken.
+        :rtype: :class:`Account`
+
+        """
         if username in self.accounts:
             raise ValueError('username taken')
         account = Account(username=username, password=password)
@@ -39,6 +56,11 @@ class Users(Model):
         return account
 
     def authenticate(self, username, password):
+        """Authenticate a user against the accounts password.
+
+        :rtype: :class:`bool`
+
+        """
         return self.accounts[username].authenticate(password)
 
 
