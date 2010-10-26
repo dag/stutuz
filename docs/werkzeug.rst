@@ -44,28 +44,41 @@ HTML
 HTTP
 ^^^^
 
-Useful attributes on Flask's request object.
+This is the base class for the three first request attributes below.
 
-``request.accept_charsets``
+.. autoclass:: Accept
+   :members:
+
+Useful attributes on Flask's request object
++++++++++++++++++++++++++++++++++++++++++++
+
+.. autoattribute:: flask.Request.accept_charsets
+   :noindex:
+
     .. autoclass:: CharsetAccept
        :members:
-       :inherited-members:
 
-``request.accept_languages``
+.. autoattribute:: flask.Request.accept_languages
+   :noindex:
+
     .. autoclass:: LanguageAccept
        :members:
-       :inherited-members:
 
-``request.accept_mimetypes``
+.. autoattribute:: flask.Request.accept_mimetypes
+   :noindex:
+
     .. autoclass:: MIMEAccept
        :members:
-       :inherited-members:
 
-``request.user_agent``
+.. autoattribute:: flask.Request.user_agent
+   :noindex:
+
     .. autoclass:: UserAgent
        :members:
 
-``request.authorization``
+.. autoattribute:: flask.Request.authorization
+   :noindex:
+
     .. autoclass:: Authorization
        :members:
 
