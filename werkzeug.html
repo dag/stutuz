@@ -314,221 +314,161 @@ entities, not only the XML entities inserted by <cite>escape</cite>.</p>
 </div>
 <div class="section" id="http">
 <h3>HTTP<a class="headerlink" href="#http" title="Permalink to this headline">¶</a></h3>
-<p>Useful attributes on Flask&#8217;s request object.</p>
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">request.accept_charsets</span></tt></dt>
-<dd><dl class="first last class">
+<p>This is the base class for the three first request attributes below.</p>
+<dl class="class">
+<dt id="werkzeug.Accept">
+<em class="property">class </em><tt class="descclassname">werkzeug.</tt><tt class="descname">Accept</tt><big>(</big><em>values=()</em><big>)</big><a class="headerlink" href="#werkzeug.Accept" title="Permalink to this definition">¶</a></dt>
+<dd><p>An <a class="reference internal" href="#werkzeug.Accept" title="werkzeug.Accept"><tt class="xref py py-class docutils literal"><span class="pre">Accept</span></tt></a> object is just a list subclass for lists of
+<tt class="docutils literal"><span class="pre">(value,</span> <span class="pre">quality)</span></tt> tuples.  It is automatically sorted by quality.</p>
+<p>All <a class="reference internal" href="#werkzeug.Accept" title="werkzeug.Accept"><tt class="xref py py-class docutils literal"><span class="pre">Accept</span></tt></a> objects work similar to a list but provide extra
+functionality for working with the data.  Containment checks are
+normalized to the rules of that header:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">CharsetAccept</span><span class="p">([(</span><span class="s">&#39;ISO-8859-1&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">best</span>
+<span class="go">&#39;ISO-8859-1&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;iso-8859-1&#39;</span> <span class="ow">in</span> <span class="n">a</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;UTF8&#39;</span> <span class="ow">in</span> <span class="n">a</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;utf7&#39;</span> <span class="ow">in</span> <span class="n">a</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>To get the quality for an item you can use normal item lookup:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">a</span><span class="p">[</span><span class="s">&#39;utf-8&#39;</span><span class="p">]</span>
+<span class="go">0.7</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="s">&#39;utf7&#39;</span><span class="p">]</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 0.5: </span><a class="reference internal" href="#werkzeug.Accept" title="werkzeug.Accept"><tt class="xref py py-class docutils literal"><span class="pre">Accept</span></tt></a> objects are forced immutable now.</p>
+<dl class="attribute">
+<dt id="werkzeug.Accept.best">
+<tt class="descname">best</tt><a class="headerlink" href="#werkzeug.Accept.best" title="Permalink to this definition">¶</a></dt>
+<dd><p>The best match as value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.Accept.best_match">
+<tt class="descname">best_match</tt><big>(</big><em>matches</em>, <em>default=None</em><big>)</big><a class="headerlink" href="#werkzeug.Accept.best_match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the best match from a list of possible matches based
+on the quality of the client.  If two items have the same quality,
+the one is returned that comes first.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>matches</strong> &#8211; a list of matches to check for</li>
+<li><strong>default</strong> &#8211; the value that is returned if none match</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.Accept.find">
+<tt class="descname">find</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.Accept.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the position of an entry or return -1.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> &#8211; The key to be looked up.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.Accept.index">
+<tt class="descname">index</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.Accept.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the position of an entry or raise <a class="reference external" href="http://docs.python.org/dev/library/exceptions.html#ValueError" title="(in Python v3.2)"><tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> &#8211; The key to be looked up.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 0.5: </span>This used to raise <a class="reference external" href="http://docs.python.org/dev/library/exceptions.html#IndexError" title="(in Python v3.2)"><tt class="xref py py-exc docutils literal"><span class="pre">IndexError</span></tt></a>, which was inconsistent
+with the list API.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.Accept.itervalues">
+<tt class="descname">itervalues</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.Accept.itervalues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over all values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.Accept.quality">
+<tt class="descname">quality</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.Accept.quality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the quality of the key.</p>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.6: </span>In previous versions you had to use the item-lookup syntax
+(eg: <tt class="docutils literal"><span class="pre">obj[key]</span></tt> instead of <tt class="docutils literal"><span class="pre">obj.quality(key)</span></tt>)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.Accept.to_header">
+<tt class="descname">to_header</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.Accept.to_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the header set into an HTTP header string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="werkzeug.Accept.values">
+<tt class="descname">values</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.Accept.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the values, not the qualities.</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="useful-attributes-on-flask-s-request-object">
+<h4>Useful attributes on Flask&#8217;s request object<a class="headerlink" href="#useful-attributes-on-flask-s-request-object" title="Permalink to this headline">¶</a></h4>
+<dl class="attribute">
+<dt>
+<tt class="descclassname">Request.</tt><tt class="descname">accept_charsets</tt></dt>
+<dd><p>List of charsets this client supports as <a class="reference internal" href="#werkzeug.CharsetAccept" title="werkzeug.CharsetAccept"><tt class="xref py py-class docutils literal"><span class="pre">CharsetAccept</span></tt></a>
+object.</p>
+<blockquote>
+<dl class="class">
 <dt id="werkzeug.CharsetAccept">
 <em class="property">class </em><tt class="descclassname">werkzeug.</tt><tt class="descname">CharsetAccept</tt><big>(</big><em>values=()</em><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept" title="Permalink to this definition">¶</a></dt>
-<dd><p>Like <tt class="xref py py-class docutils literal"><span class="pre">Accept</span></tt> but with normalization for charsets.</p>
-<dl class="attribute">
-<dt id="werkzeug.CharsetAccept.best">
-<tt class="descname">best</tt><a class="headerlink" href="#werkzeug.CharsetAccept.best" title="Permalink to this definition">¶</a></dt>
-<dd><p>The best match as value.</p>
+<dd><p>Like <a class="reference internal" href="#werkzeug.Accept" title="werkzeug.Accept"><tt class="xref py py-class docutils literal"><span class="pre">Accept</span></tt></a> but with normalization for charsets.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="werkzeug.CharsetAccept.best_match">
-<tt class="descname">best_match</tt><big>(</big><em>matches</em>, <em>default=None</em><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept.best_match" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the best match from a list of possible matches based
-on the quality of the client.  If two items have the same quality,
-the one is returned that comes first.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>matches</strong> &#8211; a list of matches to check for</li>
-<li><strong>default</strong> &#8211; the value that is returned if none match</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+</blockquote>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="werkzeug.CharsetAccept.count">
-<tt class="descname">count</tt><a class="headerlink" href="#werkzeug.CharsetAccept.count" title="Permalink to this definition">¶</a></dt>
-<dd><p>L.count(value) -&gt; integer &#8211; return number of occurrences of value</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.CharsetAccept.find">
-<tt class="descname">find</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept.find" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the position of an entry or return -1.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> &#8211; The key to be looked up.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.CharsetAccept.index">
-<tt class="descname">index</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept.index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the position of an entry or raise <a class="reference external" href="http://docs.python.org/dev/library/exceptions.html#ValueError" title="(in Python v3.2)"><tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt></a>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> &#8211; The key to be looked up.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="versionchanged">
-<span class="versionmodified">Changed in version 0.5: </span>This used to raise <a class="reference external" href="http://docs.python.org/dev/library/exceptions.html#IndexError" title="(in Python v3.2)"><tt class="xref py py-exc docutils literal"><span class="pre">IndexError</span></tt></a>, which was inconsistent
-with the list API.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.CharsetAccept.itervalues">
-<tt class="descname">itervalues</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept.itervalues" title="Permalink to this definition">¶</a></dt>
-<dd><p>Iterate over all values.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.CharsetAccept.quality">
-<tt class="descname">quality</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept.quality" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the quality of the key.</p>
-<p class="versionadded">
-<span class="versionmodified">New in version 0.6: </span>In previous versions you had to use the item-lookup syntax
-(eg: <tt class="docutils literal"><span class="pre">obj[key]</span></tt> instead of <tt class="docutils literal"><span class="pre">obj.quality(key)</span></tt>)</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.CharsetAccept.to_header">
-<tt class="descname">to_header</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept.to_header" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert the header set into an HTTP header string.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.CharsetAccept.values">
-<tt class="descname">values</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.CharsetAccept.values" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a list of the values, not the qualities.</p>
-</dd></dl>
-
-</dd></dl>
-
-</dd>
-<dt><tt class="docutils literal"><span class="pre">request.accept_languages</span></tt></dt>
-<dd><dl class="first last class">
-<dt id="werkzeug.LanguageAccept">
-<em class="property">class </em><tt class="descclassname">werkzeug.</tt><tt class="descname">LanguageAccept</tt><big>(</big><em>values=()</em><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept" title="Permalink to this definition">¶</a></dt>
-<dd><p>Like <tt class="xref py py-class docutils literal"><span class="pre">Accept</span></tt> but with normalization for languages.</p>
-<dl class="attribute">
-<dt id="werkzeug.LanguageAccept.best">
-<tt class="descname">best</tt><a class="headerlink" href="#werkzeug.LanguageAccept.best" title="Permalink to this definition">¶</a></dt>
-<dd><p>The best match as value.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.LanguageAccept.best_match">
-<tt class="descname">best_match</tt><big>(</big><em>matches</em>, <em>default=None</em><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept.best_match" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the best match from a list of possible matches based
-on the quality of the client.  If two items have the same quality,
-the one is returned that comes first.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>matches</strong> &#8211; a list of matches to check for</li>
-<li><strong>default</strong> &#8211; the value that is returned if none match</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+<dt>
+<tt class="descclassname">Request.</tt><tt class="descname">accept_languages</tt></dt>
+<dd><p>List of languages this client accepts as <tt class="xref py py-class docutils literal"><span class="pre">LanguageAccept</span></tt>
+object.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="werkzeug.LanguageAccept.count">
-<tt class="descname">count</tt><a class="headerlink" href="#werkzeug.LanguageAccept.count" title="Permalink to this definition">¶</a></dt>
-<dd><p>L.count(value) -&gt; integer &#8211; return number of occurrences of value</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.LanguageAccept.find">
-<tt class="descname">find</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept.find" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the position of an entry or return -1.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> &#8211; The key to be looked up.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.LanguageAccept.index">
-<tt class="descname">index</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept.index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the position of an entry or raise <a class="reference external" href="http://docs.python.org/dev/library/exceptions.html#ValueError" title="(in Python v3.2)"><tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt></a>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> &#8211; The key to be looked up.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="versionchanged">
-<span class="versionmodified">Changed in version 0.5: </span>This used to raise <a class="reference external" href="http://docs.python.org/dev/library/exceptions.html#IndexError" title="(in Python v3.2)"><tt class="xref py py-exc docutils literal"><span class="pre">IndexError</span></tt></a>, which was inconsistent
-with the list API.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.LanguageAccept.itervalues">
-<tt class="descname">itervalues</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept.itervalues" title="Permalink to this definition">¶</a></dt>
-<dd><p>Iterate over all values.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.LanguageAccept.quality">
-<tt class="descname">quality</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept.quality" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the quality of the key.</p>
-<p class="versionadded">
-<span class="versionmodified">New in version 0.6: </span>In previous versions you had to use the item-lookup syntax
-(eg: <tt class="docutils literal"><span class="pre">obj[key]</span></tt> instead of <tt class="docutils literal"><span class="pre">obj.quality(key)</span></tt>)</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.LanguageAccept.to_header">
-<tt class="descname">to_header</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept.to_header" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert the header set into an HTTP header string.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.LanguageAccept.values">
-<tt class="descname">values</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.LanguageAccept.values" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a list of the values, not the qualities.</p>
-</dd></dl>
-
-</dd></dl>
-
-</dd>
-<dt><tt class="docutils literal"><span class="pre">request.accept_mimetypes</span></tt></dt>
-<dd><dl class="first last class">
+<dt>
+<tt class="descclassname">Request.</tt><tt class="descname">accept_mimetypes</tt></dt>
+<dd><p>List of mimetypes this client supports as <a class="reference internal" href="#werkzeug.MIMEAccept" title="werkzeug.MIMEAccept"><tt class="xref py py-class docutils literal"><span class="pre">MIMEAccept</span></tt></a>
+object.</p>
+<blockquote>
+<dl class="class">
 <dt id="werkzeug.MIMEAccept">
 <em class="property">class </em><tt class="descclassname">werkzeug.</tt><tt class="descname">MIMEAccept</tt><big>(</big><em>values=()</em><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept" title="Permalink to this definition">¶</a></dt>
-<dd><p>Like <tt class="xref py py-class docutils literal"><span class="pre">Accept</span></tt> but with special methods and behavior for
+<dd><p>Like <a class="reference internal" href="#werkzeug.Accept" title="werkzeug.Accept"><tt class="xref py py-class docutils literal"><span class="pre">Accept</span></tt></a> but with special methods and behavior for
 mimetypes.</p>
 <dl class="attribute">
 <dt id="werkzeug.MIMEAccept.accept_html">
@@ -542,107 +482,17 @@ mimetypes.</p>
 <dd><p>True if this object accepts XHTML.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="werkzeug.MIMEAccept.best">
-<tt class="descname">best</tt><a class="headerlink" href="#werkzeug.MIMEAccept.best" title="Permalink to this definition">¶</a></dt>
-<dd><p>The best match as value.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="werkzeug.MIMEAccept.best_match">
-<tt class="descname">best_match</tt><big>(</big><em>matches</em>, <em>default=None</em><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept.best_match" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the best match from a list of possible matches based
-on the quality of the client.  If two items have the same quality,
-the one is returned that comes first.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>matches</strong> &#8211; a list of matches to check for</li>
-<li><strong>default</strong> &#8211; the value that is returned if none match</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+</blockquote>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="werkzeug.MIMEAccept.count">
-<tt class="descname">count</tt><a class="headerlink" href="#werkzeug.MIMEAccept.count" title="Permalink to this definition">¶</a></dt>
-<dd><p>L.count(value) -&gt; integer &#8211; return number of occurrences of value</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.MIMEAccept.find">
-<tt class="descname">find</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept.find" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the position of an entry or return -1.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> &#8211; The key to be looked up.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.MIMEAccept.index">
-<tt class="descname">index</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept.index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the position of an entry or raise <a class="reference external" href="http://docs.python.org/dev/library/exceptions.html#ValueError" title="(in Python v3.2)"><tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt></a>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> &#8211; The key to be looked up.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="versionchanged">
-<span class="versionmodified">Changed in version 0.5: </span>This used to raise <a class="reference external" href="http://docs.python.org/dev/library/exceptions.html#IndexError" title="(in Python v3.2)"><tt class="xref py py-exc docutils literal"><span class="pre">IndexError</span></tt></a>, which was inconsistent
-with the list API.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.MIMEAccept.itervalues">
-<tt class="descname">itervalues</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept.itervalues" title="Permalink to this definition">¶</a></dt>
-<dd><p>Iterate over all values.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.MIMEAccept.quality">
-<tt class="descname">quality</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept.quality" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the quality of the key.</p>
-<p class="versionadded">
-<span class="versionmodified">New in version 0.6: </span>In previous versions you had to use the item-lookup syntax
-(eg: <tt class="docutils literal"><span class="pre">obj[key]</span></tt> instead of <tt class="docutils literal"><span class="pre">obj.quality(key)</span></tt>)</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.MIMEAccept.to_header">
-<tt class="descname">to_header</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept.to_header" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert the header set into an HTTP header string.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="werkzeug.MIMEAccept.values">
-<tt class="descname">values</tt><big>(</big><big>)</big><a class="headerlink" href="#werkzeug.MIMEAccept.values" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a list of the values, not the qualities.</p>
-</dd></dl>
-
-</dd></dl>
-
-</dd>
-<dt><tt class="docutils literal"><span class="pre">request.user_agent</span></tt></dt>
-<dd><dl class="first last class">
+<dt>
+<tt class="descclassname">Request.</tt><tt class="descname">user_agent</tt></dt>
+<dd><p>The current user agent.</p>
+<blockquote>
+<dl class="class">
 <dt id="werkzeug.UserAgent">
 <em class="property">class </em><tt class="descclassname">werkzeug.</tt><tt class="descname">UserAgent</tt><big>(</big><em>environ_or_string</em><big>)</big><a class="headerlink" href="#werkzeug.UserAgent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents a user agent.  Pass it a WSGI environment or a user agent
@@ -719,9 +569,15 @@ recognized:</p>
 
 </dd></dl>
 
-</dd>
-<dt><tt class="docutils literal"><span class="pre">request.authorization</span></tt></dt>
-<dd><dl class="first last class">
+</blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descclassname">Request.</tt><tt class="descname">authorization</tt></dt>
+<dd><p>The <cite>Authorization</cite> object in parsed form.</p>
+<blockquote>
+<dl class="class">
 <dt id="werkzeug.Authorization">
 <em class="property">class </em><tt class="descclassname">werkzeug.</tt><tt class="descname">Authorization</tt><big>(</big><em>auth_type</em>, <em>data=None</em><big>)</big><a class="headerlink" href="#werkzeug.Authorization" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents an <cite>Authorization</cite> header sent by the client.  You should
@@ -807,8 +663,10 @@ auth all the time.</p>
 
 </dd></dl>
 
-</dd>
-</dl>
+</blockquote>
+</dd></dl>
+
+</div>
 </div>
 <div class="section" id="security">
 <h3>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h3>
@@ -981,40 +839,40 @@ packages to get the correct load path of that module.</p>
 </div>
 <div class="section" id="module-werkzeug.exceptions">
 <span id="exceptions"></span><h2>Exceptions<a class="headerlink" href="#module-werkzeug.exceptions" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.BadRequest">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">BadRequest</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#BadRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.BadRequest" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">BadRequest</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#BadRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.BadRequest" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>400</em> <cite>Bad Request</cite></p>
 <p>Raise if the browser sends something to the application the application
 or server cannot handle.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.Unauthorized">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">Unauthorized</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#Unauthorized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.Unauthorized" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">Unauthorized</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#Unauthorized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.Unauthorized" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>401</em> <cite>Unauthorized</cite></p>
 <p>Raise if the user is not authorized.  Also used if you want to use HTTP
 basic auth.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.Forbidden">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">Forbidden</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#Forbidden"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.Forbidden" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">Forbidden</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#Forbidden"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.Forbidden" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>403</em> <cite>Forbidden</cite></p>
 <p>Raise if the user doesn&#8217;t have the permission for the requested resource
 but was authenticated.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.NotFound">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">NotFound</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#NotFound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.NotFound" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">NotFound</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#NotFound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.NotFound" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>404</em> <cite>Not Found</cite></p>
 <p>Raise if a resource does not exist and never existed.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.MethodNotAllowed">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">MethodNotAllowed</tt><big>(</big><em>valid_methods=None</em>, <em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#MethodNotAllowed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.MethodNotAllowed" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">MethodNotAllowed</tt><big>(</big><em>valid_methods=None</em>, <em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#MethodNotAllowed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.MethodNotAllowed" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>405</em> <cite>Method Not Allowed</cite></p>
 <p>Raise if the server used a method the resource does not handle.  For
 example <cite>POST</cite> if the resource is view only.  Especially useful for REST.</p>
@@ -1023,95 +881,95 @@ Strictly speaking the response would be invalid if you don&#8217;t provide valid
 methods in the header which you can do with that list.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.NotAcceptable">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">NotAcceptable</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#NotAcceptable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.NotAcceptable" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">NotAcceptable</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#NotAcceptable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.NotAcceptable" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>406</em> <cite>Not Acceptable</cite></p>
 <p>Raise if the server can&#8217;t return any content conforming to the
 <cite>Accept</cite> headers of the client.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.RequestTimeout">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">RequestTimeout</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#RequestTimeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.RequestTimeout" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">RequestTimeout</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#RequestTimeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.RequestTimeout" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>408</em> <cite>Request Timeout</cite></p>
 <p>Raise to signalize a timeout.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.Gone">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">Gone</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#Gone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.Gone" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">Gone</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#Gone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.Gone" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>410</em> <cite>Gone</cite></p>
 <p>Raise if a resource existed previously and went away without new location.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.LengthRequired">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">LengthRequired</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#LengthRequired"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.LengthRequired" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">LengthRequired</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#LengthRequired"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.LengthRequired" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>411</em> <cite>Length Required</cite></p>
 <p>Raise if the browser submitted data but no <tt class="docutils literal"><span class="pre">Content-Length</span></tt> header which
 is required for the kind of processing the server does.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.PreconditionFailed">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">PreconditionFailed</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#PreconditionFailed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.PreconditionFailed" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">PreconditionFailed</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#PreconditionFailed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.PreconditionFailed" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>412</em> <cite>Precondition Failed</cite></p>
 <p>Status code used in combination with <tt class="docutils literal"><span class="pre">If-Match</span></tt>, <tt class="docutils literal"><span class="pre">If-None-Match</span></tt>, or
 <tt class="docutils literal"><span class="pre">If-Unmodified-Since</span></tt>.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.RequestEntityTooLarge">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">RequestEntityTooLarge</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#RequestEntityTooLarge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.RequestEntityTooLarge" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">RequestEntityTooLarge</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#RequestEntityTooLarge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.RequestEntityTooLarge" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>413</em> <cite>Request Entity Too Large</cite></p>
 <p>The status code one should return if the data submitted exceeded a given
 limit.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.RequestURITooLarge">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">RequestURITooLarge</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#RequestURITooLarge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.RequestURITooLarge" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">RequestURITooLarge</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#RequestURITooLarge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.RequestURITooLarge" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>414</em> <cite>Request URI Too Large</cite></p>
 <p>Like <em>413</em> but for too long URLs.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.UnsupportedMediaType">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">UnsupportedMediaType</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#UnsupportedMediaType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.UnsupportedMediaType" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">UnsupportedMediaType</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#UnsupportedMediaType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.UnsupportedMediaType" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>415</em> <cite>Unsupported Media Type</cite></p>
 <p>The status code returned if the server is unable to handle the media type
 the client transmitted.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.InternalServerError">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">InternalServerError</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#InternalServerError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.InternalServerError" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">InternalServerError</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#InternalServerError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.InternalServerError" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>500</em> <cite>Internal Server Error</cite></p>
 <p>Raise if an internal server error occurred.  This is a good fallback if an
 unknown error occurred in the dispatcher.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.NotImplemented">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">NotImplemented</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#NotImplemented"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.NotImplemented" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">NotImplemented</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#NotImplemented"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.NotImplemented" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>501</em> <cite>Not Implemented</cite></p>
 <p>Raise if the application does not support the action requested by the
 browser.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.BadGateway">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">BadGateway</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#BadGateway"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.BadGateway" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">BadGateway</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#BadGateway"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.BadGateway" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>502</em> <cite>Bad Gateway</cite></p>
 <p>If you do proxying in your application you should return this status code
 if you received an invalid response from the upstream server it accessed
 in attempting to fulfill the request.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
 <dt id="werkzeug.exceptions.ServiceUnavailable">
-<em class="property">class </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">ServiceUnavailable</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#ServiceUnavailable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.ServiceUnavailable" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><tt class="descclassname">werkzeug.exceptions.</tt><tt class="descname">ServiceUnavailable</tt><big>(</big><em>description=None</em><big>)</big><a class="reference internal" href="_modules/werkzeug/exceptions.html#ServiceUnavailable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#werkzeug.exceptions.ServiceUnavailable" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>503</em> <cite>Service Unavailable</cite></p>
 <p>Status code you should return if a service is temporarily unavailable.</p>
 </dd></dl>
@@ -1131,7 +989,10 @@ in attempting to fulfill the request.</p>
 <li><a class="reference internal" href="#utilities">Utilities</a><ul>
 <li><a class="reference internal" href="#urls">URLs</a></li>
 <li><a class="reference internal" href="#html">HTML</a></li>
-<li><a class="reference internal" href="#http">HTTP</a></li>
+<li><a class="reference internal" href="#http">HTTP</a><ul>
+<li><a class="reference internal" href="#useful-attributes-on-flask-s-request-object">Useful attributes on Flask&#8217;s request object</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#security">Security</a></li>
 <li><a class="reference internal" href="#general-use">General use</a></li>
 </ul>

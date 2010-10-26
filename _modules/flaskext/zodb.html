@@ -209,10 +209,10 @@
 <span class="c">#: UUID4 factory</span>
 <span class="n">UUID4</span> <span class="o">=</span> <span class="n">Factory</span><span class="p">(</span><span class="n">uuid4</span><span class="p">)</span>
 
-<span class="c">#: Factory for :class:`~persistent.list.PersistentList`</span>
+<span class="c">#: Factory for :func:`PersistentList`</span>
 <span class="n">List</span> <span class="o">=</span> <span class="n">Factory</span><span class="p">(</span><span class="n">PersistentList</span><span class="p">)</span>
 
-<span class="c">#: Factory for :class:`~persistent.mapping.PersistentMapping`</span>
+<span class="c">#: Factory for :func:`PersistentMapping`</span>
 <span class="n">Mapping</span> <span class="o">=</span> <span class="n">Factory</span><span class="p">(</span><span class="n">PersistentMapping</span><span class="p">)</span>
 
 
@@ -248,7 +248,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Factory</span><span class="p">):</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">())</span>
 
