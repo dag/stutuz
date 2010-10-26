@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 
 from stutuz.tests import TestBase
 from stutuz.models import Account, Users, History, Revision
+from stutuz.models import Definition, Root, Compound, Particle, Loan
 
 
 class Models(TestBase):
@@ -72,3 +73,22 @@ class Models(TestBase):
 
         for revision in history:
             self.assert_is_instance(revision, Revision)
+
+    def test_entries(self):
+
+        admin = Account(username='admin')
+
+        donri = Root(defining='donri', affixes=['dor', "do'i"])
+        donri.history('en').revise(
+            Definition(
+                definition='x₁ is the daytime of day x₂ at location x₃.',
+                notes='See also {nicte}, {djedi}, {tcika}.'),
+            admin)
+
+        self.assert_sequence_equal(donri.affixes, ['dor', "do'i"])
+
+        self.assert_equal(donri.history('en').active.object.definition,
+                          'x₁ is the daytime of day x₂ at location x₃.')
+
+        self.assert_equal(donri.history('en').active.object.notes,
+                          'See also {nicte}, {djedi}, {tcika}.')

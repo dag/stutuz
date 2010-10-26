@@ -7,7 +7,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from werkzeug import generate_password_hash, check_password_hash
-from flaskext.zodb import Model, Timestamp
+from flaskext.zodb import Model, Timestamp, Mapping, List
 from flaskext.zodb import PersistentList, PersistentMapping
 
 
@@ -97,3 +97,73 @@ class Revision(Model):
 
     #: The wrapped object.
     object = None
+
+
+class Definition(Model):
+    """Definition of an entry in some language."""
+
+    #: The actual definition.
+    definition = None
+
+    #: Accompanying notes.
+    notes = None
+
+
+class Entry(Model):
+    """Base for dictionary entries."""
+
+    #: The word or sequence of words that this entry defines.
+    defining = None
+
+    translations = Mapping
+
+    def history(self, language):
+        """Get the history of revisions in a language, create if needed."""
+        if language not in self.translations:
+            self.translations[language] = History()
+        return self.translations[language]
+
+
+class AffixesMixin(object):
+    """Mixin for words that can have affixes."""
+
+    #: List of affix forms ("rafsi") of this word.
+    affixes = List
+
+
+class ExperimentalMixin(object):
+    """Words that can be experimental."""
+
+    #: Whether this word is experimental.
+    experimental = False
+
+
+class Root(Entry, AffixesMixin, ExperimentalMixin):
+    """A root word, aka. "gismu"."""
+
+    #: Map of language codes to words this root is based on.
+    etymology = Mapping
+
+
+class Compound(Entry):
+    """Word built with affixes, aka. "lujvo"."""
+
+    #: The metaphor ("tanru") that results in this compound.
+    source = None
+
+
+class Particle(Entry, AffixesMixin, ExperimentalMixin):
+    """Grammatical particle, aka. "cmavo"."""
+
+    #: Grammatical class ("selma'o").
+    class_ = None
+
+
+class Loan(Entry, AffixesMixin):
+    """Word borrowed from a foreign language, aka. "fu'ivla"."""
+
+    #: The word this loanword is based on.
+    base = None
+
+    #: The language code for the language this word was borrowed from.
+    origin = None
