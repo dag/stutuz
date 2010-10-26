@@ -95,36 +95,36 @@ Exceptions
 
 .. module:: werkzeug.exceptions
 
-.. autoclass:: BadRequest
+.. autoexception:: BadRequest
 
-.. autoclass:: Unauthorized
+.. autoexception:: Unauthorized
 
-.. autoclass:: Forbidden
+.. autoexception:: Forbidden
 
-.. autoclass:: NotFound
+.. autoexception:: NotFound
 
-.. autoclass:: MethodNotAllowed
+.. autoexception:: MethodNotAllowed
 
-.. autoclass:: NotAcceptable
+.. autoexception:: NotAcceptable
 
-.. autoclass:: RequestTimeout
+.. autoexception:: RequestTimeout
 
-.. autoclass:: Gone
+.. autoexception:: Gone
 
-.. autoclass:: LengthRequired
+.. autoexception:: LengthRequired
 
-.. autoclass:: PreconditionFailed
+.. autoexception:: PreconditionFailed
 
-.. autoclass:: RequestEntityTooLarge
+.. autoexception:: RequestEntityTooLarge
 
-.. autoclass:: RequestURITooLarge
+.. autoexception:: RequestURITooLarge
 
-.. autoclass:: UnsupportedMediaType
+.. autoexception:: UnsupportedMediaType
 
-.. autoclass:: InternalServerError
+.. autoexception:: InternalServerError
 
-.. autoclass:: NotImplemented
+.. autoexception:: NotImplemented
 
-.. autoclass:: BadGateway
+.. autoexception:: BadGateway
 
-.. autoclass:: ServiceUnavailable
+.. autoexception:: ServiceUnavailable
