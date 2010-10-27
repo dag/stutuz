@@ -35,16 +35,10 @@ def create_app(config=None):
 
     handlers = app.config.get('LOGBOOK_HANDLERS')
     with NestedSetup(handlers):
-        conf = '\n'.join('  {0} = {1!r}'.format(k, v)
-                         for (k, v) in app.config.iteritems())
-        logger.debug('Loaded app with configuration:\n' + conf)
-
         for extension in genshi, db:
-            logger.debug('Loading extension {0.__module__}'.format(extension))
             extension.init_app(app)
 
         for middleware in app.config.get('MIDDLEWARES', ()):
-            logger.debug('Applying middleware {0.__name__}'.format(middleware))
             app.wsgi_app = middleware(app.wsgi_app)
 
         return app
