@@ -11,6 +11,8 @@ from flask import Flask
 from flaskext.genshi import Genshi
 from flaskext.zodb import ZODB, PersistentMapping
 
+from stutuz.models import Users
+
 
 logger = Logger(__name__)
 genshi = Genshi()
@@ -22,6 +24,8 @@ def set_defaults(root):
     if 'languages' not in root:
         root['languages'] = PersistentMapping({'eng': 'English',
                                                'jbo': 'Lojban'})
+    if 'users' not in root:
+        root['users'] = Users()
 
 
 def create_app(config=None):
