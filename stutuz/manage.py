@@ -48,6 +48,23 @@ Useful names:
         current_app.process_response(current_app.response_class())
 
 
+@manager.command
+def import_language_codes():
+    from urllib2 import urlopen
+    from contextlib import closing
+    from stutuz import db
+    from flaskext.zodb import PersistentMapping
+
+    url = 'http://www.sil.org/iso639-3/iso-639-3_20100707.tab'
+    with closing(urlopen(url)) as data:
+        with db() as root:
+            root['languages'] = PersistentMapping()
+            for num, line in enumerate(data):
+                if num != 0:
+                    code, _, _, _, _, _, name, _ = line.split('\t')
+                    root['languages'][code] = name
+
+
 def main():
     manager.run()
 
