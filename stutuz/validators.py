@@ -21,6 +21,6 @@ class IsLanguageCode(Validator):
         if len(element.value) != 3:
             return self.note_error(element, state, 'invalid_length')
         with db() as root:
-            if not element.value in root['languages']:
+            if element.value not in root['languages']:
                 return self.note_error(element, state, 'invalid_code')
         return True
