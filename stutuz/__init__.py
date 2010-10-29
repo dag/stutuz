@@ -12,6 +12,8 @@ from flask import Flask
 from stutuz.extensions import genshi, db
 from stutuz.converters import converters
 
+from stutuz.modules import export
+
 
 logger = Logger(__name__)
 
@@ -34,5 +36,6 @@ def create_app(config=None):
             app.wsgi_app = middleware(app.wsgi_app)
 
         app.url_map.converters.update(converters)
+        app.register_module(export.mod, url_prefix='/export')
 
         return app

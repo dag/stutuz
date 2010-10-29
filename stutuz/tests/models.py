@@ -92,3 +92,6 @@ class Models(TestBase):
 
         self.assert_equal(donri.history('en').active.object.notes,
                           'See also {nicte}, {djedi}, {tcika}.')
+
+        self.assert_equal(Root().type, 'gismu')
+        self.assert_equal(Root(experimental=True).type, 'experimental gismu')

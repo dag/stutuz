@@ -123,6 +123,15 @@ class Entry(Model):
             self.translations[language] = History()
         return self.translations[language]
 
+    @property
+    def type(self):
+        return {
+            Root: 'gismu',
+            Compound: 'lujvo',
+            Particle: 'cmavo',
+            Loan: "fu'ivla"
+        }[self.__class__]
+
 
 class AffixesMixin(object):
     """Mixin for words that can have affixes."""
@@ -137,8 +146,14 @@ class ExperimentalMixin(object):
     #: Whether this word is experimental.
     experimental = False
 
+    @property
+    def type(self):
+        if self.experimental:
+            return 'experimental ' + super(ExperimentalMixin, self).type
+        return super(ExperimentalMixin, self).type
 
-class Root(Entry, AffixesMixin, ExperimentalMixin):
+
+class Root(ExperimentalMixin, Entry, AffixesMixin):
     """A root word, aka. "gismu"."""
 
     #: Map of language codes to words this root is based on.
@@ -152,7 +167,7 @@ class Compound(Entry):
     source = None
 
 
-class Particle(Entry, AffixesMixin, ExperimentalMixin):
+class Particle(ExperimentalMixin, Entry, AffixesMixin):
     """Grammatical particle, aka. "cmavo"."""
 
     #: Grammatical class ("selma'o").

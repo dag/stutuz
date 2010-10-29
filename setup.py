@@ -50,6 +50,7 @@ setup(
     tests_require=[
         'Flask-Testing>=0.2.4',
         'unittest2>=0.5.1',
+        'lxml>=2.2.8'
     ],
 
     test_suite='stutuz.tests',

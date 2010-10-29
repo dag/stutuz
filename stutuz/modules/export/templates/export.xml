@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary xmlns:py="http://genshi.edgewall.org/">
+  <direction from="Lojban" to="$language">
+
+    <valsi py:for="entry in entries"
+           py:with="active = entry.history(langcode).active.object"
+           word="$entry.defining"
+           type="$entry.type">
+
+      <definition>$active.definition</definition>
+      <notes py:if="active.notes">$active.notes</notes>
+      <selmaho py:if="getattr(entry, 'class_', False)">$entry.class_</selmaho>
+      <rafsi py:for="affix in getattr(entry, 'affixes', ())">$affix</rafsi>
+
+    </valsi>
+
+  </direction>
+</dictionary>
