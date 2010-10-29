@@ -6,12 +6,12 @@ from __future__ import with_statement
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from BTrees.OOBTree import OOBTree
 from werkzeug import generate_password_hash, check_password_hash
-from flaskext.zodb import Model, Timestamp, Mapping, List
-from flaskext.zodb import PersistentList, PersistentMapping
+from flaskext.zodb import Model, Timestamp, Mapping, List, BTree
 
 
-class Users(PersistentMapping):
+class Users(OOBTree):
     """Collection of user accounts, acts like a :class:`dict`."""
 
     def new(self, username, password):
@@ -65,22 +65,26 @@ class Account(Model):
         return check_password_hash(self.password, password)
 
 
-class History(PersistentList):
-    """A sequence of revisions, acts like a :class:`list`."""
+class History(OOBTree):
+    """A log of revisions, acts like a :class:`dict` with
+    :class:`~datetime.datetime` keys.
+
+    """
 
     @property
     def active(self):
         """The active revision, i.e. the last added."""
-        return self[-1]
+        return self[self.maxKey()]
 
     def revise(self, object, author=None, comment=None):
-        """Create a new revision and append to the history.
+        """Create a new revision and log it in the history.
 
         :rtype: :class:`Revision`
 
         """
-        self.append(Revision(author=author, comment=comment, object=object))
-        return self.active
+        revision = Revision(author=author, comment=comment, object=object)
+        self[revision.timestamp] = revision
+        return revision
 
 
 class Revision(Model):
@@ -115,7 +119,7 @@ class Entry(Model):
     #: The word or sequence of words that this entry defines.
     defining = None
 
-    translations = Mapping
+    translations = BTree
 
     def history(self, language):
         """Get the history of revisions in a language, create if needed."""

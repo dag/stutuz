@@ -60,7 +60,7 @@ class Models(TestBase):
         first = history.revise((1, 2, 3), account, 'First!')
 
         self.assert_is(history.active, first)
-        self.assert_is(history.active, history[-1])
+        self.assert_is(history.active, history[first.timestamp])
         self.assert_tuple_equal(history.active.object, (1, 2, 3))
         self.assert_is(history.active.author, account)
         self.assert_equal(history.active.comment, 'First!')
@@ -71,7 +71,7 @@ class Models(TestBase):
         self.assert_tuple_equal(history.active.object, (3, 2, 1))
         self.assert_equal(history.active.comment, 'Reversed sequence')
 
-        for revision in history:
+        for revision in history.itervalues():
             self.assert_is_instance(revision, Revision)
 
     def test_entries(self):
