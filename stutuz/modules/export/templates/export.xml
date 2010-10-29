@@ -3,12 +3,12 @@
   <direction from="Lojban" to="$language">
 
     <valsi py:for="entry in entries"
-           py:with="active = entry.history(langcode).active.object"
+           py:with="newest = entry.history(langcode).newest.object"
            word="$entry.defining"
            type="$entry.type">
 
-      <definition>$active.definition</definition>
-      <notes py:if="active.notes">$active.notes</notes>
+      <definition>$newest.definition</definition>
+      <notes py:if="newest.notes">$newest.notes</notes>
       <selmaho py:if="getattr(entry, 'class_', False)">$entry.class_</selmaho>
       <rafsi py:for="affix in getattr(entry, 'affixes', ())">$affix</rafsi>
 

@@ -52,24 +52,24 @@ class Models(TestBase):
             users.authenticate('noda', 'da')
 
     def test_history(self):
-        """Histories keep lists of Revisions with last as active"""
+        """Histories keep logs of Revisions with quick access to the newest"""
 
         history = History()
         account = Account(username='admin')
 
         first = history.revise((1, 2, 3), account, 'First!')
 
-        self.assert_is(history.active, first)
-        self.assert_is(history.active, history[first.timestamp])
-        self.assert_tuple_equal(history.active.object, (1, 2, 3))
-        self.assert_is(history.active.author, account)
-        self.assert_equal(history.active.comment, 'First!')
+        self.assert_is(history.newest, first)
+        self.assert_is(history.newest, history[first.timestamp])
+        self.assert_tuple_equal(history.newest.object, (1, 2, 3))
+        self.assert_is(history.newest.author, account)
+        self.assert_equal(history.newest.comment, 'First!')
 
         second = history.revise((3, 2, 1), account, 'Reversed sequence')
 
-        self.assert_is(history.active, second)
-        self.assert_tuple_equal(history.active.object, (3, 2, 1))
-        self.assert_equal(history.active.comment, 'Reversed sequence')
+        self.assert_is(history.newest, second)
+        self.assert_tuple_equal(history.newest.object, (3, 2, 1))
+        self.assert_equal(history.newest.comment, 'Reversed sequence')
 
         for revision in history.itervalues():
             self.assert_is_instance(revision, Revision)
@@ -88,10 +88,10 @@ class Models(TestBase):
 
         self.assert_sequence_equal(donri.affixes, ['dor', "do'i"])
 
-        self.assert_equal(donri.history('en').active.object.definition,
+        self.assert_equal(donri.history('en').newest.object.definition,
                           'x₁ is the daytime of day x₂ at location x₃.')
 
-        self.assert_equal(donri.history('en').active.object.notes,
+        self.assert_equal(donri.history('en').newest.object.notes,
                           'See also {nicte}, {djedi}, {tcika}.')
 
         self.assert_equal(Root().type, 'gismu')

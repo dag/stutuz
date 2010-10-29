@@ -72,8 +72,8 @@ class History(OOBTree):
     """
 
     @property
-    def active(self):
-        """The active revision, i.e. the last added."""
+    def newest(self):
+        """The most recent revision"""
         return self[self.maxKey()]
 
     def revise(self, object, author=None, comment=None):
