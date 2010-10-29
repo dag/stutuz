@@ -44,6 +44,7 @@ setup(
         'Flask-Script>=0.3.1',
         'ZODB3>=3.10.0',
         'Logbook>=0.3',
+        'flatland==dev',
     ],
 
     tests_require=[

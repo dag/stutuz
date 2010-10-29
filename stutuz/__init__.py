@@ -8,26 +8,12 @@ from __future__ import unicode_literals
 
 from logbook import Logger, NestedSetup
 from flask import Flask
-from flaskext.genshi import Genshi
-from flaskext.zodb import ZODB, PersistentMapping
 
-from stutuz.models import Users
+from stutuz.extensions import genshi, db
+from stutuz.converters import converters
 
 
 logger = Logger(__name__)
-genshi = Genshi()
-db = ZODB()
-
-
-@db.init
-def set_defaults(root):
-    if 'languages' not in root:
-        root['languages'] = PersistentMapping({'eng': 'English',
-                                               'jbo': 'Lojban'})
-    if 'users' not in root:
-        root['users'] = Users()
-    if 'entries' not in root:
-        root['entries'] = PersistentMapping()
 
 
 def create_app(config=None):
@@ -46,5 +32,7 @@ def create_app(config=None):
 
         for middleware in app.config.get('MIDDLEWARES', ()):
             app.wsgi_app = middleware(app.wsgi_app)
+
+        app.url_map.converters.update(converters)
 
         return app
