@@ -75,6 +75,7 @@ class Models(TestBase):
             self.assert_is_instance(revision, Revision)
 
     def test_entries(self):
+        """Entries behave properly"""
 
         admin = Account(username='admin')
 
