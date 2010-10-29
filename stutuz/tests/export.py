@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 
 from stutuz.tests import TestBase
 from stutuz.extensions import db
-from stutuz.models import Definition, Root, Compound, Particle, Loan
+from stutuz.models import Definition, Root
 
 
 class Export(TestBase):
