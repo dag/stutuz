@@ -49,6 +49,53 @@ Useful names:
 
 
 @manager.command
+def import_xml(xml, language):
+    from stutuz import db
+    from stutuz.models import Definition, Root, Compound, Particle, Loan
+    import xml.etree.cElementTree as etree
+
+    with db() as root:
+        doc = etree.parse(xml)
+        for element in doc.getiterator('valsi'):
+            case = lambda x: element.get('type') == x
+
+            if case('gismu'):
+                entry = Root()
+            elif case('lujvo'):
+                entry = Compound()
+            elif case('cmavo'):
+                entry = Particle()
+            elif case("fu'ivla"):
+                entry = Loan()
+            elif case('experimental gismu'):
+                entry = Root(experimental=True)
+            elif case('experimental cmavo'):
+                entry = Particle(experimental=True)
+            else:
+                continue
+
+            definition = Definition()
+            for subelement in element:
+                text = subelement.text.decode('utf-8')
+                case = lambda x: subelement.tag == x
+
+                if case('definition'):
+                    definition.definition = text
+                elif case('notes'):
+                    definition.notes = text
+                elif case('rafsi'):
+                    entry.affixes.append(text)
+                elif case('selmaho'):
+                    entry.class_ = text
+
+            entry.defining = element.get('word').decode('utf-8')
+            entry.history(language).revise(definition,
+                                           comment='Imported from XML.')
+
+            root['entries'][entry.defining] = entry
+
+
+@manager.command
 def import_language_codes():
     from urllib2 import urlopen
     from contextlib import closing

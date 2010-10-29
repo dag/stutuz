@@ -26,6 +26,8 @@ def set_defaults(root):
                                                'jbo': 'Lojban'})
     if 'users' not in root:
         root['users'] = Users()
+    if 'entries' not in root:
+        root['entries'] = PersistentMapping()
 
 
 def create_app(config=None):

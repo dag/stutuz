@@ -73,7 +73,7 @@ class History(PersistentList):
         """The active revision, i.e. the last added."""
         return self[-1]
 
-    def revise(self, object, author, comment=None):
+    def revise(self, object, author=None, comment=None):
         """Create a new revision and append to the history.
 
         :rtype: :class:`Revision`
