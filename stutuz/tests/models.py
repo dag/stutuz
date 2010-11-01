@@ -60,7 +60,7 @@ class Models(TestBase):
         first = history.revise((1, 2, 3), account, 'First!')
 
         self.assert_is(history.newest, first)
-        self.assert_is(history.newest, history[first.timestamp])
+        self.assert_is(history.newest, history[first.timestamp.isoformat()])
         self.assert_tuple_equal(history.newest.object, (1, 2, 3))
         self.assert_is(history.newest.author, account)
         self.assert_equal(history.newest.comment, 'First!')

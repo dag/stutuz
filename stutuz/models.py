@@ -67,7 +67,7 @@ class Account(Model):
 
 class History(OOBTree):
     """A log of revisions, acts like a :class:`dict` with
-    :class:`~datetime.datetime` keys.
+    timestamps in ISO 8601 for keys.
 
     """
 
@@ -83,7 +83,7 @@ class History(OOBTree):
 
         """
         revision = Revision(author=author, comment=comment, object=object)
-        self[revision.timestamp] = revision
+        self[revision.timestamp.isoformat()] = revision
         return revision
 
 
