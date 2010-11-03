@@ -20,9 +20,13 @@ class TestBase(TestCase, unittest2.TestCase):
 
     def setUp(self):
         self.app.preprocess_request()
+        if hasattr(self, 'setup'):
+            self.setup()
 
     def tearDown(self):
         self.app.process_response(self.app.response_class())
+        if hasattr(self, 'teardown'):
+            self.teardown()
 
     def create_app(self):
         return create_app('stutuz.configs.testing')
