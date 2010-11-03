@@ -96,7 +96,7 @@ called, yielding the root object to be used inside the context.
 See <tt class="xref py py-meth docutils literal"><span class="pre">__call__()</span></tt>.</p>
 <dl class="method">
 <dt id="flaskext.zodb.ZODB.__call__">
-<tt class="descname">__call__</tt><big>(</big><em>*args</em>, <em>**kwds</em><big>)</big><a class="reference internal" href="../_modules/flaskext/zodb.html#ZODB.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.zodb.ZODB.__call__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__call__</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/flaskext/zodb.html#ZODB.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.zodb.ZODB.__call__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transactional context, for database access outside of requests.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">db</span><span class="p">()</span> <span class="k">as</span> <span class="n">root</span><span class="p">:</span>
     <span class="n">root</span><span class="p">[</span><span class="s">&#39;this&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;is committed at the end of the context.&#39;</span>

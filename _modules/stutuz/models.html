@@ -57,12 +57,12 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
 
+<span class="kn">from</span> <span class="nn">BTrees.OOBTree</span> <span class="kn">import</span> <span class="n">OOBTree</span>
 <span class="kn">from</span> <span class="nn">werkzeug</span> <span class="kn">import</span> <span class="n">generate_password_hash</span><span class="p">,</span> <span class="n">check_password_hash</span>
-<span class="kn">from</span> <span class="nn">flaskext.zodb</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">Timestamp</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">List</span>
-<span class="kn">from</span> <span class="nn">flaskext.zodb</span> <span class="kn">import</span> <span class="n">PersistentList</span><span class="p">,</span> <span class="n">PersistentMapping</span>
+<span class="kn">from</span> <span class="nn">flaskext.zodb</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">Timestamp</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">BTree</span>
 
 
-<div class="viewcode-block" id="Users"><a class="viewcode-back" href="../../models.html#stutuz.models.Users">[docs]</a><span class="k">class</span> <span class="nc">Users</span><span class="p">(</span><span class="n">PersistentMapping</span><span class="p">):</span>
+<div class="viewcode-block" id="Users"><a class="viewcode-back" href="../../models.html#stutuz.models.Users">[docs]</a><span class="k">class</span> <span class="nc">Users</span><span class="p">(</span><span class="n">OOBTree</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Collection of user accounts, acts like a :class:`dict`.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Users.new"><a class="viewcode-back" href="../../models.html#stutuz.models.Users.new">[docs]</a>    <span class="k">def</span> <span class="nf">new</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
@@ -116,22 +116,26 @@
         <span class="k">return</span> <span class="n">check_password_hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
 
 </div></div>
-<div class="viewcode-block" id="History"><a class="viewcode-back" href="../../models.html#stutuz.models.History">[docs]</a><span class="k">class</span> <span class="nc">History</span><span class="p">(</span><span class="n">PersistentList</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A sequence of revisions, acts like a :class:`list`.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="History"><a class="viewcode-back" href="../../models.html#stutuz.models.History">[docs]</a><span class="k">class</span> <span class="nc">History</span><span class="p">(</span><span class="n">OOBTree</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A log of revisions, acts like a :class:`dict` with</span>
+<span class="sd">    timestamps in ISO 8601 for keys.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="History.active"><a class="viewcode-back" href="../../models.html#stutuz.models.History.active">[docs]</a>    <span class="k">def</span> <span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The active revision, i.e. the last added.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<div class="viewcode-block" id="History.newest"><a class="viewcode-back" href="../../models.html#stutuz.models.History.newest">[docs]</a>    <span class="k">def</span> <span class="nf">newest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The most recent revision&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">maxKey</span><span class="p">()]</span>
 </div>
-<div class="viewcode-block" id="History.revise"><a class="viewcode-back" href="../../models.html#stutuz.models.History.revise">[docs]</a>    <span class="k">def</span> <span class="nf">revise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">author</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create a new revision and append to the history.</span>
+<div class="viewcode-block" id="History.revise"><a class="viewcode-back" href="../../models.html#stutuz.models.History.revise">[docs]</a>    <span class="k">def</span> <span class="nf">revise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a new revision and log it in the history.</span>
 
 <span class="sd">        :rtype: :class:`Revision`</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Revision</span><span class="p">(</span><span class="n">author</span><span class="o">=</span><span class="n">author</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">))</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span>
+        <span class="n">revision</span> <span class="o">=</span> <span class="n">Revision</span><span class="p">(</span><span class="n">author</span><span class="o">=</span><span class="n">author</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">revision</span><span class="o">.</span><span class="n">timestamp</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()]</span> <span class="o">=</span> <span class="n">revision</span>
+        <span class="k">return</span> <span class="n">revision</span>
 
 </div></div>
 <div class="viewcode-block" id="Revision"><a class="viewcode-back" href="../../models.html#stutuz.models.Revision">[docs]</a><span class="k">class</span> <span class="nc">Revision</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
@@ -164,17 +168,26 @@
     <span class="sd">&quot;&quot;&quot;Base for dictionary entries.&quot;&quot;&quot;</span>
 
     <span class="c">#: The word or sequence of words that this entry defines.</span>
-    <span class="n">defining</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="bp">None</span>
 
-    <span class="n">translations</span> <span class="o">=</span> <span class="n">Mapping</span>
+    <span class="n">translations</span> <span class="o">=</span> <span class="n">BTree</span>
 
 <div class="viewcode-block" id="Entry.history"><a class="viewcode-back" href="../../models.html#stutuz.models.Entry.history">[docs]</a>    <span class="k">def</span> <span class="nf">history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">language</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the history of revisions in a language, create if needed.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">language</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">translations</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">translations</span><span class="p">[</span><span class="n">language</span><span class="p">]</span> <span class="o">=</span> <span class="n">History</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">translations</span><span class="p">[</span><span class="n">language</span><span class="p">]</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">Root</span><span class="p">:</span> <span class="s">&#39;gismu&#39;</span><span class="p">,</span>
+            <span class="n">Compound</span><span class="p">:</span> <span class="s">&#39;lujvo&#39;</span><span class="p">,</span>
+            <span class="n">Particle</span><span class="p">:</span> <span class="s">&#39;cmavo&#39;</span><span class="p">,</span>
+            <span class="n">Loan</span><span class="p">:</span> <span class="s">&quot;fu&#39;ivla&quot;</span>
+        <span class="p">}[</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">]</span>
 
-</div></div>
+</div>
 <div class="viewcode-block" id="AffixesMixin"><a class="viewcode-back" href="../../models.html#stutuz.models.AffixesMixin">[docs]</a><span class="k">class</span> <span class="nc">AffixesMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Mixin for words that can have affixes.&quot;&quot;&quot;</span>
 
@@ -188,8 +201,14 @@
     <span class="c">#: Whether this word is experimental.</span>
     <span class="n">experimental</span> <span class="o">=</span> <span class="bp">False</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">experimental</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;experimental &#39;</span> <span class="o">+</span> <span class="nb">super</span><span class="p">(</span><span class="n">ExperimentalMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">type</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">ExperimentalMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">type</span>
+
 </div>
-<div class="viewcode-block" id="Root"><a class="viewcode-back" href="../../models.html#stutuz.models.Root">[docs]</a><span class="k">class</span> <span class="nc">Root</span><span class="p">(</span><span class="n">Entry</span><span class="p">,</span> <span class="n">AffixesMixin</span><span class="p">,</span> <span class="n">ExperimentalMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="Root"><a class="viewcode-back" href="../../models.html#stutuz.models.Root">[docs]</a><span class="k">class</span> <span class="nc">Root</span><span class="p">(</span><span class="n">ExperimentalMixin</span><span class="p">,</span> <span class="n">Entry</span><span class="p">,</span> <span class="n">AffixesMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A root word, aka. &quot;gismu&quot;.&quot;&quot;&quot;</span>
 
     <span class="c">#: Map of language codes to words this root is based on.</span>
@@ -203,7 +222,7 @@
     <span class="n">source</span> <span class="o">=</span> <span class="bp">None</span>
 
 </div>
-<div class="viewcode-block" id="Particle"><a class="viewcode-back" href="../../models.html#stutuz.models.Particle">[docs]</a><span class="k">class</span> <span class="nc">Particle</span><span class="p">(</span><span class="n">Entry</span><span class="p">,</span> <span class="n">AffixesMixin</span><span class="p">,</span> <span class="n">ExperimentalMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="Particle"><a class="viewcode-back" href="../../models.html#stutuz.models.Particle">[docs]</a><span class="k">class</span> <span class="nc">Particle</span><span class="p">(</span><span class="n">ExperimentalMixin</span><span class="p">,</span> <span class="n">Entry</span><span class="p">,</span> <span class="n">AffixesMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Grammatical particle, aka. &quot;cmavo&quot;.&quot;&quot;&quot;</span>
 
     <span class="c">#: Grammatical class (&quot;selma&#39;o&quot;).</span>

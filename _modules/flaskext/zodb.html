@@ -69,6 +69,7 @@
 <span class="kn">from</span> <span class="nn">persistent</span> <span class="kn">import</span> <span class="n">Persistent</span>
 <span class="kn">from</span> <span class="nn">persistent.list</span> <span class="kn">import</span> <span class="n">PersistentList</span>
 <span class="kn">from</span> <span class="nn">persistent.mapping</span> <span class="kn">import</span> <span class="n">PersistentMapping</span>
+<span class="kn">from</span> <span class="nn">BTrees.OOBTree</span> <span class="kn">import</span> <span class="n">OOBTree</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;ZODB&#39;</span><span class="p">,</span> <span class="s">&#39;Model&#39;</span><span class="p">,</span> <span class="s">&#39;Factory&#39;</span><span class="p">,</span>
@@ -111,14 +112,28 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">cb</span> <span class="o">=</span> <span class="bp">None</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
         <span class="k">if</span> <span class="n">app</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cb</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Register a callback to be called with the root mapping when the</span>
+<span class="sd">        database is first loaded. Useful for setting defaults.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb</span> <span class="o">=</span> <span class="n">cb</span>
+        <span class="k">return</span> <span class="n">cb</span>
+
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">DB</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;ZODB_STORAGE&#39;</span><span class="p">]())</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">DB</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;ZODB_STORAGE&#39;</span><span class="p">]())</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">transaction</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="k">as</span> <span class="n">root</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cb</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">db</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -158,6 +173,17 @@
             <span class="k">return</span> <span class="n">response</span>
 
     <span class="nd">@contextmanager</span>
+    <span class="k">def</span> <span class="nf">transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">connection</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+            <span class="n">transaction</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span>
+            <span class="k">yield</span> <span class="n">connection</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">transaction</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
 <div class="viewcode-block" id="ZODB.__call__"><a class="viewcode-back" href="../../flaskext/zodb.html#flaskext.zodb.ZODB.__call__">[docs]</a>    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Transactional context, for database access outside of requests.</span>
 
@@ -167,13 +193,7 @@
 <span class="sd">                root[&#39;this&#39;] = &#39;is committed at the end of the context.&#39;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
-            <span class="n">transaction</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span>
-            <span class="k">yield</span> <span class="n">connection</span><span class="o">.</span><span class="n">root</span><span class="p">()</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="n">transaction</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-            <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transaction</span><span class="p">()</span>
 
 </div></div>
 <div class="viewcode-block" id="Factory"><a class="viewcode-back" href="../../flaskext/zodb.html#flaskext.zodb.Factory">[docs]</a><span class="k">class</span> <span class="nc">Factory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -214,6 +234,10 @@
 
 <span class="c">#: Factory for :func:`PersistentMapping`</span>
 <span class="n">Mapping</span> <span class="o">=</span> <span class="n">Factory</span><span class="p">(</span><span class="n">PersistentMapping</span><span class="p">)</span>
+
+<span class="c">#: Factory for an object-to-object balance tree mapping,</span>
+<span class="c">#: a :class:`~BTrees.OOBTree.OOBTree`.</span>
+<span class="n">BTree</span> <span class="o">=</span> <span class="n">Factory</span><span class="p">(</span><span class="n">OOBTree</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Model"><a class="viewcode-back" href="../../flaskext/zodb.html#flaskext.zodb.Model">[docs]</a><span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">Persistent</span><span class="p">):</span>
@@ -260,7 +284,7 @@
                 <span class="n">attribute</span> <span class="o">=</span> <span class="bp">None</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span> <span class="n">PersistentList</span><span class="p">):</span>
                 <span class="n">attribute</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span> <span class="n">PersistentMapping</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span> <span class="p">(</span><span class="n">PersistentMapping</span><span class="p">,</span> <span class="n">OOBTree</span><span class="p">)):</span>
                 <span class="n">attribute</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
