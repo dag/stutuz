@@ -4,3 +4,4 @@ var/
 *.egg/
 build/
 dist/
+*.swp
