@@ -117,7 +117,7 @@ class Entry(Model):
     """Base for dictionary entries."""
 
     #: The word or sequence of words that this entry defines.
-    defining = None
+    id = None
 
     translations = BTree
 

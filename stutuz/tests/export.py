@@ -16,7 +16,7 @@ class Export(TestBase):
     def test_xml(self):
         """XML export contains the right elements and attributes"""
 
-        cipra = Root(defining='cipra', affixes=['cip'])
+        cipra = Root(id='cipra', affixes=['cip'])
         cipra.history('eng').revise(object=Definition(
             definition='x1 is a test...',
             notes='Also examination, proxy measure, validation...'

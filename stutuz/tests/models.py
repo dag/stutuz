@@ -79,7 +79,7 @@ class Models(TestBase):
 
         admin = Account(username='admin')
 
-        donri = Root(defining='donri', affixes=['dor', "do'i"])
+        donri = Root(id='donri', affixes=['dor', "do'i"])
         donri.history('en').revise(
             Definition(
                 definition='x₁ is the daytime of day x₂ at location x₃.',

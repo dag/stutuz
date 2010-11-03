@@ -20,7 +20,7 @@ class API(TestBase):
 
         with db() as root:
             root['entries']['donri'] = Root(
-                defining='donri',
+                id='donri',
                 affixes=['dor', "do'i"]
             )
 

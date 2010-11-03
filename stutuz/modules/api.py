@@ -17,7 +17,7 @@ mod = Module(__name__)
 @mod.route('/entry/<id>')
 def entry(id):
     entry = db['entries'][id]
-    data = dict(id=entry.defining, type=entry.type)
+    data = dict(id=entry.id, type=entry.type)
     if hasattr(entry, 'affixes'):
         data['affixes'] = [affix.encode('utf-8') for affix in entry.affixes]
     return jsonify(data)

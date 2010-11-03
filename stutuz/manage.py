@@ -88,11 +88,11 @@ def import_xml(xml, language):
                 elif case('selmaho'):
                     entry.class_ = text
 
-            entry.defining = element.get('word').decode('utf-8')
+            entry.id = element.get('word').decode('utf-8')
             entry.history(language).revise(definition,
                                            comment='Imported from XML.')
 
-            root['entries'][entry.defining] = entry
+            root['entries'][entry.id] = entry
 
 
 @manager.command

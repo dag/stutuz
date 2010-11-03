@@ -4,7 +4,7 @@
 
     <valsi py:for="entry in entries"
            py:with="newest = entry.history(langcode).newest.object"
-           word="$entry.defining"
+           word="$entry.id"
            type="$entry.type">
 
       <definition>$newest.definition</definition>
