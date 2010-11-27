@@ -31,7 +31,7 @@ Prerequisites:
 
 On Ubuntu 10.10 you can install all of these with::
 
-    sudo apt-get install virtualenvwrapper libxml2-dev libxslt-dev
+    sudo apt-get install virtualenvwrapper libxslt-dev
 
 Next, we'll create a virtual Python environment to set it all up in::
 
