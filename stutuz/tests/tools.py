@@ -10,6 +10,7 @@ from attest import Tests, Assert
 
 from stutuz import create_app
 
+
 def flask_tests():
     tests = Tests()
 
