@@ -9,11 +9,15 @@ from __future__ import unicode_literals
 import re
 from functools import partial
 
+from attest import Tests
 from flaskext.testing import TestCase
 import unittest2
 from lxml import etree
 
 from stutuz import create_app
+
+
+all = Tests([[lambda: True]])
 
 
 class TestBase(TestCase, unittest2.TestCase):

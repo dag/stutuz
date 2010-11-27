@@ -17,6 +17,15 @@ manager.add_option('-c', '--config', dest='config',
                    default='stutuz.configs.development')
 
 
+@manager.option('-r', '--reporter', metavar='NAME')
+@manager.option('args', nargs='*')
+def runtests(reporter, args):
+    """Run all stutuz tests."""
+    from attest import get_reporter_by_name
+    from stutuz.tests import all
+    all.run(get_reporter_by_name(reporter)(*args))
+
+
 @manager.command
 def shell():
     """Interactive stutuz console."""
