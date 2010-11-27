@@ -32,7 +32,7 @@ def setup():
 
 
 @suite.test
-def entry(client, none):
+def entry(client):
     """API exposes entries"""
 
     response = client.get('/api/1/entry/?id=donri')

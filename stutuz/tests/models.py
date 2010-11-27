@@ -35,8 +35,8 @@ def users():
     """Users have unique usernames, authenticates by username with password"""
 
     users = Assert(Users())
-    admin = users.new('admin', 'mipri').obj
-    guest = users.new('guest', 'vitke').obj
+    admin = users.new('admin', 'mipri')
+    guest = users.new('guest', 'vitke')
 
     assert users['admin'].is_(admin)
     assert users['guest'].is_(guest)
@@ -63,15 +63,15 @@ def history():
     history = Assert(History())
     account = Account(username='admin')
 
-    first = history.revise((1, 2, 3), account, 'First!').obj
+    first = history.revise((1, 2, 3), account, 'First!')
 
     assert history.newest.is_(first)
-    assert history.newest.is_(history[first.timestamp.isoformat()].obj)
+    assert history.newest.is_(history[first.timestamp.isoformat()])
     assert history.newest.object == (1, 2, 3)
     assert history.newest.author.is_(account)
     assert history.newest.comment == 'First!'
 
-    second = history.revise((3, 2, 1), account, 'Reversed sequence').obj
+    second = history.revise((3, 2, 1), account, 'Reversed sequence')
 
     assert history.newest.is_(second)
     assert history.newest.object == (3, 2, 1)
