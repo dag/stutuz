@@ -6,7 +6,7 @@ from __future__ import with_statement
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from attest import Tests, Assert
+from attest import Tests, Assert, Assert as _
 
 from stutuz.models import Account, Users, History, Revision
 from stutuz.models import Definition, Root
@@ -19,7 +19,7 @@ suite = Tests()
 def account():
     """Accounts store passwords hashed and authenticates"""
 
-    account = Assert(Account(username='admin', password='mipri'))
+    account = _(Account(username='admin', password='mipri'))
     assert account.password != 'mipri'
     assert account.authenticate('mipri').is_(True)
     assert account.authenticate('toldra').is_(False)
@@ -34,7 +34,7 @@ def account():
 def users():
     """Users have unique usernames, authenticates by username with password"""
 
-    users = Assert(Users())
+    users = _(Users())
     admin = users.new('admin', 'mipri')
     guest = users.new('guest', 'vitke')
 
@@ -60,7 +60,7 @@ def users():
 def history():
     """Histories keep logs of Revisions with quick access to the newest"""
 
-    history = Assert(History())
+    history = _(History())
     account = Account(username='admin')
 
     first = history.revise((1, 2, 3), account, 'First!')
@@ -87,7 +87,7 @@ def entries():
 
     admin = Account(username='admin')
 
-    donri = Assert(Root(id='donri', affixes=['dor', "do'i"]))
+    donri = _(Root(id='donri', affixes=['dor', "do'i"]))
     donri.history('en').revise(
         Definition(
             definition='x₁ is the daytime of day x₂ at location x₃.',
@@ -102,5 +102,5 @@ def entries():
     assert donri.history('en').newest.object.notes == \
            'See also {nicte}, {djedi}, {tcika}.'
 
-    Assert(Root().type) == 'gismu'
-    Assert(Root(experimental=True).type) == 'experimental gismu'
+    assert _(Root().type) == 'gismu'
+    assert _(Root(experimental=True).type) == 'experimental gismu'
