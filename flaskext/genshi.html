@@ -77,6 +77,16 @@
 <p class="deprecated">
 <span class="versionmodified">Deprecated since version 0.4: </span><tt class="docutils literal"><span class="pre">app.genshi_instance</span></tt> in favor of <tt class="docutils literal"><span class="pre">app.extensions['genshi']</span></tt>.</p>
 <dl class="attribute">
+<dt id="flaskext.genshi.Genshi.callback">
+<tt class="descname">callback</tt><a class="headerlink" href="#flaskext.genshi.Genshi.callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>A callable for Genshi&#8217;s callback interface, called when a template
+is loaded, with the template as the only argument.</p>
+<p><a class="reference internal" href="#flaskext.genshi.Genshi.template_parsed" title="flaskext.genshi.Genshi.template_parsed"><tt class="xref py py-meth docutils literal"><span class="pre">template_parsed()</span></tt></a> is a decorator for setting this.</p>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.5.</span></p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="flaskext.genshi.Genshi.extensions">
 <tt class="descname">extensions</tt><a class="headerlink" href="#flaskext.genshi.Genshi.extensions" title="Permalink to this definition">¶</a></dt>
 <dd><p>What method is used for an extension.</p>
@@ -87,18 +97,10 @@
 <tt class="descname">filter</tt><big>(</big><em>*methods</em><big>)</big><a class="reference internal" href="../_modules/flaskext/genshi.html#Genshi.filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.genshi.Genshi.filter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator that adds a function to apply filters
 to templates by rendering method.</p>
-<p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">genshi.filters</span> <span class="kn">import</span> <span class="n">Transformer</span>
-
-<span class="nd">@genshi.filter</span><span class="p">(</span><span class="s">&#39;html&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">prepend_title</span><span class="p">(</span><span class="n">template</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">template</span> <span class="o">|</span> <span class="n">Transformer</span><span class="p">(</span><span class="s">&#39;head/title&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">prepend</span><span class="p">(</span><span class="s">&#39;MySite - &#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>See the <a class="reference external" href="http://genshi.edgewall.org/wiki/Documentation/0.6.x/filters.html">Genshi documentation</a>
-for more filters you can use.</p>
 <p class="versionadded">
 <span class="versionmodified">New in version 0.3.</span></p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 0.5: </span>Filters can now optionally take a second argument for the context.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -143,11 +145,21 @@ constructor.</p>
 from the same places as Flask.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="flaskext.genshi.Genshi.template_parsed">
+<tt class="descname">template_parsed</tt><big>(</big><em>callback</em><big>)</big><a class="reference internal" href="../_modules/flaskext/genshi.html#Genshi.template_parsed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.genshi.Genshi.template_parsed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up a calback to be called with a template when it is first
+loaded and parsed. This is the correct way to set up the
+<tt class="xref py py-class docutils literal"><span class="pre">Translator</span></tt> filter.</p>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.5.</span></p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="function">
 <dt id="flaskext.genshi.render_response">
-<tt class="descclassname">flaskext.genshi.</tt><tt class="descname">render_response</tt><big>(</big><em>template=None</em>, <em>context=None</em>, <em>method=None</em>, <em>string=None</em><big>)</big><a class="reference internal" href="../_modules/flaskext/genshi.html#render_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.genshi.render_response" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">flaskext.genshi.</tt><tt class="descname">render_response</tt><big>(</big><em>template=None</em>, <em>context=None</em>, <em>method=None</em>, <em>string=None</em>, <em>filter=None</em><big>)</big><a class="reference internal" href="../_modules/flaskext/genshi.html#render_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#flaskext.genshi.render_response" title="Permalink to this definition">¶</a></dt>
 <dd><p>Renders a template and wraps it in a <a class="reference internal" href="../flask.html#flask.Flask.response_class" title="flask.Flask.response_class"><tt class="xref py py-attr docutils literal"><span class="pre">response_class</span></tt></a>
 with mimetype set according to the rendering method.</p>
 </dd></dl>

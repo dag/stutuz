@@ -76,9 +76,10 @@ hub fork
 <li>Python 2.6 or 2.7</li>
 <li><a class="reference external" href="http://virtualenv.openplans.org/">virtualenv</a></li>
 <li><a class="reference external" href="http://www.doughellmann.com/projects/virtualenvwrapper/">virtualenvwrapper</a></li>
+<li>Headers for libxml2 and libxslt</li>
 </ul>
 <p>On Ubuntu 10.10 you can install all of these with:</p>
-<div class="highlight-bash"><div class="highlight"><pre>sudo apt-get install virtualenvwrapper
+<div class="highlight-bash"><div class="highlight"><pre>sudo apt-get install virtualenvwrapper libxml2-dev libxslt-dev
 </pre></div>
 </div>
 <p>Next, we&#8217;ll create a virtual Python environment to set it all up in:</p>
@@ -90,7 +91,7 @@ hub fork
 <div class="section" id="working-with-our-development-instance">
 <h2>Working with our development instance<a class="headerlink" href="#working-with-our-development-instance" title="Permalink to this headline">¶</a></h2>
 <p>Run the tests:</p>
-<div class="highlight-bash"><div class="highlight"><pre>./setup.py <span class="nb">test</span>
+<div class="highlight-bash"><div class="highlight"><pre>stutuzctl runtests
 </pre></div>
 </div>
 <p>Start the development server:</p>

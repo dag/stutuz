@@ -12,6 +12,10 @@ and the code is in :file:`stutuz/manage.py`.
 
    Starts a development server.
 
+.. option:: runtests
+
+   Runs the full test suite for stutuz.
+
 .. option:: shell
 
    An interactive Python console with some stutuz objects included.
