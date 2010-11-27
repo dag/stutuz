@@ -27,10 +27,11 @@ Prerequisites:
 * Python 2.6 or 2.7
 * `virtualenv <http://virtualenv.openplans.org/>`_
 * `virtualenvwrapper <http://www.doughellmann.com/projects/virtualenvwrapper/>`_
+* Headers for libxml2 and libxslt
 
 On Ubuntu 10.10 you can install all of these with::
 
-    sudo apt-get install virtualenvwrapper
+    sudo apt-get install virtualenvwrapper libxml2-dev libxslt-dev
 
 Next, we'll create a virtual Python environment to set it all up in::
 
@@ -43,7 +44,7 @@ Working with our development instance
 
 Run the tests::
 
-    ./setup.py test
+    stutuzctl runtests
 
 Start the development server::
 
