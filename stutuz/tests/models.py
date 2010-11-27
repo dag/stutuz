@@ -6,93 +6,101 @@ from __future__ import with_statement
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from stutuz.tests import TestBase
+from attest import Tests, Assert
+
 from stutuz.models import Account, Users, History, Revision
 from stutuz.models import Definition, Root
 
 
-class Models(TestBase):
+suite = Tests()
 
-    def test_account(self):
-        """Accounts store passwords hashed and authenticates"""
 
-        account = Account(username='admin', password='mipri')
-        self.assert_not_equal(account.password, 'mipri')
-        self.assert_true(account.authenticate('mipri'))
-        self.assert_false(account.authenticate('toldra'))
+@suite.test
+def account():
+    """Accounts store passwords hashed and authenticates"""
 
-        account.password = 'cnino'
-        self.assert_not_equal(account.password, 'cnino')
-        self.assert_false(account.authenticate('mipri'))
-        self.assert_true(account.authenticate('cnino'))
+    account = Assert(Account(username='admin', password='mipri'))
+    assert account.password != 'mipri'
+    assert account.authenticate('mipri').is_(True)
+    assert account.authenticate('toldra').is_(False)
 
-    def test_users(self):
-        """Users have unique usernames, authenticates by username with password
-        """
+    account.obj.password = 'cnino'
+    assert account.password != 'cnino'
+    assert account.authenticate('mipri').is_(False)
+    assert account.authenticate('cnino').is_(True)
 
-        users = Users()
-        admin = users.new('admin', 'mipri')
-        guest = users.new('guest', 'vitke')
 
-        self.assert_is(users['admin'], admin)
-        self.assert_is(users['guest'], guest)
+@suite.test
+def users():
+    """Users have unique usernames, authenticates by username with password"""
 
-        self.assert_true(users.authenticate('admin', 'mipri'))
-        self.assert_false(users.authenticate('admin', 'toldra'))
-        self.assert_true(users.authenticate('guest', 'vitke'))
-        self.assert_false(users.authenticate('guest', 'srera'))
+    users = Assert(Users())
+    admin = users.new('admin', 'mipri').obj
+    guest = users.new('guest', 'vitke').obj
 
-        with self.assert_raises(ValueError):
-            users.new('admin', 'ckiku')
+    assert users['admin'].is_(admin)
+    assert users['guest'].is_(guest)
 
-        with self.assert_raises(ValueError):
-            users.new('guest', 'vitke')
+    assert users.authenticate('admin', 'mipri').is_(True)
+    assert users.authenticate('admin', 'toldra').is_(False)
+    assert users.authenticate('guest', 'vitke').is_(True)
+    assert users.authenticate('guest', 'srera').is_(False)
 
-        with self.assert_raises(ValueError):
-            users.authenticate('noda', 'da')
+    with Assert.raises(ValueError):
+        users.new('admin', 'ckiku')
 
-    def test_history(self):
-        """Histories keep logs of Revisions with quick access to the newest"""
+    with Assert.raises(ValueError):
+        users.new('guest', 'vitke')
 
-        history = History()
-        account = Account(username='admin')
+    with Assert.raises(ValueError):
+        users.authenticate('noda', 'da')
 
-        first = history.revise((1, 2, 3), account, 'First!')
 
-        self.assert_is(history.newest, first)
-        self.assert_is(history.newest, history[first.timestamp.isoformat()])
-        self.assert_tuple_equal(history.newest.object, (1, 2, 3))
-        self.assert_is(history.newest.author, account)
-        self.assert_equal(history.newest.comment, 'First!')
+@suite.test
+def history():
+    """Histories keep logs of Revisions with quick access to the newest"""
 
-        second = history.revise((3, 2, 1), account, 'Reversed sequence')
+    history = Assert(History())
+    account = Account(username='admin')
 
-        self.assert_is(history.newest, second)
-        self.assert_tuple_equal(history.newest.object, (3, 2, 1))
-        self.assert_equal(history.newest.comment, 'Reversed sequence')
+    first = history.revise((1, 2, 3), account, 'First!').obj
 
-        for revision in history.itervalues():
-            self.assert_is_instance(revision, Revision)
+    assert history.newest.is_(first)
+    assert history.newest.is_(history[first.timestamp.isoformat()].obj)
+    assert history.newest.object == (1, 2, 3)
+    assert history.newest.author.is_(account)
+    assert history.newest.comment == 'First!'
 
-    def test_entries(self):
-        """Entries behave properly"""
+    second = history.revise((3, 2, 1), account, 'Reversed sequence').obj
 
-        admin = Account(username='admin')
+    assert history.newest.is_(second)
+    assert history.newest.object == (3, 2, 1)
+    assert history.newest.comment == 'Reversed sequence'
 
-        donri = Root(id='donri', affixes=['dor', "do'i"])
-        donri.history('en').revise(
-            Definition(
-                definition='x₁ is the daytime of day x₂ at location x₃.',
-                notes='See also {nicte}, {djedi}, {tcika}.'),
-            admin)
+    for revision in history.values():
+        assert revision.__class__.is_(Revision)
 
-        self.assert_sequence_equal(donri.affixes, ['dor', "do'i"])
 
-        self.assert_equal(donri.history('en').newest.object.definition,
-                          'x₁ is the daytime of day x₂ at location x₃.')
+@suite.test
+def entries():
+    """Entries behave properly"""
 
-        self.assert_equal(donri.history('en').newest.object.notes,
-                          'See also {nicte}, {djedi}, {tcika}.')
+    admin = Account(username='admin')
 
-        self.assert_equal(Root().type, 'gismu')
-        self.assert_equal(Root(experimental=True).type, 'experimental gismu')
+    donri = Assert(Root(id='donri', affixes=['dor', "do'i"]))
+    donri.history('en').revise(
+        Definition(
+            definition='x₁ is the daytime of day x₂ at location x₃.',
+            notes='See also {nicte}, {djedi}, {tcika}.'),
+        admin)
+
+    assert donri.affixes == ['dor', "do'i"]
+
+    assert donri.history('en').newest.object.definition == \
+           'x₁ is the daytime of day x₂ at location x₃.'
+
+    assert donri.history('en').newest.object.notes == \
+           'See also {nicte}, {djedi}, {tcika}.'
+
+    Assert(Root().type) == 'gismu'
+    Assert(Root(experimental=True).type) == 'experimental gismu'
