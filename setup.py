@@ -40,9 +40,9 @@ setup(
 
     install_requires=[
         'Flask>=0.6',
-        'Flask-Genshi>=0.4',
+        'Flask-Genshi>=0.5.1',
         'Flask-Script>=0.3.1',
-        'ZODB3>=3.10.0',
+        'ZODB3>=3.10.1',
         'Logbook>=0.3',
         'flatland==dev',
         'Attest>=0.3',
