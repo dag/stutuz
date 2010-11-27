@@ -18,7 +18,7 @@ from stutuz import create_app
 
 
 suite = lambda mod: 'stutuz.tests.' + mod + '.suite'
-all = Tests([suite('converters'), suite('models')])
+all = Tests([suite('converters'), suite('models'), suite('api')])
 
 
 class TestBase(TestCase, unittest2.TestCase):
