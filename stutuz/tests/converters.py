@@ -19,8 +19,7 @@ suite = flask_tests()
 def lang(client):
     """The lang converter matches known language codes"""
 
-    app = current_app
-    @app.route('/_test/<lang:code>')
+    @current_app.route('/_test/<lang:code>')
     def lang_code(code):
         return db['languages'][code]
 
