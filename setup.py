@@ -45,11 +45,8 @@ setup(
         'ZODB3>=3.10.0',
         'Logbook>=0.3',
         'flatland==dev',
-    ],
-
-    tests_require=[
         'Attest>=0.3',
-        'lxml>=2.2.8'
+        'lxml>=2.2.8',
     ],
 
     test_loader='attest:Loader',
