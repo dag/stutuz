@@ -23,6 +23,7 @@ all = Tests([suite('converters'),
              suite('models'),
              suite('api'),
              suite('zodb'),
+             suite('export'),
             ])
 
 

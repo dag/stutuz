@@ -6,33 +6,35 @@ from __future__ import with_statement
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from stutuz.tests import TestBase
+from stutuz.tests.tools import flask_tests, assert_xml
 from stutuz.extensions import db
 from stutuz.models import Definition, Root
 
 
-class Export(TestBase):
+suite = flask_tests()
 
-    def test_xml(self):
-        """XML export contains the right elements and attributes"""
 
-        cipra = Root(id='cipra', affixes=['cip'])
-        cipra.history('eng').revise(object=Definition(
-            definition='x1 is a test...',
-            notes='Also examination, proxy measure, validation...'
-        ))
+@suite.test
+def xml(client):
+    """XML export contains the right elements and attributes"""
 
-        with db() as root:
-            root['entries']['cipra'] = cipra
+    cipra = Root(id='cipra', affixes=['cip'])
+    cipra.history('eng').revise(object=Definition(
+        definition='x1 is a test...',
+        notes='Also examination, proxy measure, validation...'
+    ))
 
-        response = self.client.get('/export/eng.xml')
+    with db() as root:
+        root['entries']['cipra'] = cipra
 
-        xpaths = (
-            '/dictionary/direction[@from="Lojban"][@to="English"]',
-            '//valsi[@word="cipra"][@type="gismu"]/rafsi = "cip"',
-            '//definition = "x1 is a test..."',
-            '//notes = "Also examination, proxy measure, validation..."'
-        )
+    response = client.get('/export/eng.xml')
 
-        for path in xpaths:
-            self.assert_xml(response, path)
+    xpaths = (
+        '/dictionary/direction[@from="Lojban"][@to="English"]',
+        '//valsi[@word="cipra"][@type="gismu"]/rafsi = "cip"',
+        '//definition = "x1 is a test..."',
+        '//notes = "Also examination, proxy measure, validation..."'
+    )
+
+    for path in xpaths:
+        assert_xml(response, path)
