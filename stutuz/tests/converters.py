@@ -6,21 +6,26 @@ from __future__ import with_statement
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from stutuz.tests import TestBase
+from flask import current_app
+
+from stutuz.tests.tools import flask_tests
 from stutuz.extensions import db
 
 
-class Converters(TestBase):
+suite = flask_tests()
 
-    def test_lang(self):
-        """The lang converter matches known language codes"""
 
-        @self.app.route('/_test/<lang:code>')
-        def lang_code(code):
-            return db['languages'][code]
+@suite.test
+def lang(client):
+    """The lang converter matches known language codes"""
 
-        response = self.client.get('/_test/en')
-        self.assert_404(response)
+    app = current_app
+    @app.route('/_test/<lang:code>')
+    def lang_code(code):
+        return db['languages'][code]
 
-        response = self.client.get('/_test/eng')
-        self.assert_equal(response.data, 'English')
+    response = client.get('/_test/en')
+    assert response.status_code == 404
+
+    response = client.get('/_test/eng')
+    assert response.data == 'English'

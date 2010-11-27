@@ -17,7 +17,8 @@ from lxml import etree
 from stutuz import create_app
 
 
-all = Tests([[lambda: True]])
+suite = lambda mod: 'stutuz.tests.' + mod + '.suite'
+all = Tests([suite('converters')])
 
 
 class TestBase(TestCase, unittest2.TestCase):
