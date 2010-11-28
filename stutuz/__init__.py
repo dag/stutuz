@@ -6,16 +6,12 @@ from __future__ import with_statement
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from logbook import Logger, NestedSetup
+from logbook import NestedSetup
 from flask import Flask
 
 from stutuz.extensions import genshi, db
 from stutuz.converters import converters
-
-from stutuz.modules.relvlast import export, api
-
-
-logger = Logger(__name__)
+from stutuz.modules import MOUNTS
 
 
 def create_app(config=None):
@@ -36,7 +32,7 @@ def create_app(config=None):
             app.wsgi_app = middleware(app.wsgi_app)
 
         app.url_map.converters.update(converters)
-        app.register_module(export.mod, url_prefix='/export')
-        app.register_module(api.mod, url_prefix='/api/1')
+        for url_prefix, module in MOUNTS:
+            app.register_module(module, url_prefix=url_prefix)
 
         return app
