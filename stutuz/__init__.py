@@ -12,7 +12,7 @@ from flask import Flask
 from stutuz.extensions import genshi, db
 from stutuz.converters import converters
 
-from stutuz.modules import export, api
+from stutuz.modules.relvlast import export, api
 
 
 logger = Logger(__name__)
