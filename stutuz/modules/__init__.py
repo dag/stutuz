@@ -13,6 +13,7 @@ def mod(path):
     return import_string('stutuz.modules.' + path + '.mod')
 
 
-MOUNTS = [('/export', mod('relvlast.export')),
+MOUNTS = [('/dict', mod('relvlast')),
+          ('/export', mod('relvlast.export')),
           ('/api/1', mod('relvlast.api')),
          ]

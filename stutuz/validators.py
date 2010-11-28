@@ -24,3 +24,14 @@ class IsLanguageCode(Validator):
             if element.value not in root['languages']:
                 return self.note_error(element, state, 'invalid_code')
         return True
+
+
+class IsEntry(Validator):
+
+    undefined_entry = 'Undefined entry.'
+
+    def validate(self, element, state):
+        with db() as root:
+            if element.value not in root['entries']:
+                return self.note_error(element, state, 'undefined_entry')
+        return True

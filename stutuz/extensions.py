@@ -15,9 +15,13 @@ from stutuz.models import Users
 
 
 logger = Logger('stutuz')
-genshi = Genshi()
-db = ZODB()
 
+
+genshi = Genshi()
+genshi.extensions['html'] = 'html5'
+
+
+db = ZODB()
 
 @db.init
 def set_defaults(root):
