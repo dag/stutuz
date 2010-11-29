@@ -1,0 +1,10 @@
+<html xmlns:py="http://genshi.edgewall.org/" py:strip="">
+  <head py:match="head">
+    <title>
+      Lojban, ${select('title/text()')}
+    </title>
+    <link rel="stylesheet"
+          href="${url_for('.static', filename='css/master.css')}"/>
+  </head>
+  <body py:match="body">${select('*|text()')}</body>
+</html>

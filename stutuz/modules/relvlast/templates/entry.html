@@ -1,0 +1,17 @@
+<html xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+  <xi:include href="../base.html"/>
+  <head>
+    <title>Dictionary: $entry.id</title>
+  </head>
+  <body>
+    <article>
+      <h1>$entry.id</h1>
+      <h2>Translations</h2>
+      <dl py:for="lang in entry.translations">
+        <dt>${languages[lang]}</dt>
+        <dd>${entry.history(lang).newest.object.definition}</dd>
+      </dl>
+    </article>
+  </body>
+</html>

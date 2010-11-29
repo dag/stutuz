@@ -1,0 +1,18 @@
+body
+{ margin: 0 auto;
+  width: 950px;
+}
+
+h1, h2, h3, h4, h5, h6
+{ font-family: 'Garamond', 'Georgia', 'serif';
+  font-weight: normal;
+  font-style: italic;
+}
+
+dt
+{ font-variant: small-caps;
+}
+
+p, li, dt, dd
+{ font-family: 'Garamond', 'Georgia', 'serif';
+}
