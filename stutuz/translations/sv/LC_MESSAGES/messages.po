@@ -1,0 +1,31 @@
+# Swedish translations for stutuz.
+# Copyright (C) 2010 Dag Odenhall
+# This file is distributed under the same license as the stutuz project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+# FULL NAME <EMAIL@ADDRESS>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: stutuz 0.1dev\n"
+"Report-Msgid-Bugs-To: dag.odenhall@gmail.com\n"
+"POT-Creation-Date: 2010-11-29 21:46+0100\n"
+"PO-Revision-Date: 2010-11-29 22:17+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: sv <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 0.9.5\n"
+
+#: stutuz/modules/relvlast/templates/entry.html:5
+msgid "Dictionary:"
+msgstr "Ordbok:"
+
+#: stutuz/modules/relvlast/templates/entry.html:10
+msgid "Translations"
+msgstr "Översättningar"
+
+#: stutuz/templates/base.html:3
+msgid "Lojban,"
+msgstr "Lojban,"

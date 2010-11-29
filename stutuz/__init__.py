@@ -7,7 +7,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from logbook import NestedSetup
-from flask import Flask
+from flask import Flask, request
+from flaskext.babel import Babel
 
 from stutuz.extensions import genshi, db
 from stutuz.converters import converters
@@ -27,6 +28,13 @@ def create_app(config=None):
     with NestedSetup(handlers):
         for extension in genshi, db:
             extension.init_app(app)
+
+        babel = Babel(app)
+
+        @babel.localeselector
+        def get_locale():
+            return request.accept_languages.best_match(
+                    map(str, babel.list_translations()))
 
         for middleware in app.config.get('MIDDLEWARES', ()):
             app.wsgi_app = middleware(app.wsgi_app)

@@ -5,3 +5,4 @@ var/
 build/
 dist/
 *.swp
+*.mo

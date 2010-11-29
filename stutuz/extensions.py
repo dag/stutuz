@@ -8,6 +8,8 @@ from __future__ import unicode_literals
 
 from logbook import Logger
 from flaskext.genshi import Genshi
+from genshi.filters import Translator
+from flaskext.babel import gettext
 from flaskext.zodb import ZODB
 from BTrees.OOBTree import OOBTree
 
@@ -19,6 +21,10 @@ logger = Logger('stutuz')
 
 genshi = Genshi()
 genshi.extensions['html'] = 'html5'
+
+@genshi.template_parsed
+def setup_translator(template):
+    Translator(gettext).setup(template)
 
 
 db = ZODB()

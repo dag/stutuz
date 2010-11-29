@@ -42,6 +42,7 @@ setup(
         'Flask>=0.6',
         'Flask-Genshi>=0.5.1',
         'Flask-Script>=0.3.1',
+        'Flask-Babel>=0.6',
         'ZODB3>=3.10.1',
         'Logbook>=0.3',
         'flatland==dev',
