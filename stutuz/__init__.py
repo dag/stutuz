@@ -33,6 +33,8 @@ def create_app(config=None):
 
         @babel.localeselector
         def best_locale():
+            if 'locale' in request.args:
+                return request.args['locale']
             return request.accept_languages.best_match(
                     map(str, babel.list_translations()))
 
