@@ -66,22 +66,31 @@ def import_xml(xml, locale):
     with db() as root:
         doc = etree.parse(xml)
         for element in doc.getiterator('valsi'):
-            case = lambda x: element.get('type') == x
+            id = element.get('word').decode('utf-8')
 
-            if case('gismu'):
-                entry = Root()
-            elif case('lujvo'):
-                entry = Compound()
-            elif case('cmavo'):
-                entry = Particle()
-            elif case("fu'ivla"):
-                entry = Loan()
-            elif case('experimental gismu'):
-                entry = Root(experimental=True)
-            elif case('experimental cmavo'):
-                entry = Particle(experimental=True)
+            if id in root['entries']:
+                entry = root['entries'][id]
+
             else:
-                continue
+                case = lambda x: element.get('type') == x
+
+                if case('gismu'):
+                    entry = Root()
+                elif case('lujvo'):
+                    entry = Compound()
+                elif case('cmavo'):
+                    entry = Particle()
+                elif case("fu'ivla"):
+                    entry = Loan()
+                elif case('experimental gismu'):
+                    entry = Root(experimental=True)
+                elif case('experimental cmavo'):
+                    entry = Particle(experimental=True)
+                else:
+                    continue
+
+                entry.id = id
+                root['entries'][entry.id] = entry
 
             definition = Definition()
             for subelement in element:
@@ -97,11 +106,8 @@ def import_xml(xml, locale):
                 elif case('selmaho'):
                     entry.class_ = text
 
-            entry.id = element.get('word').decode('utf-8')
             entry.history(locale).revise(definition,
                                          comment='Imported from XML.')
-
-            root['entries'][entry.id] = entry
 
 
 def main():
