@@ -109,6 +109,23 @@ def import_xml(xml, locale):
             entry.history(locale).revise(definition,
                                          comment='Imported from XML.')
 
+@manager.command
+def dump_localedata(locale):
+    from babel import localedata
+    import pickle
+    from pprint import pprint
+    with open(localedata._dirname + '/' + locale + '.dat') as data:
+        pprint(pickle.load(data))
+
+
+@manager.command
+def install_localedata():
+    from stutuz.localedata import jbo
+    from babel import localedata
+    import pickle
+    with open(localedata._dirname + '/jbo.dat', 'w') as data:
+        pickle.dump(jbo.DATA, data)
+
 
 def main():
     manager.run()
