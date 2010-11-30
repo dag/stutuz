@@ -7,7 +7,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from logbook import NestedSetup
-from flask import Flask, request
+from flask import Flask, request, Markup
 from flaskext.babel import Babel, get_locale
 
 from stutuz.extensions import genshi, db
@@ -24,6 +24,12 @@ def create_app(config=None):
         app.config.from_object(config)
     app.config.from_envvar('STUTUZ_CONFIG', silent=True)
 
+    @app.context_processor
+    def global_context():
+        return dict(locale=get_locale(),
+                    Markup=Markup,  # Flask's seems to be superior to Genshi's
+                   )
+
     handlers = app.config.get('LOGBOOK_HANDLERS')
     with NestedSetup(handlers):
         for extension in genshi, db:
@@ -37,10 +43,6 @@ def create_app(config=None):
                 return request.args['locale']
             return request.accept_languages.best_match(
                     map(str, babel.list_translations()))
-
-        @app.context_processor
-        def locale():
-            return dict(locale=get_locale())
 
         for middleware in app.config.get('MIDDLEWARES', ()):
             app.wsgi_app = middleware(app.wsgi_app)

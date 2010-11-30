@@ -61,6 +61,7 @@ Useful names:
 def import_xml(xml, locale):
     from stutuz import db
     from stutuz.models import Definition, Root, Compound, Particle, Loan
+    from stutuz.utils.tex import Tex
     import xml.etree.cElementTree as etree
 
     with db() as root:
@@ -98,9 +99,9 @@ def import_xml(xml, locale):
                 case = lambda x: subelement.tag == x
 
                 if case('definition'):
-                    definition.definition = text
+                    definition.definition = Tex(text)
                 elif case('notes'):
-                    definition.notes = text
+                    definition.notes = Tex(text)
                 elif case('rafsi'):
                     entry.affixes.append(text)
                 elif case('selmaho'):

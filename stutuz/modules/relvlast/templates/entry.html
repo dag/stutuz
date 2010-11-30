@@ -10,7 +10,7 @@
       <h2>Translations</h2>
       <dl py:for="code in entry.translations">
         <dt>${locale.languages[code].capitalize()}</dt>
-        <dd>${entry.history(code).newest.object.definition}</dd>
+        <dd>${Markup(entry.history(code).newest.object.definition)}</dd>
       </dl>
     </article>
   </body>
