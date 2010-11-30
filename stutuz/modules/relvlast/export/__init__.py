@@ -22,5 +22,5 @@ def xml(locale):
         'language': Locale(locale).english_name,
         'locale': locale,
         'entries': (e for e in db['entries'].itervalues()
-                      if e.history(locale))
+                      if e.translations.get(locale))
     })
