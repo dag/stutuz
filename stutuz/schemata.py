@@ -8,11 +8,11 @@ from __future__ import unicode_literals
 
 from flatland import String
 
-from stutuz.validators import IsLanguageCode, IsEntry
+from stutuz.validators import IsLocale, IsEntry
 
 
-class LanguageCode(String):
-    validators = [IsLanguageCode()]
+class Locale(String):
+    validators = [IsLocale()]
 
 
 class Entry(String):

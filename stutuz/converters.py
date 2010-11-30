@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 
 from werkzeug.routing import BaseConverter, ValidationError
 
-from stutuz.schemata import LanguageCode, Entry
+from stutuz.schemata import Locale, Entry
 
 
 def schematic_converter(schema):
@@ -29,6 +29,6 @@ def schematic_converter(schema):
 
 
 converters = {
-    'lang': schematic_converter(LanguageCode),
+    'lang': schematic_converter(Locale),
     'entry': schematic_converter(Entry),
 }

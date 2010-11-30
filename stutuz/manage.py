@@ -58,7 +58,7 @@ Useful names:
 
 
 @manager.command
-def import_xml(xml, language):
+def import_xml(xml, locale):
     from stutuz import db
     from stutuz.models import Definition, Root, Compound, Particle, Loan
     import xml.etree.cElementTree as etree
@@ -98,25 +98,10 @@ def import_xml(xml, language):
                     entry.class_ = text
 
             entry.id = element.get('word').decode('utf-8')
-            entry.history(language).revise(definition,
-                                           comment='Imported from XML.')
+            entry.history(locale).revise(definition,
+                                         comment='Imported from XML.')
 
             root['entries'][entry.id] = entry
-
-
-@manager.command
-def import_language_codes():
-    from urllib2 import urlopen
-    from contextlib import closing
-    from stutuz import db
-
-    url = 'http://www.sil.org/iso639-3/iso-639-3_20100707.tab'
-    with closing(urlopen(url)) as data:
-        with db() as root:
-            for num, line in enumerate(data):
-                if num != 0:
-                    code, _, _, _, _, _, name, _ = line.split('\t')
-                    root['languages'][code] = name
 
 
 def main():

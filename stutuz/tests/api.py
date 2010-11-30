@@ -20,7 +20,7 @@ suite = flask_tests()
 @suite.context
 def setup():
     donri = Root(id='donri', affixes=['dor', "do'i"])
-    donri.history('eng').revise(object=Definition(
+    donri.history('en').revise(object=Definition(
         definition='x1 is the daytime...',
         notes='See also {nicte}...'
     ))
@@ -44,7 +44,7 @@ def entry(client):
         'affixes': ['dor', "do'i"]
     }
 
-    response = client.get('/api/1/entry/?id=donri&language=eng')
+    response = client.get('/api/1/entry/?id=donri&locale=en')
     assert response.status_code == 200
     assert var(json.loads(response.data.obj)) == {
         'id': 'donri',
@@ -64,7 +64,7 @@ def entry(client):
     assert response.content_type == 'application/json'
     assert 'error' in var(json.loads(response.data.obj))
 
-    response = client.get('/api/1/entry/?id=donri&language=zzz')
+    response = client.get('/api/1/entry/?id=donri&locale=zzz')
     assert response.status_code == 400
     assert response.content_type == 'application/json'
     assert 'error' in var(json.loads(response.data.obj))

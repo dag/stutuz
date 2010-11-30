@@ -19,7 +19,7 @@ def xml(client):
     """XML export contains the right elements and attributes"""
 
     cipra = Root(id='cipra', affixes=['cip'])
-    cipra.history('eng').revise(object=Definition(
+    cipra.history('en').revise(object=Definition(
         definition='x1 is a test...',
         notes='Also examination, proxy measure, validation...'
     ))
@@ -27,7 +27,7 @@ def xml(client):
     with db() as root:
         root['entries']['cipra'] = cipra
 
-    response = client.get('/export/eng.xml')
+    response = client.get('/export/en.xml')
 
     xpaths = (
         '/dictionary/direction[@from="Lojban"][@to="English"]',

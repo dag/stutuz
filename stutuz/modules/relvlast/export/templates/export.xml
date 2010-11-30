@@ -3,7 +3,7 @@
   <direction from="Lojban" to="$language">
 
     <valsi py:for="entry in entries"
-           py:with="newest = entry.history(langcode).newest.object"
+           py:with="newest = entry.history(locale).newest.object"
            word="$entry.id"
            type="$entry.type">
 

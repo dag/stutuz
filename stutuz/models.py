@@ -121,11 +121,11 @@ class Entry(Model):
 
     translations = BTree
 
-    def history(self, language):
-        """Get the history of revisions in a language, create if needed."""
-        if language not in self.translations:
-            self.translations[language] = History()
-        return self.translations[language]
+    def history(self, locale):
+        """Get the history of revisions for a locale, create if needed."""
+        if locale not in self.translations:
+            self.translations[locale] = History()
+        return self.translations[locale]
 
     @property
     def type(self):

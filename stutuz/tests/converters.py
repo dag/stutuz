@@ -7,9 +7,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from flask import current_app
+from babel import Locale
 
 from stutuz.tests.tools import flask_tests
-from stutuz.extensions import db
 
 
 suite = flask_tests()
@@ -21,10 +21,10 @@ def lang(client):
 
     @current_app.route('/_test/<lang:code>')
     def lang_code(code):
-        return db['languages'][code]
-
-    response = client.get('/_test/en')
-    assert response.status_code == 404
+        return Locale(code).english_name
 
     response = client.get('/_test/eng')
+    assert response.status_code == 404
+
+    response = client.get('/_test/en')
     assert response.data == 'English'

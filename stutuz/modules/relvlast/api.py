@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from flask import Module, request, Response, jsonify
+from babel import localedata
 
 from stutuz.extensions import db
 
@@ -26,9 +27,9 @@ def entry():
         return jsonerror("Missing required argument 'id'.", 400)
     if request.args['id'] not in db['entries']:
         return jsonerror('Undefined entry.', 404)
-    if 'language' in request.args and \
-       request.args['language'] not in db['languages']:
-        return jsonerror('Invalid language code.', 400)
+    if 'locale' in request.args and \
+       not localedata.exists(request.args['locale']):
+        return jsonerror('Invalid locale.', 400)
 
     entry = db['entries'][request.args['id']]
     data = dict(id=entry.id, type=entry.type)
@@ -37,9 +38,9 @@ def entry():
     if hasattr(entry, 'class_'):
         data['class'] = entry.class_
 
-    language = request.args.get('language')
-    if entry.history(language):
-        definition = entry.history(language).newest.object
+    locale = request.args.get('locale')
+    if entry.history(locale):
+        definition = entry.history(locale).newest.object
         data['definition'] = definition.definition
         data['notes'] = definition.notes
     return jsonify(data)

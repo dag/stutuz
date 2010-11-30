@@ -31,8 +31,6 @@ db = ZODB()
 
 @db.init
 def set_defaults(root):
-    if 'languages' not in root:
-        root['languages'] = OOBTree({'eng': 'English', 'jbo': 'Lojban'})
     if 'users' not in root:
         root['users'] = Users()
     if 'entries' not in root:

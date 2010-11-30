@@ -8,9 +8,9 @@
     <article>
       <h1>$entry.id</h1>
       <h2>Translations</h2>
-      <dl py:for="lang in entry.translations">
-        <dt>${languages[lang]}</dt>
-        <dd>${entry.history(lang).newest.object.definition}</dd>
+      <dl py:for="code in entry.translations">
+        <dt>${locale.languages[code].capitalize()}</dt>
+        <dd>${entry.history(code).newest.object.definition}</dd>
       </dl>
     </article>
   </body>

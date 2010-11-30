@@ -7,22 +7,18 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from flatland.validation import Validator
+from babel import localedata
 
 from stutuz.extensions import db
 
 
-class IsLanguageCode(Validator):
+class IsLocale(Validator):
 
-    invalid_length = 'Language code must be exactly three letters.'
-
-    invalid_code = 'Invalid language code.'
+    invalid_locale = 'Invalid locale.'
 
     def validate(self, element, state):
-        if len(element.value) != 3:
-            return self.note_error(element, state, 'invalid_length')
-        with db() as root:
-            if element.value not in root['languages']:
-                return self.note_error(element, state, 'invalid_code')
+        if not localedata.exists(element.value):
+            return self.note_error(element, state, 'invalid_locale')
         return True
 
 
