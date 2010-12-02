@@ -13,6 +13,23 @@ dt
 { font-variant: small-caps;
 }
 
-p, li, dt, dd
+p, li, dt, dd, th, td
 { font-family: 'Garamond', 'Georgia', 'serif';
+}
+
+
+table.history
+{ width: 100%;
+}
+
+table.history td
+{ text-align: center;
+}
+
+table.history td.comment
+{ font-style: italic;
+}
+
+table.history td.timestamp
+{ font-family: 'Consolas', 'monospace';
 }

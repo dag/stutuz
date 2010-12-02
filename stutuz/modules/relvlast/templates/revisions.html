@@ -1,0 +1,29 @@
+<html xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+  <xi:include href="../base.html"/>
+  <head>
+    <title>Dictionary: $entry.id</title>
+  </head>
+  <body>
+    <article>
+      <h1>$entry.id</h1>
+      <h2>Revisions in ${locale.languages[language]}</h2>
+      <table class="history">
+        <tr>
+          <th>Author</th>
+          <th>Comment</th>
+          <th>Time</th>
+        </tr>
+        <tr py:for="revision in reversed(history.values())">
+          <td class="author">$revision.author</td>
+          <td class="comment">$revision.comment</td>
+          <td class="timestamp">
+            <time datetime="${revision.timestamp.isoformat()}">
+              ${format_datetime(revision.timestamp)}
+            </time>
+          </td>
+        </tr>
+      </table>
+    </article>
+  </body>
+</html>

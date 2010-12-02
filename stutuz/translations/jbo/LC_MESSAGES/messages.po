@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: stutuz 0.1dev\n"
 "Report-Msgid-Bugs-To: dag.odenhall@gmail.com\n"
 "POT-Creation-Date: 2010-11-29 21:46+0100\n"
-"PO-Revision-Date: 2010-11-30 21:05+0100\n"
+"PO-Revision-Date: 2010-12-02 00:41+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: jbo <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -19,6 +19,7 @@ msgstr ""
 "Generated-By: Babel 0.9.5\n"
 
 #: stutuz/modules/relvlast/templates/entry.html:5
+#: stutuz/modules/relvlast/templates/revisions.html:5
 msgid "Dictionary:"
 msgstr "vlaste:"
 
@@ -26,6 +27,23 @@ msgstr "vlaste:"
 msgid "Translations"
 msgstr "xe fanva"
 
+#: stutuz/modules/relvlast/templates/revisions.html:10
+msgid "Revisions in"
+msgstr ""
+
+#: stutuz/modules/relvlast/templates/revisions.html:13
+msgid "Author"
+msgstr ""
+
+#: stutuz/modules/relvlast/templates/revisions.html:14
+msgid "Comment"
+msgstr ""
+
+#: stutuz/modules/relvlast/templates/revisions.html:15
+msgid "Time"
+msgstr ""
+
 #: stutuz/templates/base.html:3
 msgid "Lojban,"
 msgstr "la lojban,"
+

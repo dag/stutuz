@@ -1,14 +1,14 @@
-# Translations template for stutuz.
+# Translations template for PROJECT.
 # Copyright (C) 2010 Dag Odenhall
-# This file is distributed under the same license as the stutuz project.
+# This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: stutuz 0.1dev\n"
+"Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: dag.odenhall@gmail.com\n"
-"POT-Creation-Date: 2010-11-29 21:46+0100\n"
+"POT-Creation-Date: 2010-12-02 00:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,28 @@ msgstr ""
 "Generated-By: Babel 0.9.5\n"
 
 #: stutuz/modules/relvlast/templates/entry.html:5
+#: stutuz/modules/relvlast/templates/revisions.html:5
 msgid "Dictionary:"
 msgstr ""
 
 #: stutuz/modules/relvlast/templates/entry.html:10
 msgid "Translations"
+msgstr ""
+
+#: stutuz/modules/relvlast/templates/revisions.html:10
+msgid "Revisions in"
+msgstr ""
+
+#: stutuz/modules/relvlast/templates/revisions.html:13
+msgid "Author"
+msgstr ""
+
+#: stutuz/modules/relvlast/templates/revisions.html:14
+msgid "Comment"
+msgstr ""
+
+#: stutuz/modules/relvlast/templates/revisions.html:15
+msgid "Time"
 msgstr ""
 
 #: stutuz/templates/base.html:3
