@@ -12,7 +12,7 @@ from babel.dates import format_datetime
 from flaskext.babel import Babel, get_locale
 
 from stutuz.extensions import genshi, db
-from stutuz.converters import converters
+from stutuz.schemata import CONVERTERS
 from stutuz.modules import MOUNTS
 
 
@@ -52,7 +52,7 @@ def create_app(config=None):
         for middleware in app.config.get('MIDDLEWARES', ()):
             app.wsgi_app = middleware(app.wsgi_app)
 
-        app.url_map.converters.update(converters)
+        app.url_map.converters.update(CONVERTERS)
         for url_prefix, module in MOUNTS:
             app.register_module(module, url_prefix=url_prefix)
 
