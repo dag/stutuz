@@ -44,11 +44,11 @@ Working with our development instance
 
 Run the tests::
 
-    stutuzctl runtests
+    stutuzctl test
 
 Start the development server::
 
-    stutuzctl runserver
+    stutuzctl serve
 
 When you're done you might want to get out of the environment::
 

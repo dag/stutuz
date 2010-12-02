@@ -7,19 +7,24 @@ from __future__ import with_statement
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from flaskext.script import Manager
+from flaskext.script import Manager, Server
 
 from stutuz import create_app
 
 
-manager = Manager(create_app)
+class Serve(Server):
+    description = 'Run the development server.'
+
+
+manager = Manager(create_app, with_default_commands=False)
 manager.add_option('-c', '--config', dest='config',
                    default='stutuz.configs.development')
+manager.add_command('serve', Serve())
 
 
 @manager.option('-r', '--reporter', metavar='NAME')
 @manager.option('args', nargs='*')
-def runtests(reporter, args):
+def test(reporter, args):
     """Run all stutuz tests."""
     from attest import get_reporter_by_name
     from stutuz.tests import all
@@ -29,19 +34,21 @@ def runtests(reporter, args):
 @manager.command
 def shell():
     """Interactive stutuz console."""
+    from inspect import cleandoc
     from flask import current_app
     from stutuz import db, models
 
     banner = \
-"""Interactive stutuz console.
+        """Interactive stutuz console.
 
-Useful names:
+        Useful names:
 
-  app     Flask application for stutuz
-  db      The database instance
-  models  Namespace for all models
-"""
+          app     Flask application for stutuz
+          db      The database instance
+          models  Namespace for all models
+        """
 
+    banner = cleandoc(banner)
     try:
         current_app.preprocess_request()
         context = dict(app=current_app, db=db, models=models)
@@ -58,14 +65,15 @@ Useful names:
 
 
 @manager.command
-def import_xml(xml, locale):
+def import_xml(file, locale):
+    """Import data from a jbovlaste XML export."""
     from stutuz import db
     from stutuz.models import Definition, Root, Compound, Particle, Loan
     from stutuz.utils.tex import Tex
     import xml.etree.cElementTree as etree
 
     with db() as root:
-        doc = etree.parse(xml)
+        doc = etree.parse(file)
         for element in doc.getiterator('valsi'):
             id = element.get('word').decode('utf-8')
 
@@ -112,6 +120,7 @@ def import_xml(xml, locale):
 
 @manager.command
 def dump_localedata(locale):
+    """Use a Babel locale as base for a new custom one."""
     from babel import localedata
     import pickle
     from pprint import pprint
@@ -121,6 +130,7 @@ def dump_localedata(locale):
 
 @manager.command
 def install_localedata():
+    """Install the custom locales shipped with stutuz."""
     from stutuz.localedata import jbo
     from babel import localedata
     import pickle

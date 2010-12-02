@@ -8,11 +8,11 @@ and the code is in :file:`stutuz/manage.py`.
 
 .. program:: stutuzctl
 
-.. option:: runserver
+.. option:: serve
 
    Starts a development server.
 
-.. option:: runtests
+.. option:: test
 
    Runs the full test suite for stutuz.
 
