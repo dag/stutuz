@@ -12,7 +12,7 @@ from stutuz.schemata import Locale, Entry
 
 
 def schematic_converter(schema):
-    """Create a Werkzeug converter from a flaskland schema."""
+    """Create a Werkzeug converter from a flatland schema."""
 
     class Converter(BaseConverter):
 
