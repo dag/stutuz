@@ -1,5 +1,5 @@
 # Translations template for PROJECT.
-# Copyright (C) 2010 Dag Odenhall
+# Copyright (C) 2010 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: dag.odenhall@gmail.com\n"
-"POT-Creation-Date: 2010-12-02 00:41+0100\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2010-12-02 23:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,32 +17,32 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.5\n"
 
-#: stutuz/modules/relvlast/templates/entry.html:5
-#: stutuz/modules/relvlast/templates/revisions.html:5
+#: modules/relvlast/templates/entry.html:5
+#: modules/relvlast/templates/revisions.html:5
 msgid "Dictionary:"
 msgstr ""
 
-#: stutuz/modules/relvlast/templates/entry.html:10
+#: modules/relvlast/templates/entry.html:10
 msgid "Translations"
 msgstr ""
 
-#: stutuz/modules/relvlast/templates/revisions.html:10
+#: modules/relvlast/templates/revisions.html:10
 msgid "Revisions in"
 msgstr ""
 
-#: stutuz/modules/relvlast/templates/revisions.html:13
+#: modules/relvlast/templates/revisions.html:13
 msgid "Author"
 msgstr ""
 
-#: stutuz/modules/relvlast/templates/revisions.html:14
+#: modules/relvlast/templates/revisions.html:14
 msgid "Comment"
 msgstr ""
 
-#: stutuz/modules/relvlast/templates/revisions.html:15
+#: modules/relvlast/templates/revisions.html:15
 msgid "Time"
 msgstr ""
 
-#: stutuz/templates/base.html:3
+#: templates/base.html:3
 msgid "Lojban,"
 msgstr ""
 

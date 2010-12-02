@@ -7,6 +7,9 @@ from __future__ import with_statement
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import os
+
+from flask import current_app
 from flaskext.script import Manager, Server
 
 from stutuz import create_app
@@ -35,18 +38,17 @@ def test(reporter, args):
 def shell():
     """Interactive stutuz console."""
     from inspect import cleandoc
-    from flask import current_app
     from stutuz import db, models
 
-    banner = \
-        """Interactive stutuz console.
+    banner = '''\
+        Interactive stutuz console.
 
         Useful names:
 
           app     Flask application for stutuz
           db      The database instance
           models  Namespace for all models
-        """
+        '''
 
     banner = cleandoc(banner)
     try:
@@ -136,6 +138,46 @@ def install_localedata():
     import pickle
     with open(localedata._dirname + '/jbo.dat', 'w') as data:
         pickle.dump(jbo.DATA, data)
+
+
+@manager.command
+def extract_translations():
+    """Extract translatable strings."""
+    root = current_app.root_path
+    os.system('''
+        cd {root}
+        pybabel extract -F babel.cfg -o messages.pot .
+    '''.format(root=root))
+
+
+@manager.command
+def new_translations(locale):
+    """Set up a new locale for translations."""
+    root = current_app.root_path
+    os.system('''
+        cd {root}
+        pybabel init -i messages.pot -d translations -l {locale}
+    '''.format(root=root, locale=locale))
+
+
+@manager.command
+def compile_translations():
+    """Compile translated strings."""
+    root = current_app.root_path
+    os.system('''
+        cd {root}
+        pybabel compile -d translations
+    '''.format(root=root))
+
+
+@manager.command
+def update_translations():
+    """Merge existing translations and new strings."""
+    root = current_app.root_path
+    os.system('''
+        cd {root}
+        pybabel update -i messages.pot -d translations
+    '''.format(root=root))
 
 
 def main():
