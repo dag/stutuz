@@ -11,7 +11,7 @@ from attest import Tests
 
 suite = lambda mod: 'stutuz.tests.' + mod + '.suite'
 
-all = Tests([suite('converters'),
+all = Tests([suite('schemata'),
              suite('models'),
              suite('api'),
              suite('zodb'),
