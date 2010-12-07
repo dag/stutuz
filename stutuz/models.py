@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from BTrees.OOBTree import OOBTree
+from BTrees.IOBTree import IOBTree
 from werkzeug import generate_password_hash, check_password_hash
 from flaskext.zodb import Model, Timestamp, Mapping, List, BTree
 
@@ -65,7 +66,7 @@ class Account(Model):
         return check_password_hash(self.password, password)
 
 
-class History(OOBTree):
+class History(IOBTree):
     """A log of revisions, acts like a :class:`dict` with
     timestamps in ISO 8601 for keys.
 
