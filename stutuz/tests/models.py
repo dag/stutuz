@@ -66,7 +66,7 @@ def history():
     first = history.revise((1, 2, 3), account, 'First!')
 
     assert history.newest.is_(first)
-    assert history.newest.is_(history[first.timestamp.isoformat()])
+    assert history.newest.is_(history[len(history.obj)])
     assert history.newest.object == (1, 2, 3)
     assert history.newest.author.is_(account)
     assert history.newest.comment == 'First!'

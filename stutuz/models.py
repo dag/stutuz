@@ -83,7 +83,7 @@ class History(OOBTree):
 
         """
         revision = Revision(author=author, comment=comment, object=object)
-        self[revision.timestamp.isoformat()] = revision
+        self[(self.maxKey() if self else 0) + 1] = revision
         return revision
 
 
