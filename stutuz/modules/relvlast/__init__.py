@@ -33,14 +33,16 @@ def entry(entry):
             data['translations'][code] = str(history.newest.object.definition)
         return jsonify(data)
 
-    return render_response('relvlast/entry.html', {'entry': entry})
+    return render_response('relvlast/entry.html', dict(entry = entry))
 
 
 @mod.route('/<entry:entry>/revisions/<lang:language>/')
 def revisions(entry, language):
     entry = db['entries'][entry]
-    return render_response('relvlast/revisions.html', {
-        'entry': entry,
-        'language': language,
-        'history': entry.history(language),
-    })
+    return render_response('relvlast/revisions.html',
+        dict(
+            entry = entry,
+            language = language,
+            history = entry.history(language),
+        )
+    )

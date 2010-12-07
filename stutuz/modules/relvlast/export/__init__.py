@@ -18,9 +18,11 @@ mod = Module(__name__)
 
 @mod.route('/<lang:locale>.xml')
 def xml(locale):
-    return render_response('export/export.xml', {
-        'language': Locale(locale).english_name,
-        'locale': locale,
-        'entries': (e for e in db['entries'].itervalues()
-                      if e.translations.get(locale))
-    })
+    return render_response('export/export.xml',
+        dict(
+            language = Locale(locale).english_name,
+            locale = locale,
+            entries = (e for e in db['entries'].itervalues()
+                         if e.translations.get(locale)),
+        )
+    )
