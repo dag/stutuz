@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 
 from flask import Module, request, jsonify
 from flaskext.genshi import render_response
+from babel import Locale
 
 from stutuz.extensions import db
 
@@ -36,7 +37,7 @@ def entry(entry):
     return render_response('relvlast/entry.html', dict(entry = entry))
 
 
-@mod.route('/<entry:entry>/revisions/<lang:language>/')
+@mod.route('/<entry:entry>/+revisions/<lang:language>/')
 def revisions(entry, language):
     entry = db['entries'][entry]
     return render_response('relvlast/revisions.html',
@@ -46,3 +47,18 @@ def revisions(entry, language):
             history = entry.history(language),
         )
     )
+
+
+@mod.route('/+export/<lang:locale>/')
+def export(locale):
+    response = render_response('relvlast/export.xml',
+        dict(
+            language = Locale(locale).english_name,
+            locale = locale,
+            entries = (e for e in db['entries'].itervalues()
+                         if e.translations.get(locale)),
+        )
+    )
+    response.headers.add('Content-Disposition', 'attachment',
+                         filename='.'.join(('jbovlaste', locale, 'xml')))
+    return response

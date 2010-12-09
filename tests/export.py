@@ -27,7 +27,7 @@ def xml(client):
     with db() as root:
         root['entries']['cipra'] = cipra
 
-    response = client.get('/export/en.xml')
+    response = client.get('/dict/+export/en/')
 
     xpaths = (
         '/dictionary/direction[@from="Lojban"][@to="English"]',

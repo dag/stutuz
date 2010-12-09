@@ -17,7 +17,6 @@ from werkzeug import import_string
 
 
 MODULES = [('/dict', 'relvlast'),
-           ('/export', 'relvlast.export'),
            ('/api/1', 'relvlast.api'),
           ]
 
