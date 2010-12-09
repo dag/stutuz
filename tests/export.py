@@ -6,7 +6,7 @@ from __future__ import with_statement
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from stutuz.tests.tools import flask_tests, assert_xml
+from tests.tools import flask_tests, assert_xml
 from stutuz.extensions import db
 from stutuz.models import Definition, Root
 

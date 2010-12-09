@@ -18,7 +18,7 @@ def wants_json():
            'json' in request.args
 
 
-mod = Module(__name__)
+mod = Module(__name__, 'relvlast')
 
 
 @mod.route('/<entry:entry>/')

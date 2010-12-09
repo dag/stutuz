@@ -13,7 +13,13 @@ from flaskext.babel import Babel, get_locale
 
 from stutuz.extensions import genshi, db
 from stutuz.schemata import CONVERTERS
-from stutuz.modules import MOUNTS
+from werkzeug import import_string
+
+
+MODULES = [('/dict', 'relvlast'),
+           ('/export', 'relvlast.export'),
+           ('/api/1', 'relvlast.api'),
+          ]
 
 
 def create_app(config=None):
@@ -53,7 +59,8 @@ def create_app(config=None):
             app.wsgi_app = middleware(app.wsgi_app)
 
         app.url_map.converters.update(CONVERTERS)
-        for url_prefix, module in MOUNTS:
+        for url_prefix, module in MODULES:
+            module = import_string(module).mod
             app.register_module(module, url_prefix=url_prefix)
 
         return app

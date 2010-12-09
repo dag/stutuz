@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 from attest import Assert as var
 from flask import json
 
-from stutuz.tests.tools import flask_tests
+from tests.tools import flask_tests
 from stutuz.extensions import db
 from stutuz.models import Root, Definition
 

@@ -12,7 +12,7 @@ from attest import Tests, Assert as var
 
 from stutuz import schemata
 from stutuz.extensions import db
-from stutuz.tests.tools import flask_tests
+from tests.tools import flask_tests
 
 
 forms = flask_tests()

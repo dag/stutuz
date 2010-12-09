@@ -30,7 +30,7 @@ manager.add_command('serve', Serve())
 def test(reporter, args):
     """Run all stutuz tests."""
     from attest import get_reporter_by_name
-    from stutuz.tests import all
+    from tests import all
     all.run(get_reporter_by_name(reporter)(*args))
 
 
@@ -145,7 +145,7 @@ def extract_translations():
     """Extract translatable strings."""
     root = current_app.root_path
     os.system('''
-        cd {root}
+        cd {root}/..
         pybabel extract -F babel.cfg -o messages.pot .
     '''.format(root=root))
 
@@ -156,7 +156,7 @@ def new_translations(locale):
     root = current_app.root_path
     os.system('''
         cd {root}
-        pybabel init -i messages.pot -d translations -l {locale}
+        pybabel init -i ../messages.pot -d translations -l {locale}
     '''.format(root=root, locale=locale))
 
 
@@ -176,7 +176,7 @@ def update_translations():
     root = current_app.root_path
     os.system('''
         cd {root}
-        pybabel update -i messages.pot -d translations
+        pybabel update -i ../messages.pot -d translations
     '''.format(root=root))
 
 

@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 from attest import Tests
 
 
-suite = lambda mod: 'stutuz.tests.' + mod + '.suite'
+suite = lambda mod: 'tests.' + mod + '.suite'
 
 all = Tests([suite('schemata'),
              suite('models'),
