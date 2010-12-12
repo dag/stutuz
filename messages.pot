@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2010-12-02 23:33+0100\n"
+"POT-Creation-Date: 2010-12-12 21:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,32 +17,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.5\n"
 
-#: modules/relvlast/templates/entry.html:5
-#: modules/relvlast/templates/revisions.html:5
+#: relvlast/templates/entry.html:6 relvlast/templates/revisions.html:6
 msgid "Dictionary:"
 msgstr ""
 
-#: modules/relvlast/templates/entry.html:10
+#: relvlast/templates/entry.html:11
 msgid "Translations"
 msgstr ""
 
-#: modules/relvlast/templates/revisions.html:10
+#: relvlast/templates/revisions.html:11
 msgid "Revisions in"
 msgstr ""
 
-#: modules/relvlast/templates/revisions.html:13
+#: relvlast/templates/revisions.html:14
 msgid "Author"
 msgstr ""
 
-#: modules/relvlast/templates/revisions.html:14
+#: relvlast/templates/revisions.html:15
 msgid "Comment"
 msgstr ""
 
-#: modules/relvlast/templates/revisions.html:15
+#: relvlast/templates/revisions.html:16
 msgid "Time"
 msgstr ""
 
-#: templates/base.html:3
+#: stutuz/templates/base.html:4
 msgid "Lojban,"
 msgstr ""
 

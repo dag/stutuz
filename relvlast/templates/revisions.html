@@ -1,13 +1,14 @@
 <html xmlns:xi="http://www.w3.org/2001/XInclude"
-      xmlns:py="http://genshi.edgewall.org/">
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:i18n="http://genshi.edgewall.org/i18n/">
   <xi:include href="../base.html"/>
   <head>
-    <title>Dictionary: $entry.id</title>
+    <title i18n:msg="entry">Dictionary: $entry.id</title>
   </head>
   <body>
     <article>
       <h1>$entry.id</h1>
-      <h2>Revisions in ${locale.languages[language]}</h2>
+      <h2 i18n:msg="language">Revisions in ${locale.languages[language]}</h2>
       <table class="history">
         <tr>
           <th>Author</th>
