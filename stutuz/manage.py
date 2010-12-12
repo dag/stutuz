@@ -112,7 +112,7 @@ def import_xml(file, locale):
                     definition.definition = Tex(text)
                 elif case('notes'):
                     definition.notes = Tex(text)
-                elif case('rafsi'):
+                elif case('rafsi') and text not in entry.affixes:
                     entry.affixes.append(text)
                 elif case('selmaho'):
                     entry.class_ = text
