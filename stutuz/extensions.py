@@ -16,6 +16,12 @@ from BTrees.OOBTree import OOBTree
 from stutuz.models import Users
 
 
+class LazyTranslations(object):
+
+    def __getattr__(self, name):
+        return getattr(get_translations(), name)
+
+
 logger = Logger('stutuz')
 
 
@@ -24,7 +30,7 @@ genshi.extensions['html'] = 'html5'
 
 @genshi.template_parsed
 def setup_translator(template):
-    Translator(get_translations()).setup(template)
+    Translator(LazyTranslations()).setup(template)
 
 
 db = ZODB()
