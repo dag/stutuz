@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: stutuz 0.1dev\n"
 "Report-Msgid-Bugs-To: dag.odenhall@gmail.com\n"
 "POT-Creation-Date: 2010-11-29 21:46+0100\n"
-"PO-Revision-Date: 2010-12-13 17:52+0100\n"
+"PO-Revision-Date: 2010-12-13 18:35+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: jbo <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -19,9 +19,9 @@ msgstr ""
 "Generated-By: Babel 0.9.5\n"
 
 #: relvlast/templates/entry.html:6 relvlast/templates/revisions.html:6
-#, fuzzy, python-format
+#, python-format
 msgid "Dictionary: %(entry)s"
-msgstr "vlaste:"
+msgstr "vlaste zo %(entry)s"
 
 #: relvlast/templates/entry.html:11
 msgid "Translations"
@@ -30,28 +30,24 @@ msgstr "xe fanva"
 #: relvlast/templates/revisions.html:11
 #, python-format
 msgid "Revisions in %(language)s"
-msgstr ""
+msgstr "tcini bau lo %(language)s"
 
 #: relvlast/templates/revisions.html:14
 msgid "Author"
-msgstr ""
+msgstr "finti"
 
 #: relvlast/templates/revisions.html:15
 msgid "Comment"
-msgstr ""
+msgstr "pinka"
 
 #: relvlast/templates/revisions.html:16
 msgid "Time"
-msgstr ""
+msgstr "tcika"
 
 #: stutuz/templates/base.html:4
 #, python-format
 msgid "Lojban, %(subtitle)s"
-msgstr ""
-
-#~ msgid "Revisions in"
-#~ msgstr ""
+msgstr "mi'e lojban %(subtitle)s"
 
 #~ msgid "Lojban,"
 #~ msgstr "la lojban,"
-
