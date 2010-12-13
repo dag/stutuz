@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 from logbook import Logger
 from flaskext.genshi import Genshi
 from genshi.filters import Translator
-from flaskext.babel import gettext
+from flaskext.babel import get_translations
 from flaskext.zodb import ZODB
 from BTrees.OOBTree import OOBTree
 
@@ -24,7 +24,7 @@ genshi.extensions['html'] = 'html5'
 
 @genshi.template_parsed
 def setup_translator(template):
-    Translator(gettext).setup(template)
+    Translator(get_translations()).setup(template)
 
 
 db = ZODB()
