@@ -20,7 +20,7 @@
           <td class="comment">$revision.comment</td>
           <td class="timestamp">
             <time datetime="${revision.timestamp.isoformat()}">
-              ${format_datetime(revision.timestamp)}
+              ${filters.datetimeformat(revision.timestamp)}
             </time>
           </td>
         </tr>

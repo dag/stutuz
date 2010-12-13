@@ -8,7 +8,6 @@ from __future__ import unicode_literals
 
 from logbook import NestedSetup
 from flask import Flask, request, Markup
-from babel.dates import format_datetime
 from flaskext.babel import Babel, get_locale
 
 from stutuz.extensions import genshi, db
@@ -30,13 +29,9 @@ def create_app(config=None):
         app.config.from_object(config)
     app.config.from_envvar('STUTUZ_CONFIG', silent=True)
 
-    def _format_datetime(datetime, format='short'):
-        return format_datetime(datetime, format, locale=get_locale())
-
     @app.context_processor
     def global_context():
         return dict(locale=get_locale(),
-                    format_datetime=_format_datetime,
                     Markup=Markup,  # Flask's seems to be superior to Genshi's
                    )
 
