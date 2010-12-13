@@ -6,6 +6,7 @@ from __future__ import with_statement
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from werkzeug import LocalProxy
 from logbook import Logger
 from flaskext.genshi import Genshi
 from genshi.filters import Translator
@@ -16,12 +17,7 @@ from BTrees.OOBTree import OOBTree
 from stutuz.models import Users
 
 
-class LazyTranslations(object):
-
-    def __getattr__(self, name):
-        return getattr(get_translations(), name)
-
-
+current_translations = LocalProxy(get_translations)
 logger = Logger('stutuz')
 
 
@@ -30,7 +26,7 @@ genshi.extensions['html'] = 'html5'
 
 @genshi.template_parsed
 def setup_translator(template):
-    Translator(LazyTranslations()).setup(template)
+    Translator(current_translations).setup(template)
 
 
 db = ZODB()
