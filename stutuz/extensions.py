@@ -7,7 +7,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from werkzeug import LocalProxy
-from logbook import Logger
 from flaskext.genshi import Genshi
 from genshi.filters import Translator
 from flaskext.babel import get_translations
@@ -18,7 +17,6 @@ from stutuz.models import Users
 
 
 current_translations = LocalProxy(get_translations)
-logger = Logger('stutuz')
 
 
 genshi = Genshi()

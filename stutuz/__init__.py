@@ -35,26 +35,35 @@ def create_app(config=None):
                     Markup=Markup,  # Flask's seems to be superior to Genshi's
                    )
 
-    handlers = app.config.get('LOGBOOK_HANDLERS')
-    with NestedSetup(handlers):
-        for extension in genshi, db:
-            extension.init_app(app)
+    handlers = NestedSetup(app.config.get('LOGBOOK_HANDLERS'))
 
-        babel = Babel(app)
+    @app.before_request
+    def push_handlers():
+        handlers.push_thread()
 
-        @babel.localeselector
-        def best_locale():
-            if 'locale' in request.args:
-                return request.args['locale']
-            return request.accept_languages.best_match(
-                    map(str, babel.list_translations()))
+    @app.after_request
+    def pop_handlers(response):
+        handlers.pop_thread()
+        return response
 
-        for middleware in app.config.get('MIDDLEWARES', ()):
-            app.wsgi_app = middleware(app.wsgi_app)
+    for extension in genshi, db:
+        extension.init_app(app)
 
-        app.url_map.converters.update(CONVERTERS)
-        for url_prefix, module in MODULES:
-            module = import_string(module).mod
-            app.register_module(module, url_prefix=url_prefix)
+    babel = Babel(app)
 
-        return app
+    @babel.localeselector
+    def best_locale():
+        if 'locale' in request.args:
+            return request.args['locale']
+        return request.accept_languages.best_match(
+                map(str, babel.list_translations()))
+
+    for middleware in app.config.get('MIDDLEWARES', ()):
+        app.wsgi_app = middleware(app.wsgi_app)
+
+    app.url_map.converters.update(CONVERTERS)
+    for url_prefix, module in MODULES:
+        module = import_string(module).mod
+        app.register_module(module, url_prefix=url_prefix)
+
+    return app
